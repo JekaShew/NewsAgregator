@@ -1,0 +1,55 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34728.123
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsAgregator.Web", "NewsAgregator.Web\NewsAgregator.Web.csproj", "{B1FC35E9-2B5D-414A-9F64-D3FBBB910F1A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsAgregator.Data", "NewsAgregator.Data\NewsAgregator.Data.csproj", "{16BECE7E-C530-40D6-9162-E193038A4A3E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsAgregator.Abstract", "NewsAgregator.Abstract\NewsAgregator.Abstract.csproj", "{C47C8DAC-C790-4D70-8304-2864F6E01305}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsAgregator.ViewModels", "NewsAgregator.ViewModels\NewsAgregator.ViewModels.csproj", "{E6915AB7-802D-4408-AF14-DFDA3E98630C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NewsAgregator.Services", "NewsAgregator.Services\NewsAgregator.Services.csproj", "{3E7AE236-C940-4597-8689-42EA1F35919A}"
+EndProject
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "NewsAgragator.Web.Client", "NewsAgragator.Web.Client\NewsAgragator.Web.Client.njsproj", "{097C1F03-59AB-4502-9E26-44252459CDC2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B1FC35E9-2B5D-414A-9F64-D3FBBB910F1A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1FC35E9-2B5D-414A-9F64-D3FBBB910F1A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1FC35E9-2B5D-414A-9F64-D3FBBB910F1A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1FC35E9-2B5D-414A-9F64-D3FBBB910F1A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16BECE7E-C530-40D6-9162-E193038A4A3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16BECE7E-C530-40D6-9162-E193038A4A3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16BECE7E-C530-40D6-9162-E193038A4A3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16BECE7E-C530-40D6-9162-E193038A4A3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C47C8DAC-C790-4D70-8304-2864F6E01305}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C47C8DAC-C790-4D70-8304-2864F6E01305}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C47C8DAC-C790-4D70-8304-2864F6E01305}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C47C8DAC-C790-4D70-8304-2864F6E01305}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6915AB7-802D-4408-AF14-DFDA3E98630C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6915AB7-802D-4408-AF14-DFDA3E98630C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6915AB7-802D-4408-AF14-DFDA3E98630C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6915AB7-802D-4408-AF14-DFDA3E98630C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3E7AE236-C940-4597-8689-42EA1F35919A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3E7AE236-C940-4597-8689-42EA1F35919A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3E7AE236-C940-4597-8689-42EA1F35919A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3E7AE236-C940-4597-8689-42EA1F35919A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{097C1F03-59AB-4502-9E26-44252459CDC2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{097C1F03-59AB-4502-9E26-44252459CDC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{097C1F03-59AB-4502-9E26-44252459CDC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{097C1F03-59AB-4502-9E26-44252459CDC2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A204D797-9A97-48D7-9572-0A95217B5F93}
+	EndGlobalSection
+EndGlobal
