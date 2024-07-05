@@ -13,6 +13,7 @@ namespace NewsAgregator.Data.Models
         public string? Text { get; set; }
         public DateTime? Date { get; set; }
         public float? PositiveRating { get; set; }
+        public string? Source { get; set; }
 
         public Guid? NewsStatusId { get; set; }
         public NewsStatus? NewsStatus { get; set; }

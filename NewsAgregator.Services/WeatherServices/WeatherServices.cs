@@ -82,7 +82,7 @@ namespace NewsAgregator.Services.WeatherServices
                 weather.TemperatureNight = updatedWeather.TemperatureNight;
                 weather.TemperatureCommon = updatedWeather.TemperatureCommon;
                 weather.Date = updatedWeather.Date;
-                weather.Percipittaion = updatedWeather.Percipittaion;
+                weather.Percipitaion = updatedWeather.Percipitaion;
                 weather.Wind = updatedWeather.Wind;
                 weather.WindDirection = updatedWeather.WindDirection;
                 weather.Pressure = updatedWeather.Pressure;

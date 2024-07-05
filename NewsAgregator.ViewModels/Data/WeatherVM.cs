@@ -17,7 +17,7 @@ namespace NewsAgregator.ViewModels.Data
         public int? TemperatureNight { get; set; }
         public int? TemperatureCommon { get; set; }
         public DateTime? Date { get; set; }
-        public string? Percipittaion { get; set; }
+        public string? Percipitaion { get; set; }
         public float? Wind { get; set; }
         public string? WindDirection { get; set; }
         public int? Pressure { get; set; }

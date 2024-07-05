@@ -1,0 +1,82 @@
+.editPage{
+    background-color: rgba(194, 197, 38, 0.979);
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display:flex;
+    flex-direction: column;
+    width:90%;
+    margin: auto;
+}
+
+.pageTitle {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-family: 'Arial', sans-serif; /* Шрифт */
+    font-size: 2rem;
+    text-align: center;
+    color: #333333; /* Цвет текста */
+    text-transform: uppercase; /* Приведение текста к верхнему регистру */
+    margin: 1rem auto 1rem auto;
+    width: 80%;
+}
+
+.editPageInputs{
+    display:flex;
+    flex-direction: column;
+}
+
+.divInput{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    width:80%;
+    margin: 1rem auto 1rem auto;
+}
+
+.inputTitle{
+    padding: 20px;
+    margin-bottom: 20px;
+    font-family: 'Arial', sans-serif; /* Шрифт */
+    font-size: 1rem; /* Размер шрифта */
+    color: #333333; /* Цвет текста */
+    text-transform: uppercase; /* Приведение текста к верхнему регистру */
+    letter-spacing: 1px; /* Расстояние между буквами */
+    margin:0.2rem auto 0.2rem auto;
+    width: 30%;
+}
+
+.input{
+    font-family: 'Arial', sans-serif; /* Шрифт */
+    font-size: 1rem; /* Размер шрифта */
+    padding: 0.1rem;
+    border: 2px solid #cccccc;
+    border-radius: 5px;
+    transition: border-color 0.3s ease;
+    width:65%
+}
+
+.input:focus {
+    outline: none;
+    border-color: #007BFF;
+}
+
+.btnAddChange{
+    width:8rem;
+    height:2rem;
+    font-family: 'Arial', sans-serif; /* Шрифт */
+    font-size: 1rem; /* Размер шрифта */
+    margin: 1rem 2rem 1rem auto;
+    display: inline-block;
+    padding: 0.1rem 0.2rem;
+    background-color: #007BFF;
+    color: #ffffff;
+    border: none;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+}
+.btnAddChange:hover {
+    background-color: #0056b3;
+}
+
+

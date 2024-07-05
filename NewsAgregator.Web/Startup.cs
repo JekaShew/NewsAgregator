@@ -40,7 +40,11 @@ namespace NewsAgregator.Web
         {
 
             services.AddAutoMapper(typeof(Services.AutoMapper));
+            //Home
             services.AddDbContext<AppDBContext>(options => options.UseSqlServer(@"Server=JEKASHEW;Database=NewsAgregator;Trusted_Connection=True;TrustServerCertificate=True"));
+            //Work
+            //services.AddDbContext<AppDBContext>(options => options.UseSqlServer(@"Server=SHEVTSOV2-10;Database=NewsAgregator;Trusted_Connection=True;TrustServerCertificate=True"));
+            services.AddMvc();
             services.AddMvc();
             services.AddCors();
             services.AddSwaggerGen(x =>

@@ -14,6 +14,7 @@ namespace NewsAgregator.ViewModels.Data
         public string? Text { get; set; }
         public DateTime? Date { get; set; }
         public float? PositiveRating { get; set; }
+        public string? Source { get; set; }
 
         public Guid? NewsStatusId { get; set; }
         public NewsStatusVM? NewsStatus { get; set; }

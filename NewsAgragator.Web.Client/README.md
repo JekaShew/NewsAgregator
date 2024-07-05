@@ -1,3 +1,0 @@
-# NewsAgragator.Web.Client
-
-

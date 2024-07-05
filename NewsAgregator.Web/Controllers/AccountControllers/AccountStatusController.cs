@@ -33,7 +33,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         }
 
         [HttpGet("takebyid")]
-        public async Task<IActionResult> TakeById(Guid id)
+        public async Task<IActionResult> TakeById([FromRoute]Guid id)
         {
             var result = await _accountStatusServices.TakeAccountStatusById(id);
             if (result != null)
@@ -43,14 +43,14 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         }
 
         [HttpDelete("delete")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete([FromRoute]Guid id)
         {
             await _accountStatusServices.DeleteAccountStatus(id);
             return Ok();
         }
 
         [HttpPost("update")]
-        public async Task<IActionResult> Update(AccountStatusVM accountStatusVM)
+        public async Task<IActionResult> Update([FromBody] AccountStatusVM accountStatusVM)
         {
             await _accountStatusServices.UpdateAccountStatus(accountStatusVM);
             return Ok();
