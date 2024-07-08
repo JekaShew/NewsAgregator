@@ -34,6 +34,15 @@ namespace NewsAgregator.Web
 {
     public class Startup
     {
+        
+        public Startup(IConfiguration configuration)
+        {
+            Configuration = configuration;
+        }
+
+        public IConfiguration Configuration { get; }
+       
+
         // This method gets called by the runtime. Use this method to add services to the container.
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
@@ -43,8 +52,10 @@ namespace NewsAgregator.Web
             //Home
             //services.AddDbContext<AppDBContext>(options => options.UseSqlServer(@"Server=JEKASHEW;Database=NewsAgregator;Trusted_Connection=True;TrustServerCertificate=True"));
             //Work
-            services.AddDbContext<AppDBContext>(options => options.UseSqlServer(@"Server=SHEVTSOV2-10;Database=NewsAgregator;Trusted_Connection=True;TrustServerCertificate=True"));
-           
+            //services.AddDbContext<AppDBContext>(options => options.UseSqlServer(@"Server=SHEVTSOV2-10;Database=NewsAgregator;Trusted_Connection=True;TrustServerCertificate=True"));
+
+            services.AddDbContext<AppDBContext>(options => options.UseSqlServer(connectionString: Configuration.GetConnectionString("Home")));
+            
             services.AddMvc();
             services.AddCors();
             services.AddSwaggerGen(x =>
