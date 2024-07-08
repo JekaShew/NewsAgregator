@@ -1,4 +1,5 @@
 ﻿using NewsAgregator.Data.Models;
+using NewsAgregator.ViewModels.Additional;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,10 +18,33 @@ namespace NewsAgregator.ViewModels.Data
         public string? Source { get; set; }
 
         public Guid? NewsStatusId { get; set; }
-        public NewsStatusVM? NewsStatus { get; set; }
+        public List<Parameter>? NewsStatuses { get; set; }
+        public Parameter? NewsStatus { get; set; }
 
         public List<ComplaintVM>? Complaints { get; set; }
 
         public List<CommentVM>? Comments { get; set; }
+
+        public void FromDataModel(NewsAgregator.Data.Models.NewsStatus newsStatus)
+        {
+            if (newsStatus != null)
+            {
+                NewsStatus = new Parameter
+                {
+                    Id = newsStatus.Id,
+                    Text = newsStatus.Title,
+
+                };
+            }
+            else
+            {
+                NewsStatus = new Parameter
+                {
+                    Id = null,
+                    Text = "",
+
+                };
+            }
+        }
     }
 }

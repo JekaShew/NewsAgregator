@@ -1,4 +1,5 @@
-﻿using NewsAgregator.ViewModels.Data;
+﻿using NewsAgregator.ViewModels.Additional;
+using NewsAgregator.ViewModels.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,5 +19,6 @@ namespace NewsAgregator.Abstract.NewsInterfaces
         public Task DeleteNews(Guid id);
 
         public Task UpdateNews(NewsVM updatedNews);
+        public Task<NewsParameters> GetNewsParameters();
     }
 }

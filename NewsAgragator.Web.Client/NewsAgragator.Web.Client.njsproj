@@ -1,0 +1,203 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">14.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <Name>NewsAgragator.Web.Client</Name>
+    <RootNamespace>NewsAgragator.Web.Client</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>86df93af-a1d4-4eb6-b4ab-b63ef9f60749</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <StartupFile>
+    </StartupFile>
+    <StartWebBrowser>False</StartWebBrowser>
+    <SearchPath>
+    </SearchPath>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
+    <StartWebBrowser>false</StartWebBrowser>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="package.json" />
+    <Content Include="public\favicon.ico" />
+    <Content Include="public\index.html" />
+    <Content Include="public\logo192.png" />
+    <Content Include="public\logo512.png" />
+    <Content Include="public\manifest.json" />
+    <Content Include="public\robots.txt" />
+    <Content Include="README.md" />
+    <Content Include="src\apiMiddleware.js" />
+    <Content Include="src\app\App.css" />
+    <Content Include="src\app\App.js" />
+    <Content Include="src\app\customComponents\InputObject1\InputObject.js">
+      <SubType>Code</SubType>
+    </Content>
+    <Content Include="src\app\customComponents\InputObject\InputObject.css" />
+    <Content Include="src\app\customComponents\InputObject\InputObject.js" />
+    <Content Include="src\app\customComponents\ModalConfirmation\ModalConfirmation.css" />
+    <Content Include="src\app\customComponents\ModalConfirmation\ModalConfirmation.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\AccountStatuses\AccountStatuses.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\AccountStatuses\actions.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\AccountStatuses\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\Accounts\Accounts.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\Accounts\actions.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\Accounts\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\EditAccountStatus\actions.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\EditAccountStatus\EditAccountStatus.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\EditAccountStatus\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\EditAccount\actions.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\EditAccount\EditAccount.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\EditAccount\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\EditPolicy\actions.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\EditPolicy\EditPolicy.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\EditPolicy\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\EditRole\EditRole.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\Policies\actions.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\Policies\Policies.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\Policies\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\Roles\actions.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\Roles\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\Roles\Roles.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\ComplaintStatuses\actions.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\ComplaintStatuses\ComplaintStatuses.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\ComplaintStatuses\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\Complaints\actions.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\Complaints\Complaints.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\Complaints\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\ComplaintTypes\actions.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\ComplaintTypes\ComplaintTypes.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\ComplaintTypes\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\EditComplaintStatus\actions.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\EditComplaintStatus\EditComplaintStatus.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\EditComplaintStatus\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\EditComplaintType\actions.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\EditComplaintType\EditComplaintType.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\EditComplaintType\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\EditComplaint\actions.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\EditComplaint\EditComplaint.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\EditComplaint\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\EditNotificationMessage\actions.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\EditNotificationMessage\EditNotificationMessage.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\EditNotificationMessage\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\NotificationMessages\actions.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\NotificationMessages\NotificationMessages.js" />
+    <Content Include="src\app\pages\AdminPages\ComplaintPages\NotificationMessages\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\EditPage.css" />
+    <Content Include="src\app\pages\AdminPages\NewsPages\Comments\actions.js" />
+    <Content Include="src\app\pages\AdminPages\NewsPages\Comments\Comments.js" />
+    <Content Include="src\app\pages\AdminPages\NewsPages\Comments\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\NewsPages\EditComment\actions.js" />
+    <Content Include="src\app\pages\AdminPages\NewsPages\EditComment\EditComment.js" />
+    <Content Include="src\app\pages\AdminPages\NewsPages\EditComment\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\NewsPages\EditNewsStatus\actions.js" />
+    <Content Include="src\app\pages\AdminPages\NewsPages\EditNewsStatus\EditNewsStatus.js" />
+    <Content Include="src\app\pages\AdminPages\NewsPages\EditNewsStatus\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\NewsPages\EditNews\actions.js" />
+    <Content Include="src\app\pages\AdminPages\NewsPages\EditNews\EditNews.js" />
+    <Content Include="src\app\pages\AdminPages\NewsPages\EditNews\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\NewsPages\NewsStatuses\actions.js" />
+    <Content Include="src\app\pages\AdminPages\NewsPages\NewsStatuses\NewsStatuses.js" />
+    <Content Include="src\app\pages\AdminPages\NewsPages\NewsStatuses\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\NewsPages\News\actions.js" />
+    <Content Include="src\app\pages\AdminPages\NewsPages\News\News.js" />
+    <Content Include="src\app\pages\AdminPages\NewsPages\News\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\ReferenceBooks\ReferenceBooks.css" />
+    <Content Include="src\app\pages\AdminPages\ReferenceBooks\ReferenceBooks.js" />
+    <Content Include="src\app\pages\AdminPages\WeatherPages\EditWeatherStatus\actions.js" />
+    <Content Include="src\app\pages\AdminPages\WeatherPages\EditWeatherStatus\EditWeatherStatus.js" />
+    <Content Include="src\app\pages\AdminPages\WeatherPages\EditWeatherStatus\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\WeatherPages\EditWeather\actions.js" />
+    <Content Include="src\app\pages\AdminPages\WeatherPages\EditWeather\EditWeather.js" />
+    <Content Include="src\app\pages\AdminPages\WeatherPages\EditWeather\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\WeatherPages\WeatherStatuses\actions.js" />
+    <Content Include="src\app\pages\AdminPages\WeatherPages\WeatherStatuses\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\WeatherPages\WeatherStatuses\WeatherStatuses.js" />
+    <Content Include="src\app\pages\AdminPages\WeatherPages\Weathers\actions.js" />
+    <Content Include="src\app\pages\AdminPages\WeatherPages\Weathers\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\WeatherPages\Weathers\Weathers.js" />
+    <Content Include="src\app\pages\ClientPages\MainPage\actions.js" />
+    <Content Include="src\app\pages\ClientPages\MainPage\Main.css" />
+    <Content Include="src\app\pages\ClientPages\MainPage\Main.js" />
+    <Content Include="src\app\pages\ClientPages\MainPage\reducer.js" />
+    <Content Include="src\app\pages\ClientPages\NewsPages\NewsPage\actions.js" />
+    <Content Include="src\app\pages\ClientPages\NewsPages\NewsPage\News.css" />
+    <Content Include="src\app\pages\ClientPages\NewsPages\NewsPage\News.js" />
+    <Content Include="src\app\pages\ClientPages\NewsPages\NewsPage\reducer.js" />
+    <Content Include="src\app\pages\ClientPages\WeatherPages\WeatherPage\actions.js" />
+    <Content Include="src\app\pages\ClientPages\WeatherPages\WeatherPage\reducer.js" />
+    <Content Include="src\app\pages\ClientPages\WeatherPages\WeatherPage\Weather.css" />
+    <Content Include="src\app\pages\ClientPages\WeatherPages\WeatherPage\Weather.js" />
+    <Content Include="src\app\pages\Wrapper\Wrapper.css" />
+    <Content Include="src\app\pages\Wrapper\Wrapper.js" />
+    <Content Include="src\config.js" />
+    <Content Include="src\index.css" />
+    <Content Include="src\index.js" />
+    <Content Include="src\initialState.js" />
+    <Content Include="src\reducers.js" />
+    <Content Include="src\store.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="public\" />
+    <Folder Include="src\" />
+    <Folder Include="src\app\" />
+    <Folder Include="src\app\customComponents\" />
+    <Folder Include="src\app\customComponents\InputObject\" />
+    <Folder Include="src\app\customComponents\ModalConfirmation\" />
+    <Folder Include="src\app\customComponents\InputObject1\" />
+    <Folder Include="src\app\pages\" />
+    <Folder Include="src\app\pages\AdminPages\" />
+    <Folder Include="src\app\pages\AdminPages\AccountPages\" />
+    <Folder Include="src\app\pages\AdminPages\AccountPages\AccountStatuses\" />
+    <Folder Include="src\app\pages\AdminPages\AccountPages\Accounts\" />
+    <Folder Include="src\app\pages\AdminPages\AccountPages\EditAccountStatus\" />
+    <Folder Include="src\app\pages\AdminPages\AccountPages\EditAccount\" />
+    <Folder Include="src\app\pages\AdminPages\AccountPages\EditPolicy\" />
+    <Folder Include="src\app\pages\AdminPages\AccountPages\EditRole\" />
+    <Folder Include="src\app\pages\AdminPages\AccountPages\Policies\" />
+    <Folder Include="src\app\pages\AdminPages\AccountPages\Roles\" />
+    <Folder Include="src\app\pages\AdminPages\ComplaintPages\" />
+    <Folder Include="src\app\pages\AdminPages\ComplaintPages\ComplaintStatuses\" />
+    <Folder Include="src\app\pages\AdminPages\ComplaintPages\Complaints\" />
+    <Folder Include="src\app\pages\AdminPages\ComplaintPages\ComplaintTypes\" />
+    <Folder Include="src\app\pages\AdminPages\ComplaintPages\EditComplaintStatus\" />
+    <Folder Include="src\app\pages\AdminPages\ComplaintPages\EditComplaintType\" />
+    <Folder Include="src\app\pages\AdminPages\ComplaintPages\EditComplaint\" />
+    <Folder Include="src\app\pages\AdminPages\ComplaintPages\EditNotificationMessage\" />
+    <Folder Include="src\app\pages\AdminPages\ComplaintPages\NotificationMessages\" />
+    <Folder Include="src\app\pages\AdminPages\NewsPages\" />
+    <Folder Include="src\app\pages\AdminPages\NewsPages\Comments\" />
+    <Folder Include="src\app\pages\AdminPages\NewsPages\EditComment\" />
+    <Folder Include="src\app\pages\AdminPages\NewsPages\EditNewsStatus\" />
+    <Folder Include="src\app\pages\AdminPages\NewsPages\EditNews\" />
+    <Folder Include="src\app\pages\AdminPages\NewsPages\NewsStatuses\" />
+    <Folder Include="src\app\pages\AdminPages\NewsPages\News\" />
+    <Folder Include="src\app\pages\AdminPages\ReferenceBooks\" />
+    <Folder Include="src\app\pages\AdminPages\WeatherPages\" />
+    <Folder Include="src\app\pages\AdminPages\WeatherPages\EditWeatherStatus\" />
+    <Folder Include="src\app\pages\AdminPages\WeatherPages\EditWeather\" />
+    <Folder Include="src\app\pages\AdminPages\WeatherPages\WeatherStatuses\" />
+    <Folder Include="src\app\pages\AdminPages\WeatherPages\Weathers\" />
+    <Folder Include="src\app\pages\ClientPages\" />
+    <Folder Include="src\app\pages\ClientPages\AccountPages\" />
+    <Folder Include="src\app\pages\ClientPages\AccountPages\AccountPage\" />
+    <Folder Include="src\app\pages\ClientPages\ComplaintPages\" />
+    <Folder Include="src\app\pages\ClientPages\MainPage\" />
+    <Folder Include="src\app\pages\ClientPages\NewsPages\" />
+    <Folder Include="src\app\pages\ClientPages\NewsPages\NewsPage\" />
+    <Folder Include="src\app\pages\ClientPages\WeatherPages\" />
+    <Folder Include="src\app\pages\ClientPages\WeatherPages\WeatherPage\" />
+    <Folder Include="src\app\pages\Wrapper\" />
+  </ItemGroup>
+  <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
+</Project>

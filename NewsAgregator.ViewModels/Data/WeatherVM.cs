@@ -1,4 +1,5 @@
 ﻿using NewsAgregator.Data.Models;
+using NewsAgregator.ViewModels.Additional;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,19 +24,55 @@ namespace NewsAgregator.ViewModels.Data
         public int? Pressure { get; set; }
         public int? Humidity { get; set; }
 
+
+        public List<Parameter>? WeatherStatuses { get; set; }
         public Guid? WeatherStatusMorningId { get; set; }
-        public WeatherStatusVM? WeatherStatusMorning { get; set; }
+        public Parameter? WeatherStatusMorning { get; set; }
 
         public Guid? WeatherStatusDayId { get; set; }
-        public WeatherStatusVM? WeatherStatusDay { get; set; }
+        public Parameter? WeatherStatusDay { get; set; }
 
         public Guid? WeatherStatusEveningId { get; set; }
-        public WeatherStatusVM? WeatherStatusEvening { get; set; }
+        public Parameter? WeatherStatusEvening { get; set; }
 
         public Guid? WeatherStatusNightId { get; set; }
-        public WeatherStatusVM? WeatherStatusNight { get; set; }
+        public Parameter? WeatherStatusNight { get; set; }
 
         public Guid? WeatherStatusCommonId { get; set; }
-        public WeatherStatusVM? WeatherStatusCommon { get; set; }
+        public Parameter? WeatherStatusCommon { get; set; }
+
+        public void FromDataModel(WeatherStatus weatherStatusCommon, WeatherStatus weatherStatusMorning, WeatherStatus weatherStatusDay, WeatherStatus weatherStatusEvening, WeatherStatus weatherStatusNight)
+        {        
+            WeatherStatusCommon = new Parameter
+            {
+                Id = weatherStatusCommon !=null? weatherStatusCommon.Id : null,
+                Text = weatherStatusCommon != null ? weatherStatusCommon.Title : "",
+            };
+
+            WeatherStatusMorning = new Parameter
+            {
+                Id = weatherStatusMorning != null ? weatherStatusMorning.Id : null,
+                Text = weatherStatusMorning != null ? weatherStatusMorning.Title : "",
+            };
+
+            WeatherStatusDay = new Parameter
+            {
+                Id = weatherStatusDay != null ? weatherStatusDay.Id : null,
+                Text = weatherStatusDay != null ? weatherStatusDay.Title : "",
+            };
+
+            WeatherStatusEvening = new Parameter
+            {
+                Id = weatherStatusEvening != null ? weatherStatusEvening.Id : null,
+                Text = weatherStatusEvening != null ? weatherStatusEvening.Title : "",
+            };
+
+            WeatherStatusNight = new Parameter
+            {
+                Id = weatherStatusNight != null ? weatherStatusNight.Id : null,
+                Text = weatherStatusNight != null ? weatherStatusNight.Title : "",
+            };
+
+        }
     }
 }

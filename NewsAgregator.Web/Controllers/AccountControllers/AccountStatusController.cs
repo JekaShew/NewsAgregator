@@ -16,7 +16,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         }
 
         [HttpPost("add")]
-        public async Task<IActionResult> Add(AccountStatusVM accountStatusVM)
+        public async Task<IActionResult> Add([FromForm]AccountStatusVM accountStatusVM)
         {
             await _accountStatusServices.AddAccountStatus(accountStatusVM);
             return Ok();
@@ -26,13 +26,13 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         public async Task<IActionResult> TakeAll()
         {
             var result = await _accountStatusServices.TakeAccountStatuses();
-            if (result != null)
+            if (result.Count != 0)
                 return Ok(result);
             else
                 return NotFound();
         }
 
-        [HttpGet("takebyid")]
+        [HttpGet("takebyid/{id}")]
         public async Task<IActionResult> TakeById([FromRoute]Guid id)
         {
             var result = await _accountStatusServices.TakeAccountStatusById(id);
@@ -42,7 +42,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
                 return NotFound();
         }
 
-        [HttpDelete("delete")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete([FromRoute]Guid id)
         {
             await _accountStatusServices.DeleteAccountStatus(id);
@@ -50,7 +50,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         }
 
         [HttpPost("update")]
-        public async Task<IActionResult> Update([FromBody] AccountStatusVM accountStatusVM)
+        public async Task<IActionResult> Update(AccountStatusVM accountStatusVM)
         {
             await _accountStatusServices.UpdateAccountStatus(accountStatusVM);
             return Ok();

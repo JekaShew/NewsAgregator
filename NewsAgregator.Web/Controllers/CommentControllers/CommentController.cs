@@ -16,6 +16,14 @@ namespace NewsAgregator.Web.Controllers.CommentControllers
             _commentServices = commentServices;
         }
 
+        [HttpGet("getparameters")]
+        public async Task<IActionResult> GetParameters()
+        {
+            var result = await _commentServices.GetCommentParameters();
+
+            return Ok(result);
+        }
+
         [HttpPost("add")]
         public async Task<IActionResult> Add(CommentVM commentVM)
         {
@@ -33,7 +41,7 @@ namespace NewsAgregator.Web.Controllers.CommentControllers
                 return NotFound();
         }
 
-        [HttpGet("takebyid")]
+        [HttpGet("takebyid/{id}")]
         public async Task<IActionResult> TakeById(Guid id)
         {
             var result = await _commentServices.TakeCommentById(id);
@@ -43,7 +51,7 @@ namespace NewsAgregator.Web.Controllers.CommentControllers
                 return NotFound();
         }
 
-        [HttpDelete("delete")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _commentServices.DeleteComment(id);

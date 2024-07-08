@@ -1,4 +1,5 @@
 ﻿using NewsAgregator.Data.Models;
+using NewsAgregator.ViewModels.Additional;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,19 +20,40 @@ namespace NewsAgregator.ViewModels.Data
         public float? DesiredNewsRating { get; set; }
 
         public Guid? AccountStatusId { get; set; }
-        public AccountStatus? AccountStatus { get; set; }
+        public List<Parameter>? AccountStatuses { get; set; }
+        public Parameter? AccountStatus { get; set; }
+
 
         public Guid? RoleId { get; set; }
-        public Role? Role { get; set; }
+        public List<Parameter>? Roles { get; set; }
+        public Parameter? Role { get; set; }
 
-        public List<Complaint>? UserComplaints { get; set; }
 
-        public List<Complaint>? AdministratorComplaints { get; set; }
+        public List<ComplaintVM>? UserComplaints { get; set; }
 
-        public List<NotificationMessage>? RecipientUsers { get; set; }
+        public List<ComplaintVM>? AdministratorComplaints { get; set; }
 
-        public List<NotificationMessage>? SenderAdministrators { get; set; }
+        public List<NotificationMessageVM>? RecipientUsers { get; set; }
 
-        public List<Comment>? Comments { get; set; }
+        public List<NotificationMessageVM>? SenderAdministrators { get; set; }
+
+        public List<CommentVM>? Comments { get; set; }
+
+        public void FromDataModel(NewsAgregator.Data.Models.AccountStatus accountStatus, NewsAgregator.Data.Models.Role role)
+        {            
+            AccountStatus = new Parameter
+            {
+                Id = accountStatus != null? accountStatus.Id : null,
+                Text = accountStatus != null ? accountStatus.Title : "",
+
+            };
+ 
+            Role = new Parameter
+            {
+                Id = role != null? role.Id : null,
+                Text = role != null? role.Title : "",
+            };
+ 
+        }
     }
 }

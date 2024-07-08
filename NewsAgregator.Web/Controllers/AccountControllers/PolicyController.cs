@@ -32,8 +32,8 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
                 return NotFound();
         }
 
-        [HttpGet("takebyid")]
-        public async Task<IActionResult> TakeById(Guid id)
+        [HttpGet("takebyid/{id}")]
+        public async Task<IActionResult> TakeById([FromRoute]Guid id)
         {
             var result = await _policyServices.TakePolicyById(id);
             if (result != null)
@@ -42,8 +42,8 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
                 return NotFound();
         }
 
-        [HttpDelete("delete")]
-        public async Task<IActionResult> Delete(Guid id)
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> Delete([FromRoute]Guid id)
         {
             await _policyServices.DeletePolicy(id);
             return Ok();

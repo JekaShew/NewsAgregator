@@ -14,6 +14,14 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
             _complaintServices = complaintServices;
         }
 
+        [HttpGet("getparameters")]
+        public async Task<IActionResult> GetParameters()
+        {
+            var result = await _complaintServices.GetComplaintParameters();
+
+            return Ok(result);
+        }
+
         [HttpPost("add")]
         public async Task<IActionResult> Add(ComplaintVM complaintVM)
         {
@@ -31,7 +39,7 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
                 return NotFound();
         }
 
-        [HttpGet("takebyid")]
+        [HttpGet("takebyid/{id}")]
         public async Task<IActionResult> TakeById(Guid id)
         {
             var result = await _complaintServices.TakeComplaintById(id);
@@ -41,7 +49,7 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
                 return NotFound();
         }
 
-        [HttpDelete("delete")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _complaintServices.DeleteComplaint(id);

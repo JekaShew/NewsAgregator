@@ -15,6 +15,14 @@ namespace NewsAgregator.Web.Controllers.MessageControllers
             _notificationMessageServices = notificationMessageServices;
         }
 
+        [HttpGet("getparameters")]
+        public async Task<IActionResult> GetParameters()
+        {
+            var result = await _notificationMessageServices.GetNotificationMessageParameters();
+
+            return Ok(result);
+        }
+
         [HttpPost("add")]
         public async Task<IActionResult> Add(NotificationMessageVM notificationMessageVM)
         {
@@ -32,7 +40,7 @@ namespace NewsAgregator.Web.Controllers.MessageControllers
                 return NotFound();
         }
 
-        [HttpGet("takebyid")]
+        [HttpGet("takebyid/{id}")]
         public async Task<IActionResult> TakeById(Guid id)
         {
             var result = await _notificationMessageServices.TakeNotificationMessageById(id);
@@ -42,7 +50,7 @@ namespace NewsAgregator.Web.Controllers.MessageControllers
                 return NotFound();
         }
 
-        [HttpDelete("delete")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _notificationMessageServices.DeleteNotificationMessage(id);

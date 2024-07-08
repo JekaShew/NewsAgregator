@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NewsAgregator.Abstract.NewsInterfaces;
 using NewsAgregator.Data;
 using NewsAgregator.Data.Models;
+using NewsAgregator.ViewModels.Additional;
 using NewsAgregator.ViewModels.Data;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,27 @@ namespace NewsAgregator.Services.NewsServices
             _appDBContext = appDBContext;
             _mapper = mapper;
         }
+
+        public async Task<NewsParameters> GetNewsParameters()
+        {
+            var newsParameters = new NewsParameters()
+            {
+                NewsStatuses = await _appDBContext.NewsStatuses.Select(ns => new Parameter { Id = ns.Id, Text = ns.Title }).ToListAsync(),
+               
+            };
+            return newsParameters;
+
+        }
+
+        public async Task ConvertNewsParameters(NewsVM newsVM)
+        {
+            var newsStatus = await _appDBContext.NewsStatuses
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(accs => accs.Id == newsVM.NewsStatusId);
+
+            newsVM.FromDataModel(newsStatus);
+        }
+
         public async Task AddNews(NewsVM news)
         {
             var newNews = _mapper.Map<Data.Models.News>(news);
@@ -44,6 +66,10 @@ namespace NewsAgregator.Services.NewsServices
                 .Include(ns => ns.NewsStatus)
                 .FirstOrDefaultAsync(n => n.Id == id));
 
+            var newsParameters = await GetNewsParameters();
+            await ConvertNewsParameters(news);
+            news.NewsStatuses = newsParameters.NewsStatuses;
+
             return news;
         }
 
@@ -53,6 +79,15 @@ namespace NewsAgregator.Services.NewsServices
                 .AsNoTracking()
                 .Include(ns => ns.NewsStatus)
                 .ToListAsync());
+
+            foreach (var newsVM in newsVMs)
+            {
+                var newsStatus = await _appDBContext.NewsStatuses
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(accs => accs.Id == newsVM.NewsStatusId);
+
+                newsVM.FromDataModel(newsStatus);
+            }
 
             return newsVMs;
         }

@@ -14,6 +14,14 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
             _accountServices = accountServices;
         }
 
+        [HttpGet("getparameters")]
+        public async Task<IActionResult> GetParameters()
+        {
+            var result = await _accountServices.GetAccountParameters();
+
+            return Ok(result);
+        }
+
         [HttpPost("add")]
         public async Task<IActionResult> Add(AccountVM accountVM)
         {
@@ -31,8 +39,8 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
                 return NotFound();
         }
 
-        [HttpGet("takebyid")]
-        public async Task<IActionResult> TakeById(Guid id)
+        [HttpGet("takebyid/{id}")]
+        public async Task<IActionResult> TakeById([FromRoute] Guid id)
         {
             var result = await _accountServices.TakeAccountById(id);
             if (result != null)
@@ -41,8 +49,8 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
                 return NotFound();
         }
 
-        [HttpDelete("delete")]
-        public async Task<IActionResult> Delete(Guid id)
+        [HttpDelete("delete/{id}")]
+        public async Task<IActionResult> Delete([FromRoute]Guid id)
         {
             await _accountServices.DeleteAccount(id);
             return Ok();

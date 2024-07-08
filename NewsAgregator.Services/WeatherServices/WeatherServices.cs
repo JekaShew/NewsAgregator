@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NewsAgregator.Abstract.WeatherInterfaces;
 using NewsAgregator.Data;
 using NewsAgregator.Data.Models;
+using NewsAgregator.ViewModels.Additional;
 using NewsAgregator.ViewModels.Data;
 using System;
 using System.Collections.Generic;
@@ -21,6 +22,38 @@ namespace NewsAgregator.Services.WeatherServices
             _appDBContext = appDBContext;
             _mapper = mapper;
         }
+
+        public async Task<WeatherParameters> GetWeatherParameters()
+        {
+            var weatherParameters = new WeatherParameters()
+            {
+                WeatherStatuses = await _appDBContext.WeatherStatuses.Select(accs => new Parameter { Id = accs.Id, Text = accs.Title }).ToListAsync(),
+            };
+            return weatherParameters;
+
+        }
+
+        public async Task ConvertWeatherParameters(WeatherVM weatherVM)
+        {
+            var weatherStatusCommon = await _appDBContext.WeatherStatuses
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(accs => accs.Id == weatherVM.WeatherStatusCommonId);
+            var weatherStatusMorning = await _appDBContext.WeatherStatuses
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(accs => accs.Id == weatherVM.WeatherStatusMorningId);
+            var weatherStatusDay = await _appDBContext.WeatherStatuses
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(accs => accs.Id == weatherVM.WeatherStatusDayId);
+            var weatherStatusEvening = await _appDBContext.WeatherStatuses
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(accs => accs.Id == weatherVM.WeatherStatusEveningId);
+            var weatherStatusNight = await _appDBContext.WeatherStatuses
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(accs => accs.Id == weatherVM.WeatherStatusNightId);
+
+            weatherVM.FromDataModel(weatherStatusCommon, weatherStatusMorning, weatherStatusDay, weatherStatusEvening, weatherStatusNight);
+        }
+
         public async Task AddWeather(WeatherVM weather)
         {
             var newWeather = _mapper.Map<Data.Models.Weather>(weather);
@@ -52,6 +85,10 @@ namespace NewsAgregator.Services.WeatherServices
                 .Include(wsc => wsc.WeatherStatusCommon)
                 .FirstOrDefaultAsync(w => w.Id == id));
 
+            var weatherParameters = await GetWeatherParameters();
+            await ConvertWeatherParameters(weather);
+            weather.WeatherStatuses = weatherParameters.WeatherStatuses;
+
             return weather;
         }
 
@@ -65,6 +102,11 @@ namespace NewsAgregator.Services.WeatherServices
                 .Include(wsn => wsn.WeatherStatusNight)
                 .Include(wsc => wsc.WeatherStatusCommon)
                 .ToListAsync());
+
+            foreach (var weatherVM in weatherVMs)
+            {
+                await ConvertWeatherParameters(weatherVM);  
+            }
 
             return weatherVMs;
         }

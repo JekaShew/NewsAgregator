@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using NewsAgregator.Abstract.MessageInterfaces;
 using NewsAgregator.Data;
 using NewsAgregator.Data.Models;
+using NewsAgregator.ViewModels.Additional;
 using NewsAgregator.ViewModels.Data;
 using System;
 using System.Collections.Generic;
@@ -20,6 +21,29 @@ namespace NewsAgregator.Services.MessageServices
         {
             _appDBContext = appDBContext;
             _mapper = mapper;
+        }
+
+        public async Task<NotificationMessageParameters> GetNotificationMessageParameters()
+        {
+            var notificationMessageParameters = new NotificationMessageParameters()
+            {
+                Accounts = await _appDBContext.Accounts.Select(acc => new Parameter { Id = acc.Id, Text = acc.UserName }).ToListAsync(),
+                
+            };
+            return notificationMessageParameters;
+
+        }
+
+        public async Task ConvertNotificationMessageParameters(NotificationMessageVM notificationMessageVM)
+        {
+            var user = await _appDBContext.Accounts
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(u => u.Id == notificationMessageVM.UserId);
+            var administrator = await _appDBContext.Accounts
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(a => a.Id == notificationMessageVM.AdministratorId);
+            notificationMessageVM.FromDataModel(user, administrator);
+
         }
         public async Task AddNotificationMessage(NotificationMessageVM notificationMessage)
         {
@@ -46,6 +70,10 @@ namespace NewsAgregator.Services.MessageServices
                 .Include(a => a.Administrator)  
                 .FirstOrDefaultAsync(nm => nm.Id == id));
 
+            var notificationMessageParameters = await GetNotificationMessageParameters();
+            await ConvertNotificationMessageParameters(notificationMessage);
+            notificationMessage.Accounts = notificationMessageParameters.Accounts;
+
             return notificationMessage;
         }
 
@@ -56,6 +84,11 @@ namespace NewsAgregator.Services.MessageServices
                 .Include(u => u.User)
                 .Include(a => a.Administrator)
                 .ToListAsync());
+
+            foreach (var notifiactionMessageVM in notificationMessageVMs)
+            {
+                await ConvertNotificationMessageParameters(notifiactionMessageVM);
+            }
 
             return notificationMessageVMs;
         }

@@ -1,11 +1,14 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using NewsAgregator.Abstract.AccountInterfaces;
 using NewsAgregator.Data;
 using NewsAgregator.Data.Models;
+using NewsAgregator.ViewModels.Additional;
 using NewsAgregator.ViewModels.Data;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -22,10 +25,35 @@ namespace NewsAgregator.Services.AccountServices
             _mapper = mapper;
         }
 
+        public async Task<AccountParameters> GetAccountParameters()
+        {
+            var accountParameters = new AccountParameters()
+            {
+                AccountStatuses = await _appDBContext.AccountStatuses.Select(accs => new Parameter { Id = accs.Id, Text = accs.Title }).ToListAsync(),
+                Roles = await _appDBContext.Roles.Select(r => new Parameter { Id = r.Id, Text = r.Title }).ToListAsync()
+            }; 
+            return accountParameters;
+
+        }
+
+        public async Task ConvertAccountParameters(AccountVM accountVM)
+        {
+            var accountStatus = await _appDBContext.AccountStatuses
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(accs => accs.Id == accountVM.AccountStatusId);
+            var role = await _appDBContext.Roles
+                        .AsNoTracking()
+                        .FirstOrDefaultAsync(r => r.Id == accountVM.RoleId);
+            accountVM.FromDataModel(accountStatus, role);
+
+        }
+
         public async Task AddAccount(AccountVM account)
         {
             var newAccount = _mapper.Map<Data.Models.Account>(account);
             newAccount.Id = Guid.NewGuid();
+            newAccount.AccountStatusId = account.AccountStatusId;
+            newAccount.RoleId = account.RoleId;
             newAccount.AccountStatus = null;
             newAccount.Role = null;
                 
@@ -47,8 +75,15 @@ namespace NewsAgregator.Services.AccountServices
                 .Include(acc => acc.Role)
                 .FirstOrDefaultAsync(acc => acc.Id == id));
 
+            var accountParameters = await GetAccountParameters();
+            await ConvertAccountParameters(account);
+            account.AccountStatuses = accountParameters.AccountStatuses;
+            account.Roles = accountParameters.Roles;
+
             return account;
         }
+
+        
 
         public async Task<List<AccountVM>> TakeAccounts()
         {
@@ -58,7 +93,19 @@ namespace NewsAgregator.Services.AccountServices
                 .Include(acc => acc.Role)
                 .ToListAsync());
 
-            return accountVMs;
+            foreach (var accountVM in accountVMs)
+            {
+                await ConvertAccountParameters(accountVM);
+            }
+
+                //var tasks = new List<Task>();
+                //foreach(var accountVM in accountVMs)
+                //{
+                //    tasks.Add(ConvertAccountParameters(accountVM));
+                //}
+                //await Task.WhenAll(tasks);
+
+                return accountVMs;
         }
 
         public async Task UpdateAccount(AccountVM updatedAccount)

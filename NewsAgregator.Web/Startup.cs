@@ -41,10 +41,10 @@ namespace NewsAgregator.Web
 
             services.AddAutoMapper(typeof(Services.AutoMapper));
             //Home
-            services.AddDbContext<AppDBContext>(options => options.UseSqlServer(@"Server=JEKASHEW;Database=NewsAgregator;Trusted_Connection=True;TrustServerCertificate=True"));
+            //services.AddDbContext<AppDBContext>(options => options.UseSqlServer(@"Server=JEKASHEW;Database=NewsAgregator;Trusted_Connection=True;TrustServerCertificate=True"));
             //Work
-            //services.AddDbContext<AppDBContext>(options => options.UseSqlServer(@"Server=SHEVTSOV2-10;Database=NewsAgregator;Trusted_Connection=True;TrustServerCertificate=True"));
-            services.AddMvc();
+            services.AddDbContext<AppDBContext>(options => options.UseSqlServer(@"Server=SHEVTSOV2-10;Database=NewsAgregator;Trusted_Connection=True;TrustServerCertificate=True"));
+           
             services.AddMvc();
             services.AddCors();
             services.AddSwaggerGen(x =>
@@ -63,6 +63,7 @@ namespace NewsAgregator.Web
                 });
                 x.DocInclusionPredicate((name, api) => true);
             });
+
             //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             //       .AddJwtBearer(options =>
             //       {
@@ -81,7 +82,8 @@ namespace NewsAgregator.Web
             //           };
             //       });
 
-            services.AddScoped<DbContext>(isp => isp.GetService<AppDBContext>());
+            services.AddDbContext<AppDBContext>();
+            //services.AddTransient<DbContext>(isp => isp.GetService<AppDBContext>());
 
             services.AddScoped<IAccountServices, AccountServices>();
             services.AddScoped<IAccountStatusServices, AccountStatusServices>();

@@ -23,17 +23,15 @@
       "launchBrowser": true,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
+      }      
+    },
+    "NewsAgregator": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "applicationUrl": "http://localhost:5000",
-      "NewsAgregator": {
-        "commandName": "Project",
-        "launchBrowser": true,
-        "environmentVariables": {
-          "ASPNETCORE_ENVIRONMENT": "Development"
-        },
-        "dotnetRunMessages": "true",
-        "applicationUrl": "http://localhost:3000"
-      }
+      "applicationUrl": "http://localhost:5000"
     }
   },
   "$schema": "http://json.schemastore.org/launchsettings.json",

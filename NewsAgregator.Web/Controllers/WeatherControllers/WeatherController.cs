@@ -15,6 +15,14 @@ namespace NewsAgregator.Web.Controllers.WeatherControllers
             _weatherServices = weatherServices;
         }
 
+        [HttpGet("getparameters")]
+        public async Task<IActionResult> GetParameters()
+        {
+            var result = await _weatherServices.GetWeatherParameters();
+
+            return Ok(result);
+        }
+
         [HttpPost("add")]
         public async Task<IActionResult> Add(WeatherVM weatherVM)
         {
@@ -32,7 +40,7 @@ namespace NewsAgregator.Web.Controllers.WeatherControllers
                 return NotFound();
         }
 
-        [HttpGet("takebyid")]
+        [HttpGet("takebyid/{id}")]
         public async Task<IActionResult> TakeById(Guid id)
         {
             var result = await _weatherServices.TakeWeatherById(id);
@@ -42,7 +50,7 @@ namespace NewsAgregator.Web.Controllers.WeatherControllers
                 return NotFound();
         }
 
-        [HttpDelete("delete")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _weatherServices.DeleteWeather(id);

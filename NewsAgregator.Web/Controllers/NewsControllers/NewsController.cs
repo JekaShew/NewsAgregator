@@ -15,6 +15,14 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
             _newsServices = newsServices;
         }
 
+        [HttpGet("getparameters")]
+        public async Task<IActionResult> GetParameters()
+        {
+            var result = await _newsServices.GetNewsParameters();
+
+            return Ok(result);
+        }
+
         [HttpPost("add")]
         public async Task<IActionResult> Add(NewsVM newsVM)
         {
@@ -32,7 +40,7 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
                 return NotFound();
         }
 
-        [HttpGet("takebyid")]
+        [HttpGet("takebyid/{id}")]
         public async Task<IActionResult> TakeById(Guid id)
         {
             var result = await _newsServices.TakeNewsById(id);
@@ -42,7 +50,7 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
                 return NotFound();
         }
 
-        [HttpDelete("delete")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _newsServices.DeleteNews(id);

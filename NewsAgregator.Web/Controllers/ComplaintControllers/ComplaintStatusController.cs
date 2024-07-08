@@ -32,7 +32,7 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
                 return NotFound();
         }
 
-        [HttpGet("takebyid")]
+        [HttpGet("takebyid/{id}")]
         public async Task<IActionResult> TakeById(Guid id)
         {
             var result = await _complaintStatus.TakeComplaintStatusById(id);
@@ -42,7 +42,7 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
                 return NotFound();
         }
 
-        [HttpDelete("delete")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             await _complaintStatus.DeleteComplaintStatus(id);
