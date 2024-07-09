@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Hosting;
+using Serilog;
+using Serilog.Events;
 
 namespace NewsAgregator.Web
 {
@@ -7,6 +9,12 @@ namespace NewsAgregator.Web
     {
         public static void Main(string[] args)
         {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Information)
+                .Enrich.FromLogContext()
+                .WriteTo.File("logs.log")
+                .CreateBootstrapLogger();
+
             CreateHostBuilder(args).Build().Run();
         }
 

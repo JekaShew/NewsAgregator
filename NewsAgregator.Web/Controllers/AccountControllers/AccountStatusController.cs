@@ -9,51 +9,98 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
     public class AccountStatusController : Controller
     {
         private readonly IAccountStatusServices _accountStatusServices;
+        private readonly ILogger<AccountStatusController> _logger;
 
-        public AccountStatusController(IAccountStatusServices accountStatusServices)
+        public AccountStatusController(IAccountStatusServices accountStatusServices, ILogger<AccountStatusController> logger)
         {
             _accountStatusServices = accountStatusServices;
+            _logger = logger;
         }
 
         [HttpPost("add")]
         public async Task<IActionResult> Add([FromForm]AccountStatusVM accountStatusVM)
         {
-            await _accountStatusServices.AddAccountStatus(accountStatusVM);
-            return Ok();
+            try
+            {
+                await _accountStatusServices.AddAccountStatus(accountStatusVM);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpGet("takeall")]
         public async Task<IActionResult> TakeAll()
         {
-            var result = await _accountStatusServices.TakeAccountStatuses();
-            if (result.Count != 0)
-                return Ok(result);
-            else
-                return NotFound();
+            try
+            {
+                var result = await _accountStatusServices.TakeAccountStatuses();
+                if (result.Count != 0)
+                    return Ok(result);
+                else
+                    return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpGet("takebyid/{id}")]
         public async Task<IActionResult> TakeById([FromRoute]Guid id)
         {
-            var result = await _accountStatusServices.TakeAccountStatusById(id);
-            if (result != null)
-                return Ok(result);
-            else
-                return NotFound();
+            try
+            {
+                var result = await _accountStatusServices.TakeAccountStatusById(id);
+                if (result != null)
+                    return Ok(result);
+                else
+                    return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete([FromRoute]Guid id)
         {
-            await _accountStatusServices.DeleteAccountStatus(id);
-            return Ok();
+            try
+            {
+                await _accountStatusServices.DeleteAccountStatus(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpPost("update")]
         public async Task<IActionResult> Update(AccountStatusVM accountStatusVM)
         {
-            await _accountStatusServices.UpdateAccountStatus(accountStatusVM);
-            return Ok();
+            try
+            {
+                await _accountStatusServices.UpdateAccountStatus(accountStatusVM);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
     }

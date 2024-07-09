@@ -2,6 +2,7 @@
 using NewsAgregator.Abstract.ComplaintInterfaces;
 using NewsAgregator.Abstract.NewsInterfaces;
 using NewsAgregator.ViewModels.Data;
+using NewsAgregator.Web.Controllers.AccountControllers;
 
 namespace NewsAgregator.Web.Controllers.NewsControllers
 {
@@ -9,51 +10,93 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
     public class NewsStatusController : Controller
     {
         private readonly INewsStatusServices _newsStatusServices;
+        private readonly ILogger<NewsStatusController> _logger;
 
-        public NewsStatusController(INewsStatusServices newsStatusServices)
+        public NewsStatusController(INewsStatusServices newsStatusServices, ILogger<NewsStatusController> logger)
         {
             _newsStatusServices = newsStatusServices;
+            _logger = logger;
         }
 
         [HttpPost("add")]
         public async Task<IActionResult> Add(NewsStatusVM newsStatusVM)
         {
-            await _newsStatusServices.AddNewsStatus(newsStatusVM);
-            return Ok();
+            try
+            {
+                await _newsStatusServices.AddNewsStatus(newsStatusVM);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpGet("takeall")]
         public async Task<IActionResult> TakeAll()
         {
-            var result = await _newsStatusServices.TakeNewsStatuses();
-            if (result != null)
-                return Ok(result);
-            else
-                return NotFound();
+            try
+            {
+                var result = await _newsStatusServices.TakeNewsStatuses();
+                if (result != null)
+                    return Ok(result);
+                else
+                    return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpGet("takebyid/{id}")]
         public async Task<IActionResult> TakeById(Guid id)
         {
-            var result = await _newsStatusServices.TakeNewsStatusById(id);
-            if (result != null)
-                return Ok(result);
-            else
-                return NotFound();
+            try
+            {
+                var result = await _newsStatusServices.TakeNewsStatusById(id);
+                if (result != null)
+                    return Ok(result);
+                else
+                    return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await _newsStatusServices.DeleteNewsStatus(id);
-            return Ok();
+            try
+            {
+                await _newsStatusServices.DeleteNewsStatus(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpPost("update")]
         public async Task<IActionResult> Update(NewsStatusVM newsStatusVM)
         {
-            await _newsStatusServices.UpdateNewsStatus(newsStatusVM);
-            return Ok();
+            try
+            {
+                await _newsStatusServices.UpdateNewsStatus(newsStatusVM);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }          
         }
     }
 }

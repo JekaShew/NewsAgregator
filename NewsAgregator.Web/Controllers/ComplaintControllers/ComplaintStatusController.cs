@@ -2,6 +2,7 @@
 using NewsAgregator.Abstract.AccountInterfaces;
 using NewsAgregator.Abstract.ComplaintInterfaces;
 using NewsAgregator.ViewModels.Data;
+using NewsAgregator.Web.Controllers.AccountControllers;
 
 namespace NewsAgregator.Web.Controllers.ComplaintControllers
 {
@@ -9,51 +10,98 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
     public class ComplaintStatusController : Controller
     {
         private readonly IComplaintStatusServices _complaintStatus;
+        private readonly ILogger<ComplaintStatusController> _logger;
 
-        public ComplaintStatusController(IComplaintStatusServices complaintStatusServices)
+        public ComplaintStatusController(IComplaintStatusServices complaintStatusServices, ILogger<ComplaintStatusController> logger)
         {
             _complaintStatus = complaintStatusServices;
+            _logger = logger;
         }
 
         [HttpPost("add")]
         public async Task<IActionResult> Add(ComplaintStatusVM complaintStatusVM)
         {
-            await _complaintStatus.AddComplaintStatus(complaintStatusVM);
-            return Ok();
+            try
+            {
+                await _complaintStatus.AddComplaintStatus(complaintStatusVM);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpGet("takeall")]
         public async Task<IActionResult> TakeAll()
         {
-            var result = await _complaintStatus.TakeComplaintStatuses();
-            if (result != null)
-                return Ok(result);
-            else
-                return NotFound();
+            try
+            {
+                var result = await _complaintStatus.TakeComplaintStatuses();
+                if (result != null)
+                    return Ok(result);
+                else
+                    return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpGet("takebyid/{id}")]
         public async Task<IActionResult> TakeById(Guid id)
         {
-            var result = await _complaintStatus.TakeComplaintStatusById(id);
-            if (result != null)
-                return Ok(result);
-            else
-                return NotFound();
+            try
+            {
+                var result = await _complaintStatus.TakeComplaintStatusById(id);
+                if (result != null)
+                    return Ok(result);
+                else
+                    return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await _complaintStatus.DeleteComplaintStatus(id);
-            return Ok();
+            try
+            {
+                await _complaintStatus.DeleteComplaintStatus(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpPost("update")]
         public async Task<IActionResult> Update(ComplaintStatusVM complaintStatusVM)
         {
-            await _complaintStatus.UpdateComplaintStatus(complaintStatusVM);
-            return Ok();
+            try
+            {
+                await _complaintStatus.UpdateComplaintStatus(complaintStatusVM);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
     }
 }

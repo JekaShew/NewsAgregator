@@ -9,51 +9,95 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
     public class RoleController : Controller
     {
         private readonly IRoleServices _roleServices;
+        private readonly ILogger<RoleController> _logger;
 
-        public RoleController(IRoleServices roleServices)
+        public RoleController(IRoleServices roleServices, ILogger<RoleController> logger)
         {
             _roleServices = roleServices;
+            _logger = logger;
         }
 
         [HttpPost("add")]
         public async Task<IActionResult> Add(RoleVM roleVM)
         {
-            await _roleServices.AddRole(roleVM);
-            return Ok();
+            try
+            {
+                await _roleServices.AddRole(roleVM);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpGet("takeall")]
         public async Task<IActionResult> TakeAll()
         {
-            var result = await _roleServices.TakeRoles();
-            if (result != null)
-                return Ok(result);
-            else
-                return NotFound();
+            try
+            {
+                var result = await _roleServices.TakeRoles();
+                if (result != null)
+                    return Ok(result);
+                else
+                    return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpGet("takebyid")]
         public async Task<IActionResult> TakeById(Guid id)
         {
-            var result = await _roleServices.TakeRoleById(id);
-            if (result != null)
-                return Ok(result);
-            else
-                return NotFound();
+            try {
+                var result = await _roleServices.TakeRoleById(id);
+                if (result != null)
+                    return Ok(result);
+                else
+                    return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpDelete("delete")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await _roleServices.DeleteRole(id);
-            return Ok();
+            try
+            {
+                await _roleServices.DeleteRole(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpPost("update")]
         public async Task<IActionResult> Update(RoleVM roleVM)
         {
-            await _roleServices.UpdateRole(roleVM);
-            return Ok();
+            try
+            {
+                await _roleServices.UpdateRole(roleVM);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
         }
     }
 }

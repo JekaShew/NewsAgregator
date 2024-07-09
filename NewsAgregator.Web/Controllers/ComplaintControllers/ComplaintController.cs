@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NewsAgregator.Abstract.ComplaintInterfaces;
 using NewsAgregator.ViewModels.Data;
+using NewsAgregator.Web.Controllers.AccountControllers;
 
 namespace NewsAgregator.Web.Controllers.ComplaintControllers
 {
@@ -8,59 +9,114 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
     public class ComplaintController : Controller
     {
         private readonly IComplaintServices _complaintServices;
+        private readonly ILogger<ComplaintController> _logger;
 
-        public ComplaintController(IComplaintServices complaintServices)
+        public ComplaintController(IComplaintServices complaintServices, ILogger<ComplaintController> logger)
         {
             _complaintServices = complaintServices;
+            _logger = logger;
         }
 
         [HttpGet("getparameters")]
         public async Task<IActionResult> GetParameters()
         {
-            var result = await _complaintServices.GetComplaintParameters();
+            try{
+                var result = await _complaintServices.GetComplaintParameters();
 
-            return Ok(result);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpPost("add")]
         public async Task<IActionResult> Add(ComplaintVM complaintVM)
         {
-            await _complaintServices.AddComplaint(complaintVM);
-            return Ok();
+            try
+            { 
+                await _complaintServices.AddComplaint(complaintVM);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpGet("takeall")]
         public async Task<IActionResult> TakeAll()
         {
-            var result = await _complaintServices.TakeComplaints();
-            if (result != null)
-                return Ok(result);
-            else
-                return NotFound();
+            try
+            {
+                var result = await _complaintServices.TakeComplaints();
+                if (result != null)
+                    return Ok(result);
+                else
+                    return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpGet("takebyid/{id}")]
         public async Task<IActionResult> TakeById(Guid id)
         {
-            var result = await _complaintServices.TakeComplaintById(id);
-            if (result != null)
-                return Ok(result);
-            else
-                return NotFound();
+            try
+            {
+                var result = await _complaintServices.TakeComplaintById(id);
+                if (result != null)
+                    return Ok(result);
+                else
+                    return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            await _complaintServices.DeleteComplaint(id);
-            return Ok();
+            try
+            {
+                await _complaintServices.DeleteComplaint(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpPost("update")]
         public async Task<IActionResult> Update(ComplaintVM complaintVM)
         {
-            await _complaintServices.UpdateComplaint(complaintVM);
-            return Ok();
+            try
+            {
+                await _complaintServices.UpdateComplaint(complaintVM);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
     }
 }

@@ -9,51 +9,97 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
     public class PolicyController : Controller
     {
         private readonly IPolicyServices _policyServices;
+        private readonly ILogger<PolicyController> _logger;
 
-        public PolicyController(IPolicyServices policyServices)
+        public PolicyController(IPolicyServices policyServices, ILogger<PolicyController> logger)
         {
             _policyServices = policyServices;
+            _logger = logger;   
         }
 
         [HttpPost("add")]
         public async Task<IActionResult> Add(PolicyVM policyVM)
         {
-            await _policyServices.AddPolicy(policyVM);
-            return Ok();
+            try
+            {
+                await _policyServices.AddPolicy(policyVM);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpGet("takeall")]
         public async Task<IActionResult> TakeAll()
         {
-            var result = await _policyServices.TakePolicies();
-            if (result != null)
-                return Ok(result);
-            else
-                return NotFound();
+            try
+            {
+                var result = await _policyServices.TakePolicies();
+                if (result != null)
+                    return Ok(result);
+                else
+                    return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpGet("takebyid/{id}")]
         public async Task<IActionResult> TakeById([FromRoute]Guid id)
         {
-            var result = await _policyServices.TakePolicyById(id);
-            if (result != null)
-                return Ok(result);
-            else
-                return NotFound();
+            try
+            {
+                var result = await _policyServices.TakePolicyById(id);
+                if (result != null)
+                    return Ok(result);
+                else
+                    return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete([FromRoute]Guid id)
         {
-            await _policyServices.DeletePolicy(id);
-            return Ok();
+            try
+            {
+                await _policyServices.DeletePolicy(id);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpPost("update")]
         public async Task<IActionResult> Update(PolicyVM policyVM)
         {
-            await _policyServices.UpdatePolicy(policyVM);
-            return Ok();
+            try
+            {
+                await _policyServices.UpdatePolicy(policyVM);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
     }
 }

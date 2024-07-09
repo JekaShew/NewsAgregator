@@ -28,6 +28,7 @@ using NewsAgregator.Abstract.NewsInterfaces;
 using NewsAgregator.Services.NewsServices;
 using NewsAgregator.Abstract.WeatherInterfaces;
 using NewsAgregator.Services.WeatherServices;
+using Serilog;
 
 
 namespace NewsAgregator.Web
@@ -53,7 +54,12 @@ namespace NewsAgregator.Web
             //services.AddDbContext<AppDBContext>(options => options.UseSqlServer(@"Server=JEKASHEW;Database=NewsAgregator;Trusted_Connection=True;TrustServerCertificate=True"));
             //Work
             //services.AddDbContext<AppDBContext>(options => options.UseSqlServer(@"Server=SHEVTSOV2-10;Database=NewsAgregator;Trusted_Connection=True;TrustServerCertificate=True"));
-
+            services.AddSerilog((services, lc) => lc
+                .ReadFrom.Configuration(Configuration)
+                .ReadFrom.Services(services)
+                .Enrich.FromLogContext()
+                .WriteTo.Console(Serilog.Events.LogEventLevel.Error)
+                .WriteTo.File("logs.log"));
             services.AddDbContext<AppDBContext>(options => options.UseSqlServer(connectionString: Configuration.GetConnectionString("Home")));
             
             services.AddMvc();
@@ -133,6 +139,7 @@ namespace NewsAgregator.Web
                 .AllowCredentials().WithExposedHeaders("Set-Cookie", "set-cookie"));
             app.UseStaticFiles();
             app.UseRouting();
+            app.UseSerilogRequestLogging();
 
             app.UseSwagger();
             app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "NewsAgragator Web API"));
