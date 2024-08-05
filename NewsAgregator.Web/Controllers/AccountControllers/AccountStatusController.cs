@@ -22,8 +22,13 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         {
             try
             {
-                await _accountStatusServices.AddAccountStatus(accountStatusVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _accountStatusServices.AddAccountStatus(accountStatusVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+                
             }
             catch (Exception ex)
             {
@@ -92,8 +97,13 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         {
             try
             {
-                await _accountStatusServices.UpdateAccountStatus(accountStatusVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _accountStatusServices.UpdateAccountStatus(accountStatusVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+                
             }
             catch (Exception ex)
             {

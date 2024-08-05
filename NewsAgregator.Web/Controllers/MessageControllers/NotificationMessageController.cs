@@ -39,8 +39,13 @@ namespace NewsAgregator.Web.Controllers.MessageControllers
         {
             try 
             {
-                await _notificationMessageServices.AddNotificationMessage(notificationMessageVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _notificationMessageServices.AddNotificationMessage(notificationMessageVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+               
             }
             catch (Exception ex)
             {
@@ -105,8 +110,13 @@ namespace NewsAgregator.Web.Controllers.MessageControllers
         {
             try
             {
-                await _notificationMessageServices.UpdateNotificationMessage(notificationMessageVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _notificationMessageServices.UpdateNotificationMessage(notificationMessageVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+               
             }
             catch (Exception ex)
             {

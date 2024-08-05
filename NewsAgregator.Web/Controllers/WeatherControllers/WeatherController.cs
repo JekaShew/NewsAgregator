@@ -39,8 +39,13 @@ namespace NewsAgregator.Web.Controllers.WeatherControllers
         {
             try
             {
-                await _weatherServices.AddWeather(weatherVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _weatherServices.AddWeather(weatherVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+                
             }
             catch (Exception ex)
             {
@@ -105,8 +110,13 @@ namespace NewsAgregator.Web.Controllers.WeatherControllers
         {
             try
             {
-                await _weatherServices.UpdateWeather(weatherVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _weatherServices.UpdateWeather(weatherVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+                
             }
             catch (Exception ex)
             {

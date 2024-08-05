@@ -22,8 +22,13 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         {
             try
             {
-                await _roleServices.AddRole(roleVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _roleServices.AddRole(roleVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+                
             }
             catch (Exception ex)
             {
@@ -90,8 +95,13 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         {
             try
             {
-                await _roleServices.UpdateRole(roleVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _roleServices.UpdateRole(roleVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+                
             }
             catch (Exception ex)
             {

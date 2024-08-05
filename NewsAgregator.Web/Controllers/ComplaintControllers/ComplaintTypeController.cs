@@ -23,8 +23,13 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
         {
             try
             {
-                await _complaintTypeServices.AddComplaintType(complaintTypeVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _complaintTypeServices.AddComplaintType(complaintTypeVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+               
             }
             catch (Exception ex)
             {
@@ -93,8 +98,13 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
         {
             try
             {
-                await _complaintTypeServices.UpdateComplaintType(complaintTypeVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _complaintTypeServices.UpdateComplaintType(complaintTypeVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+                
             }
             catch (Exception ex)
             {
