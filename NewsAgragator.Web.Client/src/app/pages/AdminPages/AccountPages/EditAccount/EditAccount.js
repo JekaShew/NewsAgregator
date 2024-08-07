@@ -10,69 +10,75 @@ import '../../../AdminPages/EditPage.css';
 
 const useValidation = (value, validations) => {
     const [isEmpty, setEmpty] = useState({ value: true, errorMessage:"The field can't be Empty!" });
-    const [minLengthError, setMinLengthError] = useState({ value: false, errorMessage: "The value's length should be more than " });
-    const [maxLengthError, setMaxLengthError] = useState({ value: false, errorMessage: "The value's length should be less than " });
+    const [minLengthError, setMinLengthError] = useState({ value: false, errorMessage: "" });
+    const [maxLengthError, setMaxLengthError] = useState({ value: false, errorMessage: "" });
     const [emailError, setEmailError] = useState({ value: false, errorMessage: "The value is not Email!" });
+    const [confirmationPasswordError, setConfirmationPasswordError] = useState({ value: false, errorMessage: "Password mismatch!" });
     const [inputValid, setInputValid] = useState(false);
-
 
     useEffect(() => {
         for (const validation in validations) {
             switch (validation) {
                 case 'isEmpty':
-                    value? setEmpty({value: false }) : setEmpty({value: true, errorMessage: isEmpty.errorMessage})
+                    value? setEmpty({value: false }) : setEmpty({value: true, errorMessage: "The field can't be Empty!"})
                     break;
                 case 'minLength':
-                    value.length < validations[validation] ? 
-                        setMinLengthError({value: true, errorMessage: minLengthError.errorMessage + validations[validation] + "!"}) :
-                        setMinLengthError({value: false});
+                    value.length < validations[validation]? 
+                    setMinLengthError({value: true, errorMessage: "The value's length should be more than " + validations[validation] + "!"}) :
+                    setMinLengthError({value: false}) ;
                     break;
                 case 'maxLength':
                     value.length > validations[validation] ? 
-                        setMaxLengthError({value: true, errorMessage: maxLengthError.errorMessage + validations[validation] + "!"}) :
+                        setMaxLengthError({value: true, errorMessage: "The value's length should be less than " + validations[validation] + "!" }) :
                         setMaxLengthError({value: false});
                     break;
                 case 'isEmail':
                     const re = /\S+@\S+\.\S+/;
                     re.test(String(value).toLowerCase()) ? 
-                        setEmailError({value: true, errorMessage: "The value is not Email!"}) : 
-                        setEmailError({value: false});
+                    setEmailError({value: false}) : 
+                    setEmailError({value: true, errorMessage: "The value is not Email!"});
+                    break;
+                case 'confirmationPassword':
+                    const pass = props.value.editAccount.password.value;
+                    value != pass ? 
+                    setConfirmationPasswordError({value: true, errorMessage: "Password mismatch!"}) : 
+                    setConfirmationPasswordError({value: false});
                     break;
             }
         }
     }, [value]);
 
     useEffect(() => {
-        if (isEmpty || maxLengthError || minLemgthError || emailError)
+        if (isEmpty.value || maxLengthError.value || minLengthError.value || emailError.value || confirmationPasswordError.value)
             setInputValid(false);
         else
             setInputValid(true);
-    }, [isEmpty, minLengthError, maxLengthError, emailError]);
+            console.log(inputValid);
+    }, [isEmpty, minLengthError, maxLengthError, emailError, confirmationPasswordError]);
 
     return {
         isEmpty,
         minLengthError,
         maxLengthError,
         emailError,
+        confirmationPasswordError,
         inputValid
     }
 }
 
 const useInput = (initialValue,validations ) => {
-
     const [value, setValue] = useState(initialValue);
     const [isDirty, setDirty] = useState(false);
     const valid = useValidation(value, validations);  
 
-    const onChange = (e) => {
+    const onChange = (e,select,inputTitle) => {
         setValue(e.target.value);
-
+        select(inputTitle, e.target.value);
     }
 
     const onBlur = (e) => {
         setDirty(true)
     }
-
 
     return {
         value,
@@ -82,24 +88,48 @@ const useInput = (initialValue,validations ) => {
         ...valid
     }
 }
-// todo improve React validation (error Messages, disabled button, etc)
+
+const renderValidationMessages = (inputName) =>{
+    if(inputName.isDirty){
+        if(inputName.isEmpty.value)
+            return  (<div style={{color:'red'}}>{inputName.isEmpty.errorMessage}</div>)
+        else if(inputName.minLengthError.value) 
+            return  (<div style={{color:'red'}}>{inputName.minLengthError.errorMessage}</div>)
+        else if(inputName.maxLengthError.value) 
+            return  (<div style={{color:'red'}}>{inputName.maxLengthError.errorMessage}</div>)
+        else if(inputName.emailError.value) 
+            return  (<div style={{color:'red'}}>{inputName.emailError.errorMessage}</div>)
+        else if(inputName.confirmationPasswordError.value) 
+            return  (<div style={{color:'red'}}>{inputName.confirmationPasswordError.errorMessage}</div>)
+        else 
+            return(<div style={{display:'block'}}></div>)
+    }
+}
 
 const EditAccount = (props) => {
 
     const userName = useInput(props.value.editAccount.userName.value, {isEmpty:true, minLength:3});
+    const login = useInput(props.value.editAccount.login.value, {isEmpty:true, minLength:3});
+    const password = useInput(props.value.editAccount.password.value, {isEmpty:true, minLength:5});
+    //const confirmationPassword = useInput(props.value.editAccount.userName.value, {isEmpty:true, confirmationPassword:true});
+    const fio = useInput(props.value.editAccount.fio.value, {isEmpty:true});
+    const email = useInput(props.value.editAccount.email.value, {isEmpty:true, isEmail:true});
 
     const navigate = useNavigate();
     const params = useParams();
     const [state, setValue] = useState({ AddOrChange: "", Loading: true, });
-    console.log("inputValid");
-    console.log(userName.inputValid);
-    const addORchangeBtn = () => {     
-        console.log(state.AddOrChange);
-        if (state.AddOrChange == "Add")
-            return (<button disabled={true} className="btnAddChange" onClick={() => addAccount()}>Add</button>);
-        else if (state.AddOrChange == "Change")
-            return (<button className="btnAddChange" onClick={() => changeAccount()}>Change</button>);
 
+    const addORchangeBtn = () => {     
+        let disabled = false;
+        if(!userName.inputValid && !login.inputValid && !password.inputValid && !fio.inputValid && !email.inputValid)
+            disabled = true;
+        else
+        disabled = false;
+
+        if (state.AddOrChange == "Add")
+            return (<button disabled={disabled} className="btnAddChange" onClick={() => addAccount()}>Add</button>);
+        else if (state.AddOrChange == "Change")
+            return (<button disabled={disabled} className="btnAddChange" onClick={() => changeAccount()}>Change</button>);
     }
 
     const goToList = () => {
@@ -113,9 +143,6 @@ const EditAccount = (props) => {
         data.roleId = data.role.id;
         data.id = params.id;
 
-        console.log(data)
-        console.log(data.accountStatus.id);
-        console.log(props.value.editAccount.accountStatus.value.id);
         let formData = new FormData();
 
         for (var key in data) {
@@ -123,7 +150,6 @@ const EditAccount = (props) => {
                 formData.append(key, data[key]);
             }
         }
-
         props.save(formData);
     }
 
@@ -147,15 +173,8 @@ const EditAccount = (props) => {
         props.add(formData);
     };
 
-    const renderInputs = () => {
-        console.log("renderInputs");
-        console.log(userName.isEmpty);
-        console.log(userName.isDirty);
-        console.log(userName);
-        
+    const renderInputs = () => {        
         if (state.Loading == false) {
-            console.log(state.Loading);
-            console.log(props.value.editAccount);
             return (
                 <div className="editPageInputs">
                     <div className="divInput">
@@ -165,17 +184,12 @@ const EditAccount = (props) => {
                             type="text"
                             placeholder="UserName"
                             value={userName.value}
-                            onChange={(e) => { userName.onChange(e); props.select("userName", e.target.value)}}
+                            onChange={(e) => userName.onChange(e,props.select,"userName")}
                             onBlur={(e) => userName.onBlur(e)}
                         />
                     </div>
                     {
-                        if(userName.isDirty && userName.isEmpty)
-                            <div style={{color:'red'}}>{userName.isEmpty.errorMessage}</div> 
-                        else if(userName.minLengthError)
-                            <div style={{color:'red'}}>{userName.minLengthError.errorMessage}</div>
-                        else
-                        <div style={{display: 'none'}}></div>
+                        renderValidationMessages(userName)
                     }
                     <div className="divInput">
                         <div className="inputTitle">FIO</div>
@@ -183,20 +197,28 @@ const EditAccount = (props) => {
                             className="input"
                             type="text"
                             placeholder="FIO"
-                            value={props.value.editAccount.fio.value}
-                            onChange={(e) => props.select("fio", e.target.value)}
+                            value={fio.value}
+                            onChange={(e) => fio.onChange(e,props.select,"fio")}
+                            onBlur={(e) => fio.onBlur(e)}
                         />
                     </div>
+                    {
+                        renderValidationMessages(fio)
+                    }
                     <div className="divInput">
                         <div className="inputTitle">Email</div>
                         <input
                             className="input"
                             type="text"
                             placeholder="Email"
-                            value={props.value.editAccount.email.value}
-                            onChange={(e) => props.select("email", e.target.value)}
+                            value={email.value}
+                            onChange={(e) => email.onChange(e,props.select,"email")}
+                            onBlur={(e) => email.onBlur(e)}
                         />
                     </div>
+                    {
+                        renderValidationMessages(email)
+                    }
                     <div className="divInput">
                         <div className="inputTitle">Phone</div>
                         <input
@@ -223,20 +245,28 @@ const EditAccount = (props) => {
                             className="input"
                             type="text"
                             placeholder="Login"
-                            value={props.value.editAccount.login.value}
-                            onChange={(e) => props.select("login", e.target.value)}
+                            value={login.value}
+                            onChange={(e) => login.onChange(e,props.select,"login")}
+                            onBlur={(e) => login.onBlur(e)}
                         />
                     </div>
+                    {
+                        renderValidationMessages(login)
+                    }
                     <div className="divInput">
                         <div className="inputTitle">Password</div>
                         <input
                             className="input"
                             type="text"
                             placeholder="Password"
-                            value={props.value.editAccount.password.value}
-                            onChange={(e) => props.select("password", e.target.value)}
+                            value={password.value}
+                            onChange={(e) => password.onChange(e,props.select,"password")}
+                            onBlur={(e) => password.onBlur(e)}
                         />
                     </div>
+                    {
+                        renderValidationMessages(password)
+                    }
                     <div className="divInput">
                         <div className="inputTitle">Account Status</div>
                         <InputObject
@@ -274,46 +304,24 @@ const EditAccount = (props) => {
     
 
     const beforeRender = () => {
-        console.log("BeforeRender");
         if (params.id != null) {
             setValue({ AddOrChange: "Change", Loading: true });
-            props.load(params.id);
-            console.log(params.id);
-            console.log(state.AddOrChange);
-            
+            props.load(params.id);            
         }
         else {
             setValue({ AddOrChange: "Add", Loading: true });
             props.clearState();
             props.loadParameters();
-            console.log(state.AddOrChange);
-           
         }
     }
 
-    //useEffect(() => {
-    //    console.log("NewUseEffect");
-        
-    //    if (params.id != null) {
-    //        setValue({ AddOrChange: "Change", Loading: state.Loading });
-    //    }
-    //    else if (params.id == null) {
-    //        setValue({ AddOrChange: "Add", Loading: state.Loading });
-    //    }
-    //    console.log(state.AddOrChange);
-    //});
-
-
     useEffect(() => {
-        console.log("propsLoading changed");
             if (params.id != null) {
                 setValue({ AddOrChange: "Change", Loading: props.value.editAccount.loading });
             }
             else if (params.id == null) {
                 setValue({ AddOrChange: "Add", Loading: props.value.editAccount.loading });
             }
-        /*setValue({ AddOrChange: state.AddOrChange, Loading: props.value.editAccount.loading });*/
-        console.log(state.AddOrChange);
     }, [props.value.editAccount.loading]);
 
     useLayoutEffect(() => {
@@ -326,9 +334,6 @@ const EditAccount = (props) => {
             <div className="editPage">
                 <div className="pageTitle">Edit Account </div>
                 {renderInputs()}
-
-               
-
                 <div className="btns">
                     <button className="btnAddChange" onClick={() => goToList()}>Back to List</button>
                     <div>

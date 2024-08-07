@@ -7,18 +7,114 @@ import { add, save, select, selectParameter, clearState, load, loadParameters } 
 import InputObject from '../../../../customComponents/InputObject/InputObject';
 import '../../../AdminPages/EditPage.css';
 
+const useValidation = (value, validations) => {
+    const [isEmpty, setEmpty] = useState({ value: true, errorMessage:"The field can't be Empty!" });
+    const [minLengthError, setMinLengthError] = useState({ value: false, errorMessage: "" });
+    const [maxLengthError, setMaxLengthError] = useState({ value: false, errorMessage: "" });
+    const [emailError, setEmailError] = useState({ value: false, errorMessage: "The value is not Email!" });
+    const [inputValid, setInputValid] = useState(false);
+
+    useEffect(() => {
+        for (const validation in validations) {
+            switch (validation) {
+                case 'isEmpty':
+                    value? setEmpty({value: false }) : setEmpty({value: true, errorMessage: "The field can't be Empty!"})
+                    break;
+                case 'minLength':
+                    value.length < validations[validation]? 
+                    setMinLengthError({value: true, errorMessage: "The value's length should be more than " + validations[validation] + "!"}) :
+                    setMinLengthError({value: false}) ;
+                    break;
+                case 'maxLength':
+                    value.length > validations[validation] ? 
+                        setMaxLengthError({value: true, errorMessage: "The value's length should be less than " + validations[validation] + "!" }) :
+                        setMaxLengthError({value: false});
+                    break;
+                case 'isEmail':
+                    const re = /\S+@\S+\.\S+/;
+                    re.test(String(value).toLowerCase()) ? 
+                        setEmailError({value: true, errorMessage: "The value is not Email!"}) : 
+                        setEmailError({value: false});
+                    break;
+            }
+        }
+    }, [value]);
+
+    useEffect(() => {
+        if (isEmpty.value || maxLengthError.value || minLengthError.value || emailError.value)
+            setInputValid(false);
+        else
+            setInputValid(true);
+            console.log(inputValid);
+    }, [isEmpty, minLengthError, maxLengthError, emailError]);
+
+    return {
+        isEmpty,
+        minLengthError,
+        maxLengthError,
+        emailError,
+        inputValid
+    }
+}
+
+const useInput = (initialValue,validations ) => {
+    const [value, setValue] = useState(initialValue);
+    const [isDirty, setDirty] = useState(false);
+    const valid = useValidation(value, validations);  
+
+    const onChange = (e,select,inputTitle) => {
+        setValue(e.target.value);
+        select(inputTitle, e.target.value);
+
+    }
+
+    const onBlur = (e) => {
+        setDirty(true)
+    }
+
+    return {
+        value,
+        onChange,
+        onBlur,
+        isDirty,
+        ...valid
+    }
+}
+
+const renderValidationMessages = (inputName) =>{
+    if(inputName.isDirty){
+        if(inputName.isEmpty.value)
+            return  (<div style={{color:'red'}}>{inputName.isEmpty.errorMessage}</div>)
+        else if(inputName.minLengthError.value) 
+            return  (<div style={{color:'red'}}>{inputName.minLengthError.errorMessage}</div>)
+        else if(inputName.maxLengthError.value) 
+            return  (<div style={{color:'red'}}>{inputName.maxLengthError.errorMessage}</div>)
+        else if(inputName.emailError.value) 
+            return  (<div style={{color:'red'}}>{inputName.emailError.errorMessage}</div>)
+        else 
+            return(<div style={{display:'block'}}></div>)
+    }
+}
 
 const EditWeather = (props) => {
+
+    const city = useInput(props.value.editWeather.city.value, {isEmpty:true, minLength:2});
 
     const navigate = useNavigate();
     const params = useParams();
     const [state, setValue] = useState({ AddOrChange: "", Loading: true, });
 
     const addORchangeBtn = () => {
+        let disabled = false;
+        if(!city.inputValid)
+            disabled = true;
+        else
+        disabled = false;
+
         if (state.AddOrChange == "Add")
-            return (<button className="btnAddChange" onClick={() => addWeather()}>Add</button>);
+            return (<button disabled={disabled} className="btnAddChange" onClick={() => addWeather()}>Add</button>);
         else if (state.AddOrChange == "Change")
-            return (<button className="btnAddChange" onClick={() => changeWeather()}>Change</button>);
+            return (<button disabled={disabled} className="btnAddChange" onClick={() => changeWeather()}>Change</button>);
 
     }
 
@@ -52,12 +148,6 @@ const EditWeather = (props) => {
                 formData.append(key, data[key]);
             }
         }
-        //formData.append('id', params.id);
-        //formData.append('weatherStatusCommonId', props.value.editWeather.weatherStatusCommon.value.id);
-        //formData.append('weatherStatusMorningId', props.value.editWeather.weatherStatusMorning.value.id);
-        //formData.append('weatherStatusDayId', props.value.editWeather.weatherStatusDay.value.id);
-        //formData.append('weatherStatusEveningId', props.value.editWeather.weatherStatusEvening.value.id);
-        //formData.append('weatherStatusNightId', props.value.editWeather.weatherStatusNight.value.id);
 
         props.save(formData);
     }
@@ -89,13 +179,6 @@ const EditWeather = (props) => {
             }
         }
 
-        //formData.append('weatherStatusCommonId', props.value.editWeather.weatherStatusCommon.value.id);
-        //formData.append('weatherStatusMorningId', props.value.editWeather.weatherStatusMorning.value.id);
-        //formData.append('weatherStatusDayId', props.value.editWeather.weatherStatusDay.value.id);
-        //formData.append('weatherStatusEveningId', props.value.editWeather.weatherStatusEvening.value.id);
-        //formData.append('weatherStatusNightId', props.value.editWeather.weatherStatusNight.value.id);
-        //formData.append('id', null);
-
         props.add(formData);
     };
 
@@ -113,10 +196,14 @@ const EditWeather = (props) => {
                             className="input"
                             type="text"
                             placeholder="City"
-                            value={props.value.editWeather.city.value}
-                            onChange={(e) => props.select("city", e.target.value)}
+                            value={city.value}
+                            onChange={(e) => city.onChange(e,props.select,"city")}
+                            onBlur={(e) => city.onBlur(e)}
                         />
                     </div>
+                    {
+                        renderValidationMessages(city)
+                    }
                     <div className="divInput">
                         <div className="inputTitle">Temperature Morning</div>
                         <input

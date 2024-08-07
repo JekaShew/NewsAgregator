@@ -13,6 +13,7 @@ namespace NewsAgregator.ViewModels.Data
     {
         [Required]
         public Guid Id { get; set; }
+        [Required, MinLength(2)]
         public string? City { get; set; }
         public int? TemperatureMorning { get; set; }
         public int? TemperatureDay { get; set; }

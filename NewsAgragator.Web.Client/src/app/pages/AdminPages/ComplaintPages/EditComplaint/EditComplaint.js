@@ -7,18 +7,115 @@ import { add, save, select, selectParameter, clearState, load, loadParameters } 
 import InputObject from '../../../../customComponents/InputObject/InputObject';
 import '../../../AdminPages/EditPage.css';
 
+const useValidation = (value, validations) => {
+    const [isEmpty, setEmpty] = useState({ value: true, errorMessage:"The field can't be Empty!" });
+    const [minLengthError, setMinLengthError] = useState({ value: false, errorMessage: "" });
+    const [maxLengthError, setMaxLengthError] = useState({ value: false, errorMessage: "" });
+    const [emailError, setEmailError] = useState({ value: false, errorMessage: "The value is not Email!" });
+    const [inputValid, setInputValid] = useState(false);
+
+    useEffect(() => {
+        for (const validation in validations) {
+            switch (validation) {
+                case 'isEmpty':
+                    value? setEmpty({value: false }) : setEmpty({value: true, errorMessage: "The field can't be Empty!"})
+                    break;
+                case 'minLength':
+                    value.length < validations[validation]? 
+                    setMinLengthError({value: true, errorMessage: "The value's length should be more than " + validations[validation] + "!"}) :
+                    setMinLengthError({value: false}) ;
+                    break;
+                case 'maxLength':
+                    value.length > validations[validation] ? 
+                        setMaxLengthError({value: true, errorMessage: "The value's length should be less than " + validations[validation] + "!" }) :
+                        setMaxLengthError({value: false});
+                    break;
+                case 'isEmail':
+                    const re = /\S+@\S+\.\S+/;
+                    re.test(String(value).toLowerCase()) ? 
+                        setEmailError({value: true, errorMessage: "The value is not Email!"}) : 
+                        setEmailError({value: false});
+                    break;
+            }
+        }
+    }, [value]);
+
+    useEffect(() => {
+        if (isEmpty.value || maxLengthError.value || minLengthError.value || emailError.value)
+            setInputValid(false);
+        else
+            setInputValid(true);
+            console.log(inputValid);
+    }, [isEmpty, minLengthError, maxLengthError, emailError]);
+
+    return {
+        isEmpty,
+        minLengthError,
+        maxLengthError,
+        emailError,
+        inputValid
+    }
+}
+
+const useInput = (initialValue,validations ) => {
+    const [value, setValue] = useState(initialValue);
+    const [isDirty, setDirty] = useState(false);
+    const valid = useValidation(value, validations);  
+
+    const onChange = (e,select,inputTitle) => {
+        setValue(e.target.value);
+        select(inputTitle, e.target.value);
+
+    }
+
+    const onBlur = (e) => {
+        setDirty(true)
+    }
+
+    return {
+        value,
+        onChange,
+        onBlur,
+        isDirty,
+        ...valid
+    }
+}
+
+const renderValidationMessages = (inputName) =>{
+    if(inputName.isDirty){
+        if(inputName.isEmpty.value)
+            return  (<div style={{color:'red'}}>{inputName.isEmpty.errorMessage}</div>)
+        else if(inputName.minLengthError.value) 
+            return  (<div style={{color:'red'}}>{inputName.minLengthError.errorMessage}</div>)
+        else if(inputName.maxLengthError.value) 
+            return  (<div style={{color:'red'}}>{inputName.maxLengthError.errorMessage}</div>)
+        else if(inputName.emailError.value) 
+            return  (<div style={{color:'red'}}>{inputName.emailError.errorMessage}</div>)
+        else 
+            return(<div style={{display:'block'}}></div>)
+    }
+}
 
 const EditComplaint = (props) => {
+
+    const title = useInput(props.value.editComplaint.title.value, {isEmpty:true, minLength:2});
+    const text = useInput(props.value.editComplaint.text.value, {isEmpty:true, minLength:5});
 
     const navigate = useNavigate();
     const params = useParams();
     const [state, setValue] = useState({ AddOrChange: "", Loading: true, });
 
     const addORchangeBtn = () => {
+        let disabled = false;
+        if(!title.inputValid && !text.inputValid)
+            disabled = true;
+        else
+        disabled = false;
+
         if (state.AddOrChange == "Add")
-            return (<button className="btnAddChange" onClick={() => addComplaint()}>Add</button>);
+            return (<button disabled={disabled} className="btnAddChange" onClick={() => addComplaint()}>Add</button>);
         else if (state.AddOrChange == "Change")
-            return (<button className="btnAddChange" onClick={() => changeComplaint()}>Change</button>);
+            return (<button disabled={disabled} className="btnAddChange" onClick={() => changeComplaint()}>Change</button>);
 
     }
 
@@ -44,13 +141,6 @@ const EditComplaint = (props) => {
                 formData.append(key, data[key]);
             }
         }
-        //formData.append('id', params.id);
-        //formData.append('commentId', props.value.editComplaint.comment.value.id);
-        //formData.append('newsId', props.value.editComplaint.news.value.id);
-        //formData.append('complaintStatusId', props.value.editComplaint.complaintStatus.value.id);
-        //formData.append('complaintTypeId', props.value.editComplaint.complaintType.value.id);
-        //formData.append('administratorId', props.value.editComplaint.administrator.value.id);
-        //formData.append('userId', props.value.editComplaint.user.value.id);
 
         props.save(formData);
     }
@@ -74,14 +164,6 @@ const EditComplaint = (props) => {
             }
         }
 
-        //formData.append('commentId', props.value.editComplaint.comment.value.id);
-        //formData.append('newsId', props.value.editComplaint.news.value.id);
-        //formData.append('complaintStatusId', props.value.editComplaint.complaintStatus.value.id);
-        //formData.append('complaintTypeId', props.value.editComplaint.complaintType.value.id);
-        //formData.append('administratorId', props.value.editComplaint.administrator.value.id);
-        //formData.append('userId', props.value.editComplaint.user.value.id);
-        //formData.append('id', null);
-
         props.add(formData);
     };
 
@@ -97,21 +179,28 @@ const EditComplaint = (props) => {
                             className="input"
                             type="text"
                             placeholder="Title"
-                            value={props.value.editComplaint.title.value}
-                            onChange={(e) => props.select("title", e.target.value)}
+                            value={title.value}
+                            onChange={(e) => title.onChange(e,props.select,"title")}
+                            onBlur={(e) => title.onBlur(e)}
                         />
                     </div>
+                    {
+                        renderValidationMessages(title)
+                    }
                     <div className="divInput">
                         <div className="inputTitle">Text</div>
                         <input
                             className="input"
                             type="text"
                             placeholder="Text"
-                            value={props.value.editComplaint.text.value}
-                            onChange={(e) => props.select("text", e.target.value)}
+                            value={text.value}
+                            onChange={(e) => text.onChange(e,props.select,"text")}
+                            onBlur={(e) => text.onBlur(e)}
                         />
                     </div>
-
+                    {
+                        renderValidationMessages(text)
+                    }
                     <div className="divInput">
                         <div className="inputTitle">Comment</div>
                         <InputObject

@@ -40,9 +40,6 @@
     <Content Include="src\apiMiddleware.js" />
     <Content Include="src\app\App.css" />
     <Content Include="src\app\App.js" />
-    <Content Include="src\app\customComponents\InputObject1\InputObject.js">
-      <SubType>Code</SubType>
-    </Content>
     <Content Include="src\app\customComponents\InputObject\InputObject.css" />
     <Content Include="src\app\customComponents\InputObject\InputObject.js" />
     <Content Include="src\app\customComponents\ModalConfirmation\ModalConfirmation.css" />
@@ -154,7 +151,6 @@
     <Folder Include="src\app\customComponents\" />
     <Folder Include="src\app\customComponents\InputObject\" />
     <Folder Include="src\app\customComponents\ModalConfirmation\" />
-    <Folder Include="src\app\customComponents\InputObject1\" />
     <Folder Include="src\app\pages\" />
     <Folder Include="src\app\pages\AdminPages\" />
     <Folder Include="src\app\pages\AdminPages\AccountPages\" />

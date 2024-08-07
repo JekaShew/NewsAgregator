@@ -13,13 +13,13 @@ namespace NewsAgregator.ViewModels.Data
     {
         [Required]
         public Guid Id { get; set; }
-        [Required, MinLength(2)]
+        [Required, MinLength(3)]
         public string? UserName { get; set; }
         [Required,MinLength(3)]
         public string? Login { get; set; }
         [Required,MinLength(5)]
         public string? Password { get; set; }
-        [Required,MinLength(1)]
+        [Required]
         public string? FIO { get; set; }
         [Required, EmailAddress]
         public string? Email { get; set; }

@@ -14,7 +14,7 @@ namespace NewsAgregator.ViewModels.Data
         [Required]
         public Guid Id { get; set; }
         public string? Title { get; set; }
-        [Required, MinLength(3)]
+        [Required, MinLength(3), MaxLength(3000)]
         public string? Text { get; set; }
 
         public DateTime? Date { get; set; }
