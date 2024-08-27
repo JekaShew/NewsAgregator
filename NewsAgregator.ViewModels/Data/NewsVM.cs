@@ -16,13 +16,10 @@ namespace NewsAgregator.ViewModels.Data
         public string? Title { get; set; }
         [Required, MinLength(3), MaxLength(3000)]
         public string? Text { get; set; }
-        public string? Description { get; set; }
+
         public DateTime? Date { get; set; }
         public float? PositiveRating { get; set; }
-        public string SourceUrl { get; set; }
-
-        public Guid? SourceId { get; set; }
-        public Source? Source { get; set; }
+        public string? Source { get; set; }
 
         public Guid? NewsStatusId { get; set; }
         public List<Parameter>? NewsStatuses { get; set; }

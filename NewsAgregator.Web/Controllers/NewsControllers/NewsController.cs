@@ -54,26 +54,6 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
             }
         }
 
-        [HttpGet("aggregate")]
-        public async Task<IActionResult> Aggregate()
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    await _newsServices.AggregateNews();
-                    return Ok();
-                }
-                else return BadRequest(ModelState);
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return StatusCode(500, ex.Message);
-            }
-        }
-
         [HttpGet("takeall")]
         public async Task<IActionResult> TakeAll()
         {
