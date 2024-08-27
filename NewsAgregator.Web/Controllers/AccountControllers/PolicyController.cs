@@ -22,8 +22,13 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         {
             try
             {
-                await _policyServices.AddPolicy(policyVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _policyServices.AddPolicy(policyVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+               
             }
             catch (Exception ex)
             {
@@ -91,8 +96,13 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         {
             try
             {
-                await _policyServices.UpdatePolicy(policyVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _policyServices.UpdatePolicy(policyVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+                
             }
             catch (Exception ex)
             {

@@ -40,8 +40,13 @@ namespace NewsAgregator.Web.Controllers.CommentControllers
         {
             try
             {
-                await _commentServices.AddComment(commentVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _commentServices.AddComment(commentVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+                
             }
             catch (Exception ex)
             {
@@ -109,8 +114,13 @@ namespace NewsAgregator.Web.Controllers.CommentControllers
         {
             try
             {
-                await _commentServices.UpdateComment(commentVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _commentServices.UpdateComment(commentVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+                
             }
             catch (Exception ex)
             {

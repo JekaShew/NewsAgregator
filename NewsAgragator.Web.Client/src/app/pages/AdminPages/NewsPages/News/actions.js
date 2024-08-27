@@ -14,3 +14,12 @@ export const remove = (id) => ({
         apiSuccess: ['NEWS_REMOVE_SUCCESS', loadData()],
     }
 });
+
+export const aggregateNews = () => ({
+    type: 'NEWS_AGGREGATE',
+    remote: {
+        url: '/api/news/aggregate',
+        type: 'get',
+        apiSuccess: ['NEWS_AGGREGATE', loadData()],
+    }
+});

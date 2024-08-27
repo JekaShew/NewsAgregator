@@ -15,6 +15,7 @@ namespace NewsAgregator.Abstract.NewsInterfaces
         public Task<NewsVM> TakeNewsById(Guid id);
 
         public Task AddNews(NewsVM news);
+        public Task AggregateNews();
 
         public Task DeleteNews(Guid id);
 

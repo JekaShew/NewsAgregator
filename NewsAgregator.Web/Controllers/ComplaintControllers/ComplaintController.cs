@@ -37,9 +37,14 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
         public async Task<IActionResult> Add(ComplaintVM complaintVM)
         {
             try
-            { 
-                await _complaintServices.AddComplaint(complaintVM);
-                return Ok();
+            {
+                if (ModelState.IsValid)
+                {
+                    await _complaintServices.AddComplaint(complaintVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+                
             }
             catch (Exception ex)
             {
@@ -108,8 +113,13 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
         {
             try
             {
-                await _complaintServices.UpdateComplaint(complaintVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _complaintServices.UpdateComplaint(complaintVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+                
             }
             catch (Exception ex)
             {

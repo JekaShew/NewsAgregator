@@ -2,6 +2,7 @@
 using NewsAgregator.ViewModels.Additional;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq;
 using System.Text;
@@ -11,8 +12,11 @@ namespace NewsAgregator.ViewModels.Data
 {
     public class ComplaintVM
     {
+        [Required]
         public Guid Id { get; set; }
+        [Required, MinLength(1)]
         public string? Title { get; set; }
+        [Required,MinLength(5)]
         public string? Text { get; set; }
 
         public Guid? CommentId { get; set; }

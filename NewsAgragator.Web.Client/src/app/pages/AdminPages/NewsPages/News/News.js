@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import Wrapper from '../../../Wrapper/Wrapper';
 import ModalConfirmation from '../../../../customComponents/ModalConfirmation/ModalConfirmation';
-import { loadData, remove } from './actions';
+import { loadData, remove, aggregateNews } from './actions';
 import '../../../AdminPages/EditPage.css';
 
 const News = (props) => {
@@ -15,6 +15,11 @@ const News = (props) => {
     const btnAddClick = () => {
         navigate('/EditNews/');
     }
+
+    const btnAggregateClick = () => {
+        props.aggregate();
+    }
+
 
     const btnGoToReferenceBooks = () => {
         navigate('/ReferenceBooks');
@@ -110,6 +115,7 @@ const News = (props) => {
                 <div className="btnsAboveTable">
                     <button className="btnAddChange" style={{ width: '12rem' }} onClick={() => btnGoToReferenceBooks()}>Reference Books</button>
                     <button className="btnAddChange" onClick={() => btnAddClick()}>Add</button>
+                    <button className="btnAddChange" onClick={() => btnAggregateClick()}>Aggregate</button>
                 </div>
                 {renderTable()}
 
@@ -132,6 +138,7 @@ const mapDispatchToProps = dispatch => {
 
         loadData: () => dispatch(loadData()),
         remove: (id) => dispatch(remove(id)),
+        aggregate:() => dispatch(aggregateNews()),
     }
 }
 

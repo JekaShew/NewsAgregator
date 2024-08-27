@@ -26,6 +26,7 @@ namespace NewsAgregator.Data
         public DbSet<NotificationMessage> NotificationMessages { get; set; }
         public DbSet<Weather> Weathers { get; set; }
         public DbSet<WeatherStatus> WeatherStatuses { get; set; }
+        public DbSet<Source> Sources { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

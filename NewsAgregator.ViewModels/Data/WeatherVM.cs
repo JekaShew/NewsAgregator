@@ -2,6 +2,7 @@
 using NewsAgregator.ViewModels.Additional;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,9 @@ namespace NewsAgregator.ViewModels.Data
 {
     public class WeatherVM
     {
+        [Required]
         public Guid Id { get; set; }
+        [Required, MinLength(2)]
         public string? City { get; set; }
         public int? TemperatureMorning { get; set; }
         public int? TemperatureDay { get; set; }

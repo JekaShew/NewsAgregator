@@ -198,11 +198,21 @@ namespace NewsAgregator.Data.Migrations
                     b.Property<DateTime?>("Date")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<Guid?>("NewsStatusId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<float?>("PositiveRating")
                         .HasColumnType("real");
+
+                    b.Property<Guid?>("SourceId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("SourceUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Text")
                         .HasColumnType("nvarchar(max)");
@@ -213,6 +223,8 @@ namespace NewsAgregator.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("NewsStatusId");
+
+                    b.HasIndex("SourceId");
 
                     b.ToTable("Newses");
                 });
@@ -319,6 +331,29 @@ namespace NewsAgregator.Data.Migrations
                     b.ToTable("RolePolicies");
                 });
 
+            modelBuilder.Entity("NewsAgregator.Data.Models.Source", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("BaseUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("RssUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Title")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Url")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Sources");
+                });
+
             modelBuilder.Entity("NewsAgregator.Data.Models.Weather", b =>
                 {
                     b.Property<Guid>("Id")
@@ -334,7 +369,7 @@ namespace NewsAgregator.Data.Migrations
                     b.Property<int?>("Humidity")
                         .HasColumnType("int");
 
-                    b.Property<string>("Percipittaion")
+                    b.Property<string>("Percipitaion")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int?>("Pressure")
@@ -485,7 +520,13 @@ namespace NewsAgregator.Data.Migrations
                         .WithMany("Newses")
                         .HasForeignKey("NewsStatusId");
 
+                    b.HasOne("NewsAgregator.Data.Models.Source", "Source")
+                        .WithMany("News")
+                        .HasForeignKey("SourceId");
+
                     b.Navigation("NewsStatus");
+
+                    b.Navigation("Source");
                 });
 
             modelBuilder.Entity("NewsAgregator.Data.Models.NotificationMessage", b =>
@@ -613,6 +654,11 @@ namespace NewsAgregator.Data.Migrations
                     b.Navigation("Accounts");
 
                     b.Navigation("RolePolicies");
+                });
+
+            modelBuilder.Entity("NewsAgregator.Data.Models.Source", b =>
+                {
+                    b.Navigation("News");
                 });
 
             modelBuilder.Entity("NewsAgregator.Data.Models.WeatherStatus", b =>

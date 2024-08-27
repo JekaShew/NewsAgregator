@@ -23,8 +23,13 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
         {
             try
             {
-                await _newsStatusServices.AddNewsStatus(newsStatusVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _newsStatusServices.AddNewsStatus(newsStatusVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+               
             }
             catch (Exception ex)
             {
@@ -89,8 +94,13 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
         {
             try
             {
-                await _newsStatusServices.UpdateNewsStatus(newsStatusVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _newsStatusServices.UpdateNewsStatus(newsStatusVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+                
             }
             catch (Exception ex)
             {

@@ -36,8 +36,13 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         public async Task<IActionResult> Add(AccountVM accountVM)
         {
             try {
-                await _accountServices.AddAccount(accountVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _accountServices.AddAccount(accountVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+                
             }
             catch (Exception ex)
             {
@@ -102,8 +107,12 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         public async Task<IActionResult> Update(AccountVM accountVM)
         {
             try {
-                await _accountServices.UpdateAccount(accountVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _accountServices.UpdateAccount(accountVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
             }
             catch (Exception ex)
             {

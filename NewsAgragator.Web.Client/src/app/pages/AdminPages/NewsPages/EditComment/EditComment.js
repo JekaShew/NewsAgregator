@@ -7,18 +7,115 @@ import { add, save, select, selectParameter, clearState, load, loadParameters } 
 import InputObject from '../../../../customComponents/InputObject/InputObject';
 import '../../../AdminPages/EditPage.css';
 
+const useValidation = (value, validations) => {
+    const [isEmpty, setEmpty] = useState({ value: true, errorMessage:"The field can't be Empty!" });
+    const [minLengthError, setMinLengthError] = useState({ value: false, errorMessage: "" });
+    const [maxLengthError, setMaxLengthError] = useState({ value: false, errorMessage: "" });
+    const [emailError, setEmailError] = useState({ value: false, errorMessage: "The value is not Email!" });
+    const [inputValid, setInputValid] = useState(false);
+
+    useEffect(() => {
+        for (const validation in validations) {
+            switch (validation) {
+                case 'isEmpty':
+                    value? setEmpty({value: false }) : setEmpty({value: true, errorMessage: "The field can't be Empty!"})
+                    break;
+                case 'minLength':
+                    value.length < validations[validation]? 
+                    setMinLengthError({value: true, errorMessage: "The value's length should be more than " + validations[validation] + "!"}) :
+                    setMinLengthError({value: false}) ;
+                    break;
+                case 'maxLength':
+                    value.length > validations[validation] ? 
+                        setMaxLengthError({value: true, errorMessage: "The value's length should be less than " + validations[validation] + "!" }) :
+                        setMaxLengthError({value: false});
+                    break;
+                case 'isEmail':
+                    const re = /\S+@\S+\.\S+/;
+                    re.test(String(value).toLowerCase()) ? 
+                        setEmailError({value: true, errorMessage: "The value is not Email!"}) : 
+                        setEmailError({value: false});
+                    break;
+            }
+        }
+    }, [value]);
+
+    useEffect(() => {
+        if (isEmpty.value || maxLengthError.value || minLengthError.value || emailError.value)
+            setInputValid(false);
+        else
+            setInputValid(true);
+            console.log(inputValid);
+    }, [isEmpty, minLengthError, maxLengthError, emailError]);
+
+    return {
+        isEmpty,
+        minLengthError,
+        maxLengthError,
+        emailError,
+        inputValid
+    }
+}
+
+const useInput = (initialValue,validations ) => {
+    const [value, setValue] = useState(initialValue);
+    const [isDirty, setDirty] = useState(false);
+    const valid = useValidation(value, validations);  
+
+    const onChange = (e,select,inputTitle) => {
+        setValue(e.target.value);
+        select(inputTitle, e.target.value);
+
+    }
+
+    const onBlur = (e) => {
+        setDirty(true)
+    }
+
+    return {
+        value,
+        onChange,
+        onBlur,
+        isDirty,
+        ...valid
+    }
+}
+
+const renderValidationMessages = (inputName) =>{
+    if(inputName.isDirty){
+        if(inputName.isEmpty.value)
+            return  (<div style={{color:'red'}}>{inputName.isEmpty.errorMessage}</div>)
+        else if(inputName.minLengthError.value) 
+            return  (<div style={{color:'red'}}>{inputName.minLengthError.errorMessage}</div>)
+        else if(inputName.maxLengthError.value) 
+            return  (<div style={{color:'red'}}>{inputName.maxLengthError.errorMessage}</div>)
+        else if(inputName.emailError.value) 
+            return  (<div style={{color:'red'}}>{inputName.emailError.errorMessage}</div>)
+        else 
+            return(<div style={{display:'block'}}></div>)
+    }
+}
 
 const EditComment = (props) => {
+
+    const text = useInput(props.value.editComment.text.value, {isEmpty:true});
+    const date = useInput(props.value.editComment.date.value, {isEmpty:true});
 
     const navigate = useNavigate();
     const params = useParams();
     const [state, setValue] = useState({ AddOrChange: "", Loading: true, });
 
     const addORchangeBtn = () => {
+        let disabled = false;
+        if(!text.inputValid && !date.inputValid)
+            disabled = true;
+        else
+        disabled = false;
+
         if (state.AddOrChange == "Add")
-            return (<button className="btnAddChange" onClick={() => addComment()}>Add</button>);
+            return (<button disabled={disabled} className="btnAddChange" onClick={() => addComment()}>Add</button>);
         else if (state.AddOrChange == "Change")
-            return (<button className="btnAddChange" onClick={() => changeComment()}>Change</button>);
+            return (<button disabled={disabled} className="btnAddChange" onClick={() => changeComment()}>Change</button>);
 
     }
 
@@ -40,9 +137,6 @@ const EditComment = (props) => {
                 formData.append(key, data[key]);
             }
         }
-        //formData.append('id', params.id);
-        //formData.append('accountId', props.value.editComment.account.value.id);
-        //formData.append('newsId', props.value.editComment.news.value.id);
 
         props.save(formData);
     }
@@ -61,9 +155,6 @@ const EditComment = (props) => {
                 formData.append(key, data[key]);
             }
         }
-        //formData.append('accountId', props.value.editComment.account.value.id);
-        //formData.append('newsId', props.value.editComment.news.value.id);
-        //formData.append('id', null);
 
         props.add(formData);
     };
@@ -80,21 +171,28 @@ const EditComment = (props) => {
                             className="input"
                             type="text"
                             placeholder="Text"
-                            value={props.value.editComment.text.value}
-                            onChange={(e) => props.select("text", e.target.value)}
+                            value={text.value}
+                            onChange={(e) => text.onChange(e,props.select,"text")}
+                            onBlur={(e) => text.onBlur(e)}
                         />
                     </div>
+                    {
+                        renderValidationMessages(text)
+                    }
                     <div className="divInput">
                         <div className="inputTitle">Date</div>
                         <input
                             className="input"
                             type="text"
                             placeholder="Date"
-                            value={props.value.editComment.date.value}
-                            onChange={(e) => props.select("date", e.target.value)}
+                            value={date.value}
+                            onChange={(e) => date.onChange(e,props.select,"date")}
+                            onBlur={(e) => date.onBlur(e)}
                         />
                     </div>
-
+                    {
+                        renderValidationMessages(date)
+                    }
                     <div className="divInput">
                         <div className="inputTitle">Account </div>
                         <InputObject

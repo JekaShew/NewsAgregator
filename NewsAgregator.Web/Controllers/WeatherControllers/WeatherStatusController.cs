@@ -23,8 +23,12 @@ namespace NewsAgregator.Web.Controllers.WeatherControllers
         {
             try
             {
-                await _weatherStatusServices.AddWeatherStatus(weatherStatusVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _weatherStatusServices.AddWeatherStatus(weatherStatusVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
             }
             catch (Exception ex)
             {
@@ -93,8 +97,12 @@ namespace NewsAgregator.Web.Controllers.WeatherControllers
         {
             try
             {
-                await _weatherStatusServices.UpdateWeatherStatus(weatherStatusVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _weatherStatusServices.UpdateWeatherStatus(weatherStatusVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
             }
             catch (Exception ex)
             {

@@ -6,17 +6,114 @@ import Wrapper from '../../../Wrapper/Wrapper';
 import { add, save, select, clearState, loadData } from './actions';
 import '../../../AdminPages/EditPage.css';
 
+const useValidation = (value, validations) => {
+    const [isEmpty, setEmpty] = useState({ value: true, errorMessage:"The field can't be Empty!" });
+    const [minLengthError, setMinLengthError] = useState({ value: false, errorMessage: "" });
+    const [maxLengthError, setMaxLengthError] = useState({ value: false, errorMessage: "" });
+    const [emailError, setEmailError] = useState({ value: false, errorMessage: "The value is not Email!" });
+    const [inputValid, setInputValid] = useState(false);
+
+    useEffect(() => {
+        for (const validation in validations) {
+            switch (validation) {
+                case 'isEmpty':
+                    value? setEmpty({value: false }) : setEmpty({value: true, errorMessage: "The field can't be Empty!"})
+                    break;
+                case 'minLength':
+                    value.length < validations[validation]? 
+                    setMinLengthError({value: true, errorMessage: "The value's length should be more than " + validations[validation] + "!"}) :
+                    setMinLengthError({value: false}) ;
+                    break;
+                case 'maxLength':
+                    value.length > validations[validation] ? 
+                        setMaxLengthError({value: true, errorMessage: "The value's length should be less than " + validations[validation] + "!" }) :
+                        setMaxLengthError({value: false});
+                    break;
+                case 'isEmail':
+                    const re = /\S+@\S+\.\S+/;
+                    re.test(String(value).toLowerCase()) ? 
+                        setEmailError({value: true, errorMessage: "The value is not Email!"}) : 
+                        setEmailError({value: false});
+                    break;
+            }
+        }
+    }, [value]);
+
+    useEffect(() => {
+        if (isEmpty.value || maxLengthError.value || minLengthError.value || emailError.value)
+            setInputValid(false);
+        else
+            setInputValid(true);
+            console.log(inputValid);
+    }, [isEmpty, minLengthError, maxLengthError, emailError]);
+
+    return {
+        isEmpty,
+        minLengthError,
+        maxLengthError,
+        emailError,
+        inputValid
+    }
+}
+
+const useInput = (initialValue,validations ) => {
+    const [value, setValue] = useState(initialValue);
+    const [isDirty, setDirty] = useState(false);
+    const valid = useValidation(value, validations);  
+
+    const onChange = (e,select,inputTitle) => {
+        setValue(e.target.value);
+        select(inputTitle, e.target.value);
+
+    }
+
+    const onBlur = (e) => {
+        setDirty(true)
+    }
+
+    return {
+        value,
+        onChange,
+        onBlur,
+        isDirty,
+        ...valid
+    }
+}
+
+const renderValidationMessages = (inputName) =>{
+    if(inputName.isDirty){
+        if(inputName.isEmpty.value)
+            return  (<div style={{color:'red'}}>{inputName.isEmpty.errorMessage}</div>)
+        else if(inputName.minLengthError.value) 
+            return  (<div style={{color:'red'}}>{inputName.minLengthError.errorMessage}</div>)
+        else if(inputName.maxLengthError.value) 
+            return  (<div style={{color:'red'}}>{inputName.maxLengthError.errorMessage}</div>)
+        else if(inputName.emailError.value) 
+            return  (<div style={{color:'red'}}>{inputName.emailError.errorMessage}</div>)
+        else 
+            return(<div style={{display:'block'}}></div>)
+    }
+}
 
 const EditAccountStatus = (props) => {
+
+    const title = useInput(props.value.editAccountStatus.title.value, {isEmpty:true, minLength:3});
+
     const navigate = useNavigate();
     const params = useParams();
     const [state, setValue] = useState({ AddOrChange: "", Loading: true, });
 
     const addORchangeBtn = () => {
+        let disabled = false;
+        if(!title.inputValid)
+            disabled = true;
+        else
+        disabled = false;
+
         if (state.AddOrChange == "Add") 
-            return (<button className="btnAddChange" onClick={() => addAccountStatus()}>Add</button>);
+            return (<button disabled={disabled} className="btnAddChange" onClick={() => addAccountStatus()}>Add</button>);
         else if (state.AddOrChange == "Change")
-            return (<button className="btnAddChange" onClick={() => changeAccountStatus()}>Change</button>);
+            return (<button disabled={disabled} className="btnAddChange" onClick={() => changeAccountStatus()}>Change</button>);
         
     }
 
@@ -66,10 +163,14 @@ const EditAccountStatus = (props) => {
                             className="input"
                             type="text"
                             placeholder="Title"
-                            value={props.value.editAccountStatus.title.value}
-                            onChange={(e) => props.select("title", e.target.value)}
+                            value={title.value}
+                            onChange={(e) => title.onChange(e,props.select,"title")}
+                            onBlur={(e) => title.onBlur(e)}
                         />
                     </div>
+                    {
+                        renderValidationMessages(title)
+                    }
                     <div className="divInput">
                         <div className="inputTitle">Description</div>
                         <input

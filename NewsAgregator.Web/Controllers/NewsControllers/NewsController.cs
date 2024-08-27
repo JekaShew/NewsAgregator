@@ -39,8 +39,33 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
         {
             try
             {
-                await _newsServices.AddNews(newsVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _newsServices.AddNews(newsVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+                
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet("aggregate")]
+        public async Task<IActionResult> Aggregate()
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    await _newsServices.AggregateNews();
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+
             }
             catch (Exception ex)
             {
@@ -105,8 +130,13 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
         {
             try
             {
-                await _newsServices.UpdateNews(newsVM);
-                return Ok();
+                if (ModelState.IsValid)
+                {
+                    await _newsServices.UpdateNews(newsVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+                
             }
             catch (Exception ex)
             {
