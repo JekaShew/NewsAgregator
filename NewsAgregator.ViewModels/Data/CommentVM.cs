@@ -28,21 +28,21 @@ namespace NewsAgregator.ViewModels.Data
 
         public List<Complaint>? Complaints { get; set; }
 
-        public void FromDataModel(Account account, News news)
-        {
-            Account = new Parameter
-            {
-                Id = account != null ? account.Id : null,
-                Text = account != null ? account.UserName : "",
+        //public void FromDataModel(Account account, News news)
+        //{
+        //    Account = new Parameter
+        //    {
+        //        Id = account != null ? account.Id : null,
+        //        Text = account != null ? account.UserName : "",
 
-            };
+        //    };
 
-            News = new Parameter
-            {
-                Id = news != null ? news.Id : null,
-                Text = news != null ? news.Title : "",
-            };
+        //    News = new Parameter
+        //    {
+        //        Id = news != null ? news.Id : null,
+        //        Text = news != null ? news.Title : "",
+        //    };
 
-        }
+        //}
     }
 }

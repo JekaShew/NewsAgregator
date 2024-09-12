@@ -29,26 +29,26 @@ namespace NewsAgregator.ViewModels.Data
 
         public List<CommentVM>? Comments { get; set; }
 
-        public void FromDataModel(NewsAgregator.Data.Models.NewsStatus newsStatus)
-        {
-            if (newsStatus != null)
-            {
-                NewsStatus = new Parameter
-                {
-                    Id = newsStatus.Id,
-                    Text = newsStatus.Title,
+        //public void FromDataModel(NewsAgregator.Data.Models.NewsStatus newsStatus)
+        //{
+        //    if (newsStatus != null)
+        //    {
+        //        NewsStatus = new Parameter
+        //        {
+        //            Id = newsStatus.Id,
+        //            Text = newsStatus.Title,
 
-                };
-            }
-            else
-            {
-                NewsStatus = new Parameter
-                {
-                    Id = null,
-                    Text = "",
+        //        };
+        //    }
+        //    else
+        //    {
+        //        NewsStatus = new Parameter
+        //        {
+        //            Id = null,
+        //            Text = "",
 
-                };
-            }
-        }
+        //        };
+        //    }
+        //}
     }
 }

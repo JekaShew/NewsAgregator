@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using NewsAgregator.Abstract.WeatherInterfaces;
 using NewsAgregator.Data;
+using NewsAgregator.Data;
 using NewsAgregator.Data.Mappers;
 using NewsAgregator.Data.Models;
 using NewsAgregator.ViewModels.Data;

@@ -35,7 +35,7 @@ namespace NewsAgregator.Services.NewsServices
             _logger = logger;
         }
 
-        public async Task<NewsParameters> GetNewsParameters()
+        public async Task<NewsParameters> GetNewsParametersAsync()
         {
             var newsParameters = new NewsParameters()
             {
@@ -55,7 +55,7 @@ namespace NewsAgregator.Services.NewsServices
             newsVM.FromDataModel(newsStatus);
         }
 
-        public async Task AddNews(NewsVM news)
+        public async Task AddNewsAsync(NewsVM news)
         {
             var newNews = _mapper.Map<Data.Models.News>(news);
             newNews.Id = Guid.NewGuid();
@@ -65,27 +65,27 @@ namespace NewsAgregator.Services.NewsServices
             await _appDBContext.SaveChangesAsync();
         }
 
-        public async Task DeleteNews(Guid id)
+        public async Task DeleteNewsAsync(Guid id)
         {
             _appDBContext.Newses.Remove(await _appDBContext.Newses.FirstOrDefaultAsync(n => n.Id == id));
             await _appDBContext.SaveChangesAsync();
         }
 
-        public async Task<NewsVM> TakeNewsById(Guid id)
+        public async Task<NewsVM> TakeNewsByIdAsync(Guid id)
         {
             var news = _mapper.Map<NewsVM>(await _appDBContext.Newses
                 .AsNoTracking()
                 .Include(ns => ns.NewsStatus)
                 .FirstOrDefaultAsync(n => n.Id == id));
 
-            var newsParameters = await GetNewsParameters();
+            var newsParameters = await GetNewsParametersAsync();
             await ConvertNewsParameters(news);
             news.NewsStatuses = newsParameters.NewsStatuses;
 
             return news;
         }
 
-        public async Task<List<NewsVM>> TakeNewses()
+        public async Task<List<NewsVM>> TakeNewsesAsync()
         {
             var newsVMs = _mapper.Map<List<NewsVM>>(await _appDBContext.Newses
                 .AsNoTracking()
@@ -104,7 +104,7 @@ namespace NewsAgregator.Services.NewsServices
             return newsVMs;
         }
 
-        public async Task UpdateNews(NewsVM updatedNews)
+        public async Task UpdateNewsAsync(NewsVM updatedNews)
         {
             var news = await _appDBContext.Newses.FirstOrDefaultAsync(n => n.Id == updatedNews.Id);
 
@@ -122,7 +122,7 @@ namespace NewsAgregator.Services.NewsServices
             else return;
         }
 
-        public async Task AggregateNews()
+        public async Task AggregateNewsAsync()
         {
             var sources = await _appDBContext.Sources.Where(x => !string.IsNullOrEmpty(x.RssUrl)).ToListAsync();
             var existedNewsUrls = await _appDBContext.Newses.Select(n => n.SourceUrl).ToListAsync();

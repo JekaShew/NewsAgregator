@@ -2,8 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using NewsAgregator.Abstract.ComplaintInterfaces;
 using NewsAgregator.Data;
-using NewsAgregator.Data.Mappers;
 using NewsAgregator.Data.Models;
+using NewsAgregator.Mapper.DataMappers;
 using NewsAgregator.ViewModels.Data;
 using System;
 using System.Collections.Generic;
@@ -53,7 +53,6 @@ namespace NewsAgregator.Services.ComplaintServices
         public async Task UpdateComplaintStatusAsync(ComplaintStatusVM updatedComplaintStatusVM)
         {
             var complaintStatus = await _appDBContext.ComplaintStatuses.FirstOrDefaultAsync(cs => cs.Id == updatedComplaintStatusVM.Id);
-            //complaintStatus = ComplaintStatusMapper.ComplaintStatusVMToComplaintStatus(updatedComplaintStatusVM);
 
             if (complaintStatus != null)
             {

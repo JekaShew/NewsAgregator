@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\NewsAgregator.Mapper\NewsAgregator.Mapper.csproj" />
     <ProjectReference Include="..\NewsAgregator.Abstract\NewsAgregator.Abstract.csproj" />
     <ProjectReference Include="..\NewsAgregator.Data\NewsAgregator.Data.csproj" />
   </ItemGroup>

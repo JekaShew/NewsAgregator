@@ -44,38 +44,38 @@ namespace NewsAgregator.ViewModels.Data
         public Guid? WeatherStatusCommonId { get; set; }
         public Parameter? WeatherStatusCommon { get; set; }
 
-        public void FromDataModel(WeatherStatus weatherStatusCommon, WeatherStatus weatherStatusMorning, WeatherStatus weatherStatusDay, WeatherStatus weatherStatusEvening, WeatherStatus weatherStatusNight)
-        {        
-            WeatherStatusCommon = new Parameter
-            {
-                Id = weatherStatusCommon !=null? weatherStatusCommon.Id : null,
-                Text = weatherStatusCommon != null ? weatherStatusCommon.Title : "",
-            };
+        //public void FromDataModel(WeatherStatus weatherStatusCommon, WeatherStatus weatherStatusMorning, WeatherStatus weatherStatusDay, WeatherStatus weatherStatusEvening, WeatherStatus weatherStatusNight)
+        //{        
+        //    WeatherStatusCommon = new Parameter
+        //    {
+        //        Id = weatherStatusCommon !=null? weatherStatusCommon.Id : null,
+        //        Text = weatherStatusCommon != null ? weatherStatusCommon.Title : "",
+        //    };
 
-            WeatherStatusMorning = new Parameter
-            {
-                Id = weatherStatusMorning != null ? weatherStatusMorning.Id : null,
-                Text = weatherStatusMorning != null ? weatherStatusMorning.Title : "",
-            };
+        //    WeatherStatusMorning = new Parameter
+        //    {
+        //        Id = weatherStatusMorning != null ? weatherStatusMorning.Id : null,
+        //        Text = weatherStatusMorning != null ? weatherStatusMorning.Title : "",
+        //    };
 
-            WeatherStatusDay = new Parameter
-            {
-                Id = weatherStatusDay != null ? weatherStatusDay.Id : null,
-                Text = weatherStatusDay != null ? weatherStatusDay.Title : "",
-            };
+        //    WeatherStatusDay = new Parameter
+        //    {
+        //        Id = weatherStatusDay != null ? weatherStatusDay.Id : null,
+        //        Text = weatherStatusDay != null ? weatherStatusDay.Title : "",
+        //    };
 
-            WeatherStatusEvening = new Parameter
-            {
-                Id = weatherStatusEvening != null ? weatherStatusEvening.Id : null,
-                Text = weatherStatusEvening != null ? weatherStatusEvening.Title : "",
-            };
+        //    WeatherStatusEvening = new Parameter
+        //    {
+        //        Id = weatherStatusEvening != null ? weatherStatusEvening.Id : null,
+        //        Text = weatherStatusEvening != null ? weatherStatusEvening.Title : "",
+        //    };
 
-            WeatherStatusNight = new Parameter
-            {
-                Id = weatherStatusNight != null ? weatherStatusNight.Id : null,
-                Text = weatherStatusNight != null ? weatherStatusNight.Title : "",
-            };
+        //    WeatherStatusNight = new Parameter
+        //    {
+        //        Id = weatherStatusNight != null ? weatherStatusNight.Id : null,
+        //        Text = weatherStatusNight != null ? weatherStatusNight.Title : "",
+        //    };
 
-        }
+        //}
     }
 }

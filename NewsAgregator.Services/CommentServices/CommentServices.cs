@@ -1,9 +1,7 @@
 ﻿using AutoMapper;
-using Mapper.Mappers.PropertiesMappers;
 using Microsoft.EntityFrameworkCore;
 using NewsAgregator.Abstract.CommentInterfaces;
 using NewsAgregator.Data;
-using NewsAgregator.Data.Mappers;
 using NewsAgregator.Data.Models;
 using NewsAgregator.ViewModels.Additional;
 using NewsAgregator.ViewModels.Data;

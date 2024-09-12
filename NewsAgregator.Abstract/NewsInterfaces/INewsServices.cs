@@ -10,16 +10,16 @@ namespace NewsAgregator.Abstract.NewsInterfaces
 {
     public interface INewsServices
     {
-        public Task<List<NewsVM>> TakeNewses();
+        public Task<List<NewsVM>> TakeNewsesAsync();
 
-        public Task<NewsVM> TakeNewsById(Guid id);
+        public Task<NewsVM> TakeNewsByIdAsync(Guid id);
 
-        public Task AddNews(NewsVM news);
-        public Task AggregateNews();
+        public Task AddNewsAsync(NewsVM news);
+        public Task AggregateNewsAsync();
 
-        public Task DeleteNews(Guid id);
+        public Task DeleteNewsAsync(Guid id);
 
-        public Task UpdateNews(NewsVM updatedNews);
-        public Task<NewsParameters> GetNewsParameters();
+        public Task UpdateNewsAsync(NewsVM updatedNews);
+        public Task<NewsParameters> GetNewsParametersAsync();
     }
 }

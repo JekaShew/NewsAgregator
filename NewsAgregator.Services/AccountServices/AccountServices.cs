@@ -1,10 +1,8 @@
 ﻿using AutoMapper;
-using Mapper.Mappers.PropertiesMappers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using NewsAgregator.Abstract.AccountInterfaces;
 using NewsAgregator.Data;
-using NewsAgregator.Data.Mappers;
 using NewsAgregator.Data.Models;
 using NewsAgregator.ViewModels.Additional;
 using NewsAgregator.ViewModels.Data;
@@ -141,5 +139,9 @@ namespace NewsAgregator.Services.AccountServices
             return await _appDBContext.Accounts.AnyAsync(a => a.Login.Equals(account.Login) && a.PasswordHash.Equals(enteredPasswordHash));
         }
 
+        public Task<bool> ChangePassword(string login, string secretWord)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
