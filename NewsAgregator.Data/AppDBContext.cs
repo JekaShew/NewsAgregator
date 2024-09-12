@@ -34,6 +34,10 @@ namespace NewsAgregator.Data
             if (modelBuilder == null)
                 throw new ArgumentNullException("modelBuilder");
 
+            modelBuilder.Entity<Account>()
+                    .HasIndex(a => a.Login)
+                    .IsUnique();
+
             modelBuilder.Entity<NotificationMessage>()
                       .HasOne(nm => nm.User)
                       .WithMany(nm => nm.RecipientUsers)

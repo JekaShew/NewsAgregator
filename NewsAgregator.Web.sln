@@ -15,6 +15,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewsAgregator.Services", "N
 EndProject
 Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "NewsAgragator.Web.Client", "NewsAgragator.Web.Client\NewsAgragator.Web.Client.njsproj", "{86DF93AF-A1D4-4EB6-B4AB-B63EF9F60749}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewsAgregator.Mapper", "NewsAgregator.Mapper\NewsAgregator.Mapper.csproj", "{85E5935F-B12A-494F-8BBE-2854E7A094A4}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NewsAgregator.Services.Tests", "NewsAgregator.Services.Tests\NewsAgregator.Services.Tests.csproj", "{F149D728-0AF8-489E-B942-778610D17DA0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +49,14 @@ Global
 		{86DF93AF-A1D4-4EB6-B4AB-B63EF9F60749}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{86DF93AF-A1D4-4EB6-B4AB-B63EF9F60749}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{86DF93AF-A1D4-4EB6-B4AB-B63EF9F60749}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85E5935F-B12A-494F-8BBE-2854E7A094A4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85E5935F-B12A-494F-8BBE-2854E7A094A4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85E5935F-B12A-494F-8BBE-2854E7A094A4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85E5935F-B12A-494F-8BBE-2854E7A094A4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F149D728-0AF8-489E-B942-778610D17DA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F149D728-0AF8-489E-B942-778610D17DA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F149D728-0AF8-489E-B942-778610D17DA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F149D728-0AF8-489E-B942-778610D17DA0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

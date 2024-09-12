@@ -59,7 +59,13 @@
     <Content Include="src\app\pages\AdminPages\AccountPages\EditPolicy\actions.js" />
     <Content Include="src\app\pages\AdminPages\AccountPages\EditPolicy\EditPolicy.js" />
     <Content Include="src\app\pages\AdminPages\AccountPages\EditPolicy\reducer.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\EditRole\actions.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\app\pages\AdminPages\AccountPages\EditRole\EditRole.js" />
+    <Content Include="src\app\pages\AdminPages\AccountPages\EditRole\reducer.js">
+      <SubType>Code</SubType>
+    </Content>
     <Content Include="src\app\pages\AdminPages\AccountPages\Policies\actions.js" />
     <Content Include="src\app\pages\AdminPages\AccountPages\Policies\Policies.js" />
     <Content Include="src\app\pages\AdminPages\AccountPages\Policies\reducer.js" />

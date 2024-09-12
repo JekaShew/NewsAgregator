@@ -10,15 +10,15 @@ namespace NewsAgregator.Abstract.CommentInterfaces
 {
     public interface ICommentServices
     {
-        public Task<List<CommentVM>> TakeComments();
+        public Task<List<CommentVM>> TakeCommentsAsync();
 
-        public Task<CommentVM> TakeCommentById(Guid id);
+        public Task<CommentVM> TakeCommentByIdAsync(Guid id);
 
-        public Task AddComment(CommentVM comment);
+        public Task AddCommentAsync(CommentVM comment);
 
-        public Task DeleteComment(Guid id);
+        public Task DeleteCommentAsync(Guid id);
 
-        public Task UpdateComment(CommentVM updatedComment);
-        public Task<CommentParameters> GetCommentParameters();
+        public Task UpdateCommentAsync(CommentVM updatedComment);
+        public Task<CommentParameters> GetCommentParametersAsync();
     }
 }

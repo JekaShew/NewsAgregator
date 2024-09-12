@@ -10,15 +10,15 @@ namespace NewsAgregator.Abstract.ComplaintInterfaces
 {
     public interface IComplaintServices
     {
-        public Task<List<ComplaintVM>> TakeComplaints();
+        public Task<List<ComplaintVM>> TakeComplaintsAsync();
 
-        public Task<ComplaintVM> TakeComplaintById(Guid id);
+        public Task<ComplaintVM> TakeComplaintByIdAsync(Guid id);
 
-        public Task AddComplaint(ComplaintVM complaint);
+        public Task AddComplaintAsync(ComplaintVM complaint);
 
-        public Task DeleteComplaint(Guid id);
+        public Task DeleteComplaintAsync(Guid id);
 
-        public Task UpdateComplaint(ComplaintVM updatedComplaint);
-        public Task<ComplaintParameters> GetComplaintParameters();
+        public Task UpdateComplaintAsync(ComplaintVM updatedComplaint);
+        public Task<ComplaintParameters> GetComplaintParametersAsync();
     }
 }

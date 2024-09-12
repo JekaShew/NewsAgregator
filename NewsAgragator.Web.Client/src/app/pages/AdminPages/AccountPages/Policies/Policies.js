@@ -73,7 +73,7 @@ const Policies = (props) => {
                         ))}
                     </tbody>
                 </table>
-                )
+            )
         }
         else
             return
@@ -104,7 +104,7 @@ const Policies = (props) => {
                     <button className="btnAddChange" style={{ width: '12rem' }} onClick={() => btnGoToReferenceBooks()}>Reference Books</button>
                     <button className="btnAddChange" onClick={() => btnAddClick()}>Add</button>
                 </div>
-                {renderTable()} 
+                {renderTable()}
             </div>
             <div style={{ display: confirmationDeleting.ConfirmationModalShow ? 'block' : 'none' }}>
                 <ModalConfirmation

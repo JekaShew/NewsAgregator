@@ -2,20 +2,20 @@ import initialState from "../../../../../initialState";
 
 
 
-export default (state = initialState, action) => {
+export default (state = initialState.editAccountStatus, action) => {
     switch (action.type) {
 
         case "ACCOUNTSTATUS_SELECT":
             return {
                 ...state,
-                editAccountStatus:
+                // editAccountStatus:
+                // {
+                //     ...state.editAccountStatus,
+                [action.name]:
                 {
-                    ...state.editAccountStatus,
-                    [action.name]:
-                    {
-                        value: action.val,
-                    },
-                }
+                    value: action.val,
+                },
+                // }
             }
 
 
@@ -23,35 +23,35 @@ export default (state = initialState, action) => {
         case "ACCOUNTSTATUS_LOAD_START":
             return {
                 ...state,
-                editAccountStatus:
-                {
-                    loading: true,
-                    id: {
-                        value: '',
-                    },
-                    title: {
-                        value: '',
-                    },
-                    description: {
-                        value: '',
-                    }
+                // editAccountStatus:
+                // {
+                loading: true,
+                id: {
+                    value: '',
+                },
+                title: {
+                    value: '',
+                },
+                description: {
+                    value: '',
                 }
+                // }
             }
 
         case "ACCOUNTSTATUS_LOAD_SUCCESS":
             return {
                 ...state,
-                editAccountStatus:
-                {
-                    ...state.editAccountStatus,
-                    loading: false,
-                    ...Object.fromEntries(Object.entries(action.data).map(x => ([
-                        x[0],
-                        {
-                            value: x[1],
-                        }
-                    ]))),
-                }
+                // editAccountStatus:
+                // {
+                //     ...state.editAccountStatus,
+                loading: false,
+                ...Object.fromEntries(Object.entries(action.data).map(x => ([
+                    x[0],
+                    {
+                        value: x[1],
+                    }
+                ]))),
+                // }
             }
 
         default:

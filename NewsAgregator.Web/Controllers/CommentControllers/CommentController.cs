@@ -24,7 +24,7 @@ namespace NewsAgregator.Web.Controllers.CommentControllers
         {
             try
             {
-                var result = await _commentServices.GetCommentParameters();
+                var result = await _commentServices.GetCommentParametersAsync();
 
                 return Ok(result);
             }
@@ -42,11 +42,11 @@ namespace NewsAgregator.Web.Controllers.CommentControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _commentServices.AddComment(commentVM);
+                    await _commentServices.AddCommentAsync(commentVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
-                
+
             }
             catch (Exception ex)
             {
@@ -61,7 +61,7 @@ namespace NewsAgregator.Web.Controllers.CommentControllers
         {
             try
             {
-                var result = await _commentServices.TakeComments();
+                var result = await _commentServices.TakeCommentsAsync();
                 if (result != null)
                     return Ok(result);
                 else
@@ -80,7 +80,7 @@ namespace NewsAgregator.Web.Controllers.CommentControllers
         {
             try
             {
-                var result = await _commentServices.TakeCommentById(id);
+                var result = await _commentServices.TakeCommentByIdAsync(id);
                 if (result != null)
                     return Ok(result);
                 else
@@ -99,7 +99,7 @@ namespace NewsAgregator.Web.Controllers.CommentControllers
         {
             try
             {
-                await _commentServices.DeleteComment(id);
+                await _commentServices.DeleteCommentAsync(id);
                 return Ok();
             }
             catch (Exception ex)
@@ -116,11 +116,11 @@ namespace NewsAgregator.Web.Controllers.CommentControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _commentServices.UpdateComment(commentVM);
+                    await _commentServices.UpdateCommentAsync(commentVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
-                
+
             }
             catch (Exception ex)
             {

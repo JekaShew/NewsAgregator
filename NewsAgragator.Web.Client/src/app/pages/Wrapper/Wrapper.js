@@ -25,7 +25,7 @@ class Wrapper extends Component {
                     <div className="footerText1"> OOO "JSCompany" УНП 32947913740138 </div>
                     <div> 2024</div>
                 </div>
-           </div>
+            </div>
         );
     }
 }

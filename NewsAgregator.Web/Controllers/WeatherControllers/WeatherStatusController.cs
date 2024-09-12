@@ -25,7 +25,7 @@ namespace NewsAgregator.Web.Controllers.WeatherControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _weatherStatusServices.AddWeatherStatus(weatherStatusVM);
+                    await _weatherStatusServices.AddWeatherStatusAsync(weatherStatusVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
@@ -43,7 +43,7 @@ namespace NewsAgregator.Web.Controllers.WeatherControllers
         {
             try
             {
-                var result = await _weatherStatusServices.TakeWeatherStatuses();
+                var result = await _weatherStatusServices.TakeWeatherStatusesAsync();
                 if (result != null)
                     return Ok(result);
                 else
@@ -61,7 +61,7 @@ namespace NewsAgregator.Web.Controllers.WeatherControllers
         {
             try
             {
-                var result = await _weatherStatusServices.TakeWeatherStatusById(id);
+                var result = await _weatherStatusServices.TakeWeatherStatusByIdAsync(id);
                 if (result != null)
                     return Ok(result);
                 else
@@ -81,7 +81,7 @@ namespace NewsAgregator.Web.Controllers.WeatherControllers
         {
             try
             {
-                await _weatherStatusServices.DeleteWeatherStatus(id);
+                await _weatherStatusServices.DeleteWeatherStatusAsync(id);
                 return Ok();
             }
             catch (Exception ex)
@@ -99,7 +99,7 @@ namespace NewsAgregator.Web.Controllers.WeatherControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _weatherStatusServices.UpdateWeatherStatus(weatherStatusVM);
+                    await _weatherStatusServices.UpdateWeatherStatusAsync(weatherStatusVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
@@ -112,5 +112,5 @@ namespace NewsAgregator.Web.Controllers.WeatherControllers
         }
     }
 
-   
+
 }

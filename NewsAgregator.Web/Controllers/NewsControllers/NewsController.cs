@@ -23,7 +23,7 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
         {
             try
             {
-                var result = await _newsServices.GetNewsParameters();
+                var result = await _newsServices.GetNewsParametersAsync();
 
                 return Ok(result);
             }
@@ -41,11 +41,31 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _newsServices.AddNews(newsVM);
+                    await _newsServices.AddNewsAsync(newsVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
-                
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet("aggregate")]
+        public async Task<IActionResult> Aggregate()
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    await _newsServices.AggregateNewsAsync();
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+
             }
             catch (Exception ex)
             {
@@ -59,8 +79,8 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
         {
             try
             {
-                var result = await _newsServices.TakeNewses();
-                if (result != null)
+                var result = await _newsServices.TakeNewsesAsync();
+                if (result.Count != 0)
                     return Ok(result);
                 else
                     return NotFound();
@@ -77,7 +97,7 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
         {
             try
             {
-                var result = await _newsServices.TakeNewsById(id);
+                var result = await _newsServices.TakeNewsByIdAsync(id);
                 if (result != null)
                     return Ok(result);
                 else
@@ -95,7 +115,7 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
         {
             try
             {
-                await _newsServices.DeleteNews(id);
+                await _newsServices.DeleteNewsAsync(id);
                 return Ok();
             }
             catch (Exception ex)
@@ -112,11 +132,11 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _newsServices.UpdateNews(newsVM);
+                    await _newsServices.UpdateNewsAsync(newsVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
-                
+
             }
             catch (Exception ex)
             {

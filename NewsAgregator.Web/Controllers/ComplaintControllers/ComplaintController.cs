@@ -20,8 +20,9 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
         [HttpGet("getparameters")]
         public async Task<IActionResult> GetParameters()
         {
-            try{
-                var result = await _complaintServices.GetComplaintParameters();
+            try
+            {
+                var result = await _complaintServices.GetComplaintParametersAsync();
 
                 return Ok(result);
             }
@@ -40,11 +41,11 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _complaintServices.AddComplaint(complaintVM);
+                    await _complaintServices.AddComplaintAsync(complaintVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
-                
+
             }
             catch (Exception ex)
             {
@@ -59,7 +60,7 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
         {
             try
             {
-                var result = await _complaintServices.TakeComplaints();
+                var result = await _complaintServices.TakeComplaintsAsync();
                 if (result != null)
                     return Ok(result);
                 else
@@ -78,7 +79,7 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
         {
             try
             {
-                var result = await _complaintServices.TakeComplaintById(id);
+                var result = await _complaintServices.TakeComplaintByIdAsync(id);
                 if (result != null)
                     return Ok(result);
                 else
@@ -97,7 +98,7 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
         {
             try
             {
-                await _complaintServices.DeleteComplaint(id);
+                await _complaintServices.DeleteComplaintAsync(id);
                 return Ok();
             }
             catch (Exception ex)
@@ -115,11 +116,11 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _complaintServices.UpdateComplaint(complaintVM);
+                    await _complaintServices.UpdateComplaintAsync(complaintVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
-                
+
             }
             catch (Exception ex)
             {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -8,7 +9,9 @@ namespace NewsAgregator.Data.Models
 {
     public class Comment
     {
+        [Required]
         public Guid Id { get; set; }
+        [Required]
         public string? Text { get; set; }
         public DateTime? Date { get; set; }
 

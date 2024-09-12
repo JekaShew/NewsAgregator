@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace NewsAgregator.Data.Mappers
+namespace NewsAgregator.Services.NewsServices
 {
-    internal class WeatherMapper
+    internal class SourceServices
     {
     }
 }

@@ -5,14 +5,14 @@ import Wrapper from '../../Wrapper/Wrapper';
 
 const ReferenceBooks = () => {
     const navigate = useNavigate();
-    
-    const goToPage = (pageTitle) =>{
-        navigate(`/${pageTitle}`);     
+
+    const goToPage = (pageTitle) => {
+        navigate(`/${pageTitle}`);
     }
-        
-    
+
+
     return (
-        
+
         <Wrapper>
             <div className="referenceBooks">
                 <div className="referenceBooksTitle"></div>
@@ -45,9 +45,9 @@ const ReferenceBooks = () => {
                         <button className="btnGoToPage" onClick={() => goToPage("Weathers")}>Weather</button>
                         <button className="btnGoToPage" onClick={() => goToPage("WeatherStatuses")}>Weather Statuses</button>
                     </div>
-                    
+
                 </div>
-                
+
             </div>
         </Wrapper>
     );

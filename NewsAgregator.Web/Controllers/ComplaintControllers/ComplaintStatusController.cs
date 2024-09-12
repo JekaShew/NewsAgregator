@@ -25,11 +25,11 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _complaintStatus.AddComplaintStatus(complaintStatusVM);
+                    await _complaintStatus.AddComplaintStatusAsync(complaintStatusVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
-                
+
             }
             catch (Exception ex)
             {
@@ -44,7 +44,7 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
         {
             try
             {
-                var result = await _complaintStatus.TakeComplaintStatuses();
+                var result = await _complaintStatus.TakeComplaintStatusesAsync();
                 if (result != null)
                     return Ok(result);
                 else
@@ -63,7 +63,7 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
         {
             try
             {
-                var result = await _complaintStatus.TakeComplaintStatusById(id);
+                var result = await _complaintStatus.TakeComplaintStatusByIdAsync(id);
                 if (result != null)
                     return Ok(result);
                 else
@@ -82,7 +82,7 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
         {
             try
             {
-                await _complaintStatus.DeleteComplaintStatus(id);
+                await _complaintStatus.DeleteComplaintStatusAsync(id);
                 return Ok();
             }
             catch (Exception ex)
@@ -100,11 +100,11 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _complaintStatus.UpdateComplaintStatus(complaintStatusVM);
+                    await _complaintStatus.UpdateComplaintStatusAsync(complaintStatusVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
-               
+
             }
             catch (Exception ex)
             {

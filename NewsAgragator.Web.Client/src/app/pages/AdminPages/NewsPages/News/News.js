@@ -138,7 +138,7 @@ const mapDispatchToProps = dispatch => {
 
         loadData: () => dispatch(loadData()),
         remove: (id) => dispatch(remove(id)),
-        aggregate:() => dispatch(aggregateNews()),
+        aggregate: () => dispatch(aggregateNews()),
     }
 }
 

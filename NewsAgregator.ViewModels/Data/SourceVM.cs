@@ -1,5 +1,4 @@
 ﻿using NewsAgregator.Data.Models;
-using NewsAgregator.ViewModels.Additional;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,14 +8,16 @@ using System.Threading.Tasks;
 
 namespace NewsAgregator.ViewModels.Data
 {
-    public class RoleVM
+    public class SourceVM
     {
         public Guid Id { get; set; }
-        [Required, MinLength(3)]
         public string? Title { get; set; }
-        public string? Description { get; set; }
+        [Required]
+        public string? BaseUrl { get; set; }
+        public string? RssUrl { get; set; }
 
-        public List<RolePolicyVM>? RolePolicies { get; set; }
-        public List<AccountVM>? Accounts { get; set; }
+        public List<News>? News { get; set; }
+
+
     }
 }

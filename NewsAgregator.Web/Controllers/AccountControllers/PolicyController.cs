@@ -14,7 +14,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         public PolicyController(IPolicyServices policyServices, ILogger<PolicyController> logger)
         {
             _policyServices = policyServices;
-            _logger = logger;   
+            _logger = logger;
         }
 
         [HttpPost("add")]
@@ -24,11 +24,11 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _policyServices.AddPolicy(policyVM);
+                    await _policyServices.AddPolicyAsync(policyVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
-               
+
             }
             catch (Exception ex)
             {
@@ -43,7 +43,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         {
             try
             {
-                var result = await _policyServices.TakePolicies();
+                var result = await _policyServices.TakePoliciesAsync();
                 if (result != null)
                     return Ok(result);
                 else
@@ -58,11 +58,11 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         }
 
         [HttpGet("takebyid/{id}")]
-        public async Task<IActionResult> TakeById([FromRoute]Guid id)
+        public async Task<IActionResult> TakeById([FromRoute] Guid id)
         {
             try
             {
-                var result = await _policyServices.TakePolicyById(id);
+                var result = await _policyServices.TakePolicyByIdAsync(id);
                 if (result != null)
                     return Ok(result);
                 else
@@ -76,11 +76,11 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         }
 
         [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> Delete([FromRoute]Guid id)
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
             try
             {
-                await _policyServices.DeletePolicy(id);
+                await _policyServices.DeletePolicyAsync(id);
                 return Ok();
             }
             catch (Exception ex)
@@ -98,11 +98,11 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _policyServices.UpdatePolicy(policyVM);
+                    await _policyServices.UpdatePolicyAsync(policyVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
-                
+
             }
             catch (Exception ex)
             {

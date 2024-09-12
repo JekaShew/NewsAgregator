@@ -22,19 +22,19 @@ export default (state = initialState, action) => {
                 {
                     loading: true,
                     value:
-                    [
-                        {
-                            id: {
-                                value: '',
+                        [
+                            {
+                                id: {
+                                    value: '',
+                                },
+                                title: {
+                                    value: '',
+                                },
+                                description: {
+                                    value: '',
+                                },
                             },
-                            title: {
-                                value: '',
-                            },
-                            description: {
-                                value: '',
-                            },
-                        },
-                    ],
+                        ],
                 }
             }
 

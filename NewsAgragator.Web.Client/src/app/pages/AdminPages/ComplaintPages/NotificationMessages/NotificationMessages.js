@@ -74,7 +74,7 @@ const NotificationMessages = (props) => {
                         ))}
                     </tbody>
                 </table>
-                )
+            )
         }
         else
             return

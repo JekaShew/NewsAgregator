@@ -7,7 +7,7 @@ import { add, save, select, clearState, loadData } from './actions';
 import '../../../AdminPages/EditPage.css';
 
 const useValidation = (value, validations) => {
-    const [isEmpty, setEmpty] = useState({ value: true, errorMessage:"The field can't be Empty!" });
+    const [isEmpty, setEmpty] = useState({ value: true, errorMessage: "The field can't be Empty!" });
     const [minLengthError, setMinLengthError] = useState({ value: false, errorMessage: "" });
     const [maxLengthError, setMaxLengthError] = useState({ value: false, errorMessage: "" });
     const [emailError, setEmailError] = useState({ value: false, errorMessage: "The value is not Email!" });
@@ -17,23 +17,23 @@ const useValidation = (value, validations) => {
         for (const validation in validations) {
             switch (validation) {
                 case 'isEmpty':
-                    value? setEmpty({value: false }) : setEmpty({value: true, errorMessage: "The field can't be Empty!"})
+                    value ? setEmpty({ value: false }) : setEmpty({ value: true, errorMessage: "The field can't be Empty!" })
                     break;
                 case 'minLength':
-                    value.length < validations[validation]? 
-                    setMinLengthError({value: true, errorMessage: "The value's length should be more than " + validations[validation] + "!"}) :
-                    setMinLengthError({value: false}) ;
+                    value.length < validations[validation] ?
+                        setMinLengthError({ value: true, errorMessage: "The value's length should be more than " + validations[validation] + "!" }) :
+                        setMinLengthError({ value: false });
                     break;
                 case 'maxLength':
-                    value.length > validations[validation] ? 
-                        setMaxLengthError({value: true, errorMessage: "The value's length should be less than " + validations[validation] + "!" }) :
-                        setMaxLengthError({value: false});
+                    value.length > validations[validation] ?
+                        setMaxLengthError({ value: true, errorMessage: "The value's length should be less than " + validations[validation] + "!" }) :
+                        setMaxLengthError({ value: false });
                     break;
                 case 'isEmail':
                     const re = /\S+@\S+\.\S+/;
-                    re.test(String(value).toLowerCase()) ? 
-                        setEmailError({value: true, errorMessage: "The value is not Email!"}) : 
-                        setEmailError({value: false});
+                    re.test(String(value).toLowerCase()) ?
+                        setEmailError({ value: true, errorMessage: "The value is not Email!" }) :
+                        setEmailError({ value: false });
                     break;
             }
         }
@@ -44,7 +44,7 @@ const useValidation = (value, validations) => {
             setInputValid(false);
         else
             setInputValid(true);
-            console.log(inputValid);
+        console.log(inputValid);
     }, [isEmpty, minLengthError, maxLengthError, emailError]);
 
     return {
@@ -56,15 +56,19 @@ const useValidation = (value, validations) => {
     }
 }
 
-const useInput = (initialValue,validations ) => {
-    const [value, setValue] = useState(initialValue);
+const useInput = (validations) => {
+    const [value, setValue] = useState("");
     const [isDirty, setDirty] = useState(false);
-    const valid = useValidation(value, validations);  
+    const valid = useValidation(value, validations);
 
-    const onChange = (e,select,inputTitle) => {
+    const onChange = (e, select, inputTitle) => {
         setValue(e.target.value);
         select(inputTitle, e.target.value);
 
+    }
+
+    const onInitialize = (propValue) => {
+        setValue(propValue);
     }
 
     const onBlur = (e) => {
@@ -73,6 +77,7 @@ const useInput = (initialValue,validations ) => {
 
     return {
         value,
+        onInitialize,
         onChange,
         onBlur,
         isDirty,
@@ -80,120 +85,32 @@ const useInput = (initialValue,validations ) => {
     }
 }
 
-const renderValidationMessages = (inputName) =>{
-    if(inputName.isDirty){
-        if(inputName.isEmpty.value)
-            return  (<div style={{color:'red'}}>{inputName.isEmpty.errorMessage}</div>)
-        else if(inputName.minLengthError.value) 
-            return  (<div style={{color:'red'}}>{inputName.minLengthError.errorMessage}</div>)
-        else if(inputName.maxLengthError.value) 
-            return  (<div style={{color:'red'}}>{inputName.maxLengthError.errorMessage}</div>)
-        else if(inputName.emailError.value) 
-            return  (<div style={{color:'red'}}>{inputName.emailError.errorMessage}</div>)
-        else 
-            return(<div style={{display:'block'}}></div>)
+const renderValidationMessages = (inputName) => {
+    if (inputName.isDirty) {
+        if (inputName.isEmpty.value)
+            return (<div style={{ color: 'red' }}>{inputName.isEmpty.errorMessage}</div>)
+        else if (inputName.minLengthError.value)
+            return (<div style={{ color: 'red' }}>{inputName.minLengthError.errorMessage}</div>)
+        else if (inputName.maxLengthError.value)
+            return (<div style={{ color: 'red' }}>{inputName.maxLengthError.errorMessage}</div>)
+        else if (inputName.emailError.value)
+            return (<div style={{ color: 'red' }}>{inputName.emailError.errorMessage}</div>)
+        else
+            return (<div style={{ display: 'block' }}></div>)
     }
 }
 
 const EditWeatherStatus = (props) => {
 
-    const title = useInput(props.value.editWeatherStatus.title.value, {isEmpty:true, minLength:3});
+    const title = useInput({ isEmpty: true, minLength: 3 });
 
     const navigate = useNavigate();
     const params = useParams();
-    const [state, setValue] = useState({ AddOrChange: "", Loading: true, });
+    const [managingState, setValue] = useState({ AddOrChange: "", Loading: true, });
 
-    const addORchangeBtn = () => {
-        let disabled = false;
-        if(!title.inputValid)
-            disabled = true;
-        else
-        disabled = false;
-
-        if (state.AddOrChange == "Add")
-            return (<button disabled={disabled} className="btnAddChange" onClick={() => addWeatherStatus()}>Add</button>);
-        else if (state.AddOrChange == "Change")
-            return (<button disabled={disabled} className="btnAddChange" onClick={() => changeWeatherStatus()}>Change</button>);
-
-    }
-
-    const goToList = () => {
-        navigate("/WeatherStatuses");
-    }
-
-    const changeWeatherStatus = () => {
-        let data = Object.fromEntries(Object.entries(props.value.editWeatherStatus).map(e => [e[0], e[1].value]));
-
-        let formData = new FormData();
-        for (var key in data) {
-            if (data[key]) {
-                formData.append(key, data[key]);
-            }
-        }
-        formData.append('id', params.id);
-
-        props.save(formData);
-    }
-
-    const addWeatherStatus = () => {
-        let data = Object.fromEntries(Object.entries(props.value.editWeatherStatus).map(e => [e[0], e[1].value]));
-
-        let formData = new FormData();
-
-        for (var key in data) {
-            if (data[key]) {
-                formData.append(key, data[key]);
-            }
-        }
-
-        formData.append('id', null);
-
-        props.add(formData);
-    };
-
-    const renderInputs = () => {
-        console.log("renderInputs");
-
-        if (state.Loading == false) {
-            return (
-                <div className="editPageInputs">
-                    <div className="divInput">
-                        <div className="inputTitle">Title</div>
-                        <input
-                            className="input"
-                            type="text"
-                            placeholder="Title"
-                            value={title.value}
-                            onChange={(e) => title.onChange(e,props.select,"title")}
-                            onBlur={(e) => title.onBlur(e)}
-                        />
-                    </div>
-                    {
-                        renderValidationMessages(title)
-                    }
-                    <div className="divInput">
-                        <div className="inputTitle">Description</div>
-                        <input
-                            className="input"
-                            type="text"
-                            placeholder="Description"
-                            value={props.value.editWeatherStatus.description.value}
-                            onChange={(e) => props.select("description", e.target.value)}
-                        />
-                    </div>
-                </div>
-            );
-        }
-        else if (state.Loading == true) {
-            return
-            (
-                <div className="items loading">
-                    ROCK
-                    <FontAwesomeIcon icon={faSpinner} />
-                </div>
-            );
-        }
-    }
+    useLayoutEffect(() => {
+        beforeRender();
+    }, []);
 
     const beforeRender = () => {
         console.log("BeforeRender");
@@ -214,18 +131,108 @@ const EditWeatherStatus = (props) => {
 
     useEffect(() => {
         console.log("propsLoading changed");
-        if (params.id != null) {
-            setValue({ AddOrChange: "Change", Loading: props.value.editWeatherStatus.loading });
+        if (params.id != null
+            && managingState.AddOrChange == "Change"
+            && !props.value.loading) {
+            title.onInitialize(props.value.title.value);
+            setValue({ AddOrChange: "Change", Loading: props.value.loading });
         }
-        else if (params.id == null) {
-            setValue({ AddOrChange: "Add", Loading: props.value.editWeatherStatus.loading });
+        else if (params.id == null && !props.value.loading) {
+            title.onInitialize("");
+            setValue({ AddOrChange: "Add", Loading: props.value.loading });
         }
         console.log(state.AddOrChange);
-    }, [props.value.editWeatherStatus.loading]);
+    }, [props.value.loading]);
 
-    useLayoutEffect(() => {
-        beforeRender();
-    }, []);
+    const addORchangeBtn = () => {
+        let disabled = false;
+        if (!title.inputValid)
+            disabled = true;
+        else
+            disabled = false;
+
+        if (managingState.AddOrChange == "Add")
+            return (<button disabled={disabled} className="btnAddChange" onClick={() => addWeatherStatus()}>Add</button>);
+        else if (managingState.AddOrChange == "Change")
+            return (<button disabled={disabled} className="btnAddChange" onClick={() => changeWeatherStatus()}>Change</button>);
+    }
+
+    const goToList = () => {
+        navigate("/WeatherStatuses");
+    }
+
+    const changeWeatherStatus = () => {
+        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
+        data.id = params.id;
+
+        let formData = new FormData();
+        for (var key in data) {
+            if (data[key]) {
+                formData.append(key, data[key]);
+            }
+        }
+
+        props.save(formData);
+    }
+
+    const addWeatherStatus = () => {
+        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
+        data.id = null;
+
+        let formData = new FormData();
+        for (var key in data) {
+            if (data[key]) {
+                formData.append(key, data[key]);
+            }
+        }
+
+        props.add(formData);
+    };
+
+    const renderInputs = () => {
+        console.log("renderInputs");
+
+        if (managingState.Loading == false) {
+            return (
+                <div className="editPageInputs">
+                    <div className="divInput">
+                        <div className="inputTitle">Title</div>
+                        <input
+                            className="input"
+                            type="text"
+                            placeholder="Title"
+                            value={title.value}
+                            onChange={(e) => title.onChange(e, props.select, "title")}
+                            onBlur={(e) => title.onBlur(e)}
+                        />
+                    </div>
+                    {
+                        renderValidationMessages(title)
+                    }
+                    <div className="divInput">
+                        <div className="inputTitle">Description</div>
+                        <input
+                            className="input"
+                            type="text"
+                            placeholder="Description"
+                            value={props.value.description.value}
+                            onChange={(e) => props.select("description", e.target.value)}
+                        />
+                    </div>
+                </div>
+            );
+        }
+        else if (managingState.Loading == true) {
+            return
+            (
+                <div className="items loading">
+                    ROCK
+                    <FontAwesomeIcon icon={faSpinner} />
+                </div>
+            );
+        }
+    }
+
 
 
     console.log(props);
@@ -234,14 +241,14 @@ const EditWeatherStatus = (props) => {
         <Wrapper>
             <div className="editPage">
                 <div className='pageTitle'> Edit Weather Status</div>
-                    {renderInputs()}
+                {renderInputs()}
 
-                    <div className="btns">
-                        <button className="btnAddChange" onClick={() => goToList()}>Back to List</button>
-                        <div>
-                            {addORchangeBtn()}
-                        </div>
+                <div className="btns">
+                    <button className="btnAddChange" onClick={() => goToList()}>Back to List</button>
+                    <div>
+                        {addORchangeBtn()}
                     </div>
+                </div>
             </div>
         </Wrapper>
     );
@@ -256,9 +263,9 @@ const mapDispatchToProps = dispatch => {
         clearState: (data) => dispatch(clearState(data)),
         loadData: (id) => dispatch(loadData(id)),
     }
- }
+}
 
-const mapStateToProps = (state) => (console.log("mapStateToProps", state), { 
+const mapStateToProps = (state) => (console.log("mapStateToProps", state), {
 
     value: state.editWeatherStatus,
 });

@@ -10,7 +10,6 @@ namespace NewsAgregator.ViewModels.Data
 {
     public class PolicyVM
     {
-        [Required]
         public Guid Id { get; set; }
         [Required, MinLength(3)]
         public string? Title { get; set; }

@@ -19,8 +19,9 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         [HttpGet("getparameters")]
         public async Task<IActionResult> GetParameters()
         {
-            try {
-                var result = await _accountServices.GetAccountParameters();
+            try
+            {
+                var result = await _accountServices.GetAccountParametersAsync();
 
                 return Ok(result);
             }
@@ -35,28 +36,30 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         [HttpPost("add")]
         public async Task<IActionResult> Add(AccountVM accountVM)
         {
-            try {
+            try
+            {
                 if (ModelState.IsValid)
                 {
-                    await _accountServices.AddAccount(accountVM);
+                    await _accountServices.AddAccountAsync(accountVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
-                
+
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex.Message);
-                return StatusCode(500,ex.Message);
+                return StatusCode(500, ex.Message);
             }
-            
+
         }
 
         [HttpGet("takeall")]
         public async Task<IActionResult> TakeAll()
         {
-            try {
-                var result = await _accountServices.TakeAccounts();
+            try
+            {
+                var result = await _accountServices.TakeAccountsAsync();
                 if (result != null)
                     return Ok(result);
                 else
@@ -73,8 +76,9 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         [HttpGet("takebyid/{id}")]
         public async Task<IActionResult> TakeById([FromRoute] Guid id)
         {
-            try {
-                var result = await _accountServices.TakeAccountById(id);
+            try
+            {
+                var result = await _accountServices.TakeAccountByIdAsync(id);
                 if (result != null)
                     return Ok(result);
                 else
@@ -89,10 +93,11 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         }
 
         [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> Delete([FromRoute]Guid id)
+        public async Task<IActionResult> Delete([FromRoute] Guid id)
         {
-            try {
-                await _accountServices.DeleteAccount(id);
+            try
+            {
+                await _accountServices.DeleteAccountAsync(id);
                 return Ok();
             }
             catch (Exception ex)
@@ -106,10 +111,11 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         [HttpPost("update")]
         public async Task<IActionResult> Update(AccountVM accountVM)
         {
-            try {
+            try
+            {
                 if (ModelState.IsValid)
                 {
-                    await _accountServices.UpdateAccount(accountVM);
+                    await _accountServices.UpdateAccountAsync(accountVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
@@ -120,6 +126,8 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
                 return StatusCode(500, ex.Message);
             }
         }
+
+
 
     }
 }

@@ -9,7 +9,7 @@ import '../../../AdminPages/EditPage.css';
 const Accounts = (props) => {
 
     const [confirmationDeleting, setConfirmationDeleting] = useState({ Id: '', Title: '', ConfirmationModalShow: false });
-    const [loading,setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     const btnAddClick = () => {
@@ -117,8 +117,8 @@ const Accounts = (props) => {
                     <button className="btnAddChange" style={{ width: '12rem' }} onClick={() => btnGoToReferenceBooks()}>Reference Books</button>
                     <button className="btnAddChange" onClick={() => btnAddClick()}>Add</button>
                 </div>
-                {renderTable()} 
-                
+                {renderTable()}
+
             </div>
             <div style={{ display: confirmationDeleting.ConfirmationModalShow ? 'block' : 'none' }}>
                 <ModalConfirmation

@@ -29,7 +29,7 @@ const AccountStatuses = (props) => {
         console.log("btnDelete");
         console.log(confirmationDeleting);
         console.log(props);
-       
+
     };
 
     const btnDeleteClick = (id) => {
@@ -43,7 +43,7 @@ const AccountStatuses = (props) => {
 
     const renderTable = () => {
         console.log("RenderTable");
-        
+
         console.log(props.value);
 
         if (loading == false) {
@@ -51,7 +51,7 @@ const AccountStatuses = (props) => {
                 <table className="table table-bordered table-hover">
                     <thead>
                         <tr className="tableRow">
-                            <th  scope="col">Action</th>
+                            <th scope="col">Action</th>
                             <th scope="col">Title</th>
                             <th scope="col">Description</th>
 
@@ -62,15 +62,15 @@ const AccountStatuses = (props) => {
                             <tr className="tableRow" key={x.id}>
 
                                 <th scope="row" className=" tableRowActions ">
-                                    <button className="btnAddChange" onClick={() => btnEditSelectedClick(x.id)}>Edit</button> <div style={{ fontSize: '2rem', alignContent: 'center' }}> | </div> 
+                                    <button className="btnAddChange" onClick={() => btnEditSelectedClick(x.id)}>Edit</button> <div style={{ fontSize: '2rem', alignContent: 'center' }}> | </div>
                                     <button onClick={() => confirmationDeletingModalShow(x.id, x.title)} type="button" className="btnDelete" data-toggle="modal" data-target="#deleteModal">
                                         Delete
                                     </button>
-                            </th>
-                            <td>{x.title != null ? x.title : "No data"}</td>
-                            <td>{x.description != null ? x.description : "No data"}</td>
-                        </tr>
-                    ))}
+                                </th>
+                                <td>{x.title != null ? x.title : "No data"}</td>
+                                <td>{x.description != null ? x.description : "No data"}</td>
+                            </tr>
+                        ))}
                     </tbody>
                 </table>)
         }
@@ -78,7 +78,7 @@ const AccountStatuses = (props) => {
             return
         (<div className="items loading">
             <FontAwesomeIcon icon={faSpinner} />
-        </div>)          
+        </div>)
     }
 
 
@@ -97,25 +97,25 @@ const AccountStatuses = (props) => {
 
 
     return (
-       
+
         <Wrapper>
-            
+
             <div className="editPage">
                 <div className="pageTitle"> Account Statuses </div>
                 <div className="btnsAboveTable">
-                    <button className="btnAddChange" style={{width: '12rem'}} onClick={() => btnGoToReferenceBooks()}>Reference Books</button>
-                    <button className="btnAddChange" onClick={() => btnAddClick()}>Add</button>                
+                    <button className="btnAddChange" style={{ width: '12rem' }} onClick={() => btnGoToReferenceBooks()}>Reference Books</button>
+                    <button className="btnAddChange" onClick={() => btnAddClick()}>Add</button>
                 </div>
-                { renderTable() } 
+                {renderTable()}
             </div>
-            
+
             <div style={{ display: confirmationDeleting.ConfirmationModalShow ? 'block' : 'none' }}>
                 <ModalConfirmation
-                    
+
                     id={confirmationDeleting.Id}
                     title={confirmationDeleting.Title}
                     onDelete={btnDeleteClick}
-                    onClose={ btnCloseClick}
+                    onClose={btnCloseClick}
                 />
             </div>
         </Wrapper>
@@ -124,7 +124,7 @@ const AccountStatuses = (props) => {
 
 const mapDispatchToProps = dispatch => {
     return {
-       
+
         loadData: () => dispatch(loadData()),
         remove: (id) => dispatch(remove(id)),
     }

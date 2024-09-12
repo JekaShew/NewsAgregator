@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using NewsAgregator.Abstract.ComplaintInterfaces;
 using NewsAgregator.Data;
+using NewsAgregator.Data.Mappers;
 using NewsAgregator.Data.Models;
 using NewsAgregator.ViewModels.Data;
 using System;
@@ -15,53 +16,54 @@ namespace NewsAgregator.Services.ComplaintServices
     public class ComplaintStatusServices : IComplaintStatusServices
     {
         private readonly AppDBContext _appDBContext;
-        private readonly IMapper _mapper;
-        public ComplaintStatusServices(AppDBContext appDBContext, IMapper mapper)
+        public ComplaintStatusServices(AppDBContext appDBContext)
         {
             _appDBContext = appDBContext;
-            _mapper = mapper;
         }
-        public async Task AddComplaintStatus(ComplaintStatusVM complaintStatus)
+        public async Task AddComplaintStatusAsync(ComplaintStatusVM complaintStatusVM)
         {
-            var newComplaintStatus = _mapper.Map<Data.Models.ComplaintStatus>(complaintStatus);
+            var newComplaintStatus = ComplaintStatusMapper.ComplaintStatusVMToComplaintStatus(complaintStatusVM);
             newComplaintStatus.Id = Guid.NewGuid();
 
             await _appDBContext.AddAsync(newComplaintStatus);
             await _appDBContext.SaveChangesAsync();
         }
 
-        public async Task DeleteComplaintStatus(Guid id)
+        public async Task DeleteComplaintStatusAsync(Guid id)
         {
             _appDBContext.ComplaintStatuses.Remove(await _appDBContext.ComplaintStatuses.FirstOrDefaultAsync(cs => cs.Id == id));
             await _appDBContext.SaveChangesAsync();
         }
 
-        public async Task<ComplaintStatusVM> TakeComplaintStatusById(Guid id)
+        public async Task<ComplaintStatusVM> TakeComplaintStatusByIdAsync(Guid id)
         {
-            var complaintStatus = _mapper.Map<ComplaintStatusVM>(await _appDBContext.ComplaintStatuses.AsNoTracking().FirstOrDefaultAsync(cs => cs.Id == id));
+            var complaintStatus = ComplaintStatusMapper.ComplaintStatusToComplaintStatusVM(await _appDBContext.ComplaintStatuses.AsNoTracking().FirstOrDefaultAsync(cs => cs.Id == id));
 
             return complaintStatus;
         }
 
-        public async Task<List<ComplaintStatusVM>> TakeComplaintStatuses()
+        public async Task<List<ComplaintStatusVM>> TakeComplaintStatusesAsync()
         {
-            var complaintStatusVMs = _mapper.Map<List<ComplaintStatusVM>>(await _appDBContext.ComplaintStatuses.AsNoTracking().ToListAsync());
+            var complaintStatusVMs = (await _appDBContext.ComplaintStatuses.AsNoTracking().ToListAsync())
+                                                .Select(cs => ComplaintStatusMapper.ComplaintStatusToComplaintStatusVM(cs)).ToList();
 
             return complaintStatusVMs;
         }
 
-        public async Task UpdateComplaintStatus(ComplaintStatusVM updatedComplaintStatus)
+        public async Task UpdateComplaintStatusAsync(ComplaintStatusVM updatedComplaintStatusVM)
         {
-            var complaintStatus = await _appDBContext.ComplaintStatuses.FirstOrDefaultAsync(cs => cs.Id == updatedComplaintStatus.Id);
+            var complaintStatus = await _appDBContext.ComplaintStatuses.FirstOrDefaultAsync(cs => cs.Id == updatedComplaintStatusVM.Id);
+            //complaintStatus = ComplaintStatusMapper.ComplaintStatusVMToComplaintStatus(updatedComplaintStatusVM);
 
             if (complaintStatus != null)
             {
-                complaintStatus.Title = updatedComplaintStatus.Title;
-                complaintStatus.Description = updatedComplaintStatus.Description;
+                complaintStatus.Title = updatedComplaintStatusVM.Title;
+                complaintStatus.Description = updatedComplaintStatusVM.Description;
 
                 await _appDBContext.SaveChangesAsync();
             }
-            else return;
+
+
         }
     }
 }

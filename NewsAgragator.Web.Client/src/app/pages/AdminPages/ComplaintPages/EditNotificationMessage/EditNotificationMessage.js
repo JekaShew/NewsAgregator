@@ -7,19 +7,153 @@ import { add, save, select, selectParameter, clearState, load, loadParameters } 
 import InputObject from '../../../../customComponents/InputObject/InputObject';
 import '../../../AdminPages/EditPage.css';
 
+const useValidation = (value, validations) => {
+    const [isEmpty, setEmpty] = useState({ value: true, errorMessage: "The field can't be Empty!" });
+    const [minLengthError, setMinLengthError] = useState({ value: false, errorMessage: "" });
+    const [maxLengthError, setMaxLengthError] = useState({ value: false, errorMessage: "" });
+    const [emailError, setEmailError] = useState({ value: false, errorMessage: "The value is not Email!" });
+    const [inputValid, setInputValid] = useState(false);
+
+    useEffect(() => {
+        for (const validation in validations) {
+            switch (validation) {
+                case 'isEmpty':
+                    value ? setEmpty({ value: false }) : setEmpty({ value: true, errorMessage: "The field can't be Empty!" })
+                    break;
+                case 'minLength':
+                    value.length < validations[validation] ?
+                        setMinLengthError({ value: true, errorMessage: "The value's length should be more than " + validations[validation] + "!" }) :
+                        setMinLengthError({ value: false });
+                    break;
+                case 'maxLength':
+                    value.length > validations[validation] ?
+                        setMaxLengthError({ value: true, errorMessage: "The value's length should be less than " + validations[validation] + "!" }) :
+                        setMaxLengthError({ value: false });
+                    break;
+                case 'isEmail':
+                    const re = /\S+@\S+\.\S+/;
+                    re.test(String(value).toLowerCase()) ?
+                        setEmailError({ value: true, errorMessage: "The value is not Email!" }) :
+                        setEmailError({ value: false });
+                    break;
+            }
+        }
+    }, [value]);
+
+    useEffect(() => {
+        if (isEmpty.value || maxLengthError.value || minLengthError.value || emailError.value)
+            setInputValid(false);
+        else
+            setInputValid(true);
+        console.log(inputValid);
+    }, [isEmpty, minLengthError, maxLengthError, emailError]);
+
+    return {
+        isEmpty,
+        minLengthError,
+        maxLengthError,
+        emailError,
+        inputValid
+    }
+}
+
+const useInput = (validations) => {
+    const [value, setValue] = useState("");
+    const [isDirty, setDirty] = useState(false);
+    const valid = useValidation(value, validations);
+
+    const onChange = (e, select, inputTitle) => {
+        setValue(e.target.value);
+        select(inputTitle, e.target.value);
+
+    }
+
+    const onInitialize = (propValue) => {
+        setValue(propValue);
+    }
+
+    const onBlur = (e) => {
+        setDirty(true)
+    }
+
+    return {
+        value,
+        onInitialize,
+        onChange,
+        onBlur,
+        isDirty,
+        ...valid
+    }
+}
+
+const renderValidationMessages = (inputName) => {
+    if (inputName.isDirty) {
+        if (inputName.isEmpty.value)
+            return (<div style={{ color: 'red' }}>{inputName.isEmpty.errorMessage}</div>)
+        else if (inputName.minLengthError.value)
+            return (<div style={{ color: 'red' }}>{inputName.minLengthError.errorMessage}</div>)
+        else if (inputName.maxLengthError.value)
+            return (<div style={{ color: 'red' }}>{inputName.maxLengthError.errorMessage}</div>)
+        else if (inputName.emailError.value)
+            return (<div style={{ color: 'red' }}>{inputName.emailError.errorMessage}</div>)
+        else
+            return (<div style={{ display: 'block' }}></div>)
+    }
+}
+
 
 const EditNotificationMessage = (props) => {
 
     const navigate = useNavigate();
     const params = useParams();
-    const [state, setValue] = useState({ AddOrChange: "", Loading: true, });
+    const [managingState, setValue] = useState({ AddOrChange: "", Loading: true, });
+    const title = useInput({ isEmpty: true, minLength: 3 });
+
+    const beforeRender = () => {
+        console.log("BeforeRender");
+        if (params.id != null) {
+            setValue({ AddOrChange: "Change", Loading: true });
+            props.load(params.id);
+        }
+        else {
+            setValue({ AddOrChange: "Add", Loading: true });
+            props.clearState();
+            props.loadParameters();
+        }
+    }
+
+    useEffect(() => {
+        console.log("propsLoading changed");
+        if (params.id != null
+            && managingState.AddOrChange == "Change"
+            && !props.value.loadingParameters
+            && !props.value.loadingData) {
+            title.onInitialize(props.value.title.value);
+            setValue({ AddOrChange: "Change", Loading: props.value.loadingData });
+        }
+        else if (params.id == null
+            && managingState.AddOrChange == "Add"
+            && !props.value.loadingParameters) {
+            title.onInitialize("");
+            setValue({ AddOrChange: "Add", Loading: props.value.loadingParameters });
+        }
+    }, [props.value.loadingParameters, props.value.loadingData]);
+
+    useLayoutEffect(() => {
+        beforeRender();
+    }, []);
 
     const addORchangeBtn = () => {
-        if (state.AddOrChange == "Add")
-            return (<button className="btnAddChange" onClick={() => addNotificationMessage()}>Add</button>);
-        else if (state.AddOrChange == "Change")
-            return (<button className="btnAddChange" onClick={() => changeNotificationMessage()}>Change</button>);
+        let disabled = false;
+        if (!title.inputValid)
+            disabled = true;
+        else
+            disabled = false;
 
+        if (managingState.AddOrChange == "Add")
+            return (<button disabled={disabled} className="btnAddChange" onClick={() => addNotificationMessage()}>Add</button>);
+        else if (managingState.AddOrChange == "Change")
+            return (<button disabled={disabled} className="btnAddChange" onClick={() => changeNotificationMessage()}>Change</button>);
     }
 
     const goToList = () => {
@@ -27,7 +161,7 @@ const EditNotificationMessage = (props) => {
     }
 
     const changeNotificationMessage = () => {
-        let data = Object.fromEntries(Object.entries(props.value.editNotificationMessage).map(e => [e[0], e[1].value]));
+        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
         data.userId = data.user.id;
         data.administratorId = data.administrator.id;
         data.id = params.id;
@@ -39,19 +173,15 @@ const EditNotificationMessage = (props) => {
                 formData.append(key, data[key]);
             }
         }
-        //formData.append('id', params.id);
-        //formData.append('userId', props.value.editNotificationMessage.user.value.id);
-        //formData.append('administratorId', props.value.editNotificationMessage.administrator.value.id);
 
         props.save(formData);
     }
 
     const addNotificationMessage = () => {
-        let data = Object.fromEntries(Object.entries(props.value.editNotificationMessage).map(e => [e[0], e[1].value]));
+        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
         data.userId = data.user.id;
         data.administratorId = data.administrator.id;
         data.id = null;
-
 
         let formData = new FormData();
 
@@ -60,18 +190,13 @@ const EditNotificationMessage = (props) => {
                 formData.append(key, data[key]);
             }
         }
-        //formData.append('userId', props.value.editNotificationMessage.user.value.id);
-        //formData.append('administratorId', props.value.editNotificationMessage.administrator.value.id);
-        //formData.append('id', null);
 
         props.add(formData);
     };
 
     const renderInputs = () => {
         console.log("renderInputs");
-        console.log(props.value.editNotificationMessage);
-        if (state.Loading == false) {
-
+        if (managingState.Loading == false) {
             return (
                 <div className="editPageInputs">
                     <div className="divInput">
@@ -80,17 +205,21 @@ const EditNotificationMessage = (props) => {
                             className="input"
                             type="text"
                             placeholder="Title"
-                            value={props.value.editNotificationMessage.title.value}
-                            onChange={(e) => props.select("title", e.target.value)}
+                            value={title.value}
+                            onChange={(e) => title.onChange(e, props.select, "title")}
+                            onBlur={(e) => title.onBlur(e)}
                         />
                     </div>
+                    {
+                        renderValidationMessages(title)
+                    }
                     <div className="divInput">
                         <div className="inputTitle">Text</div>
                         <input
                             className="input"
                             type="text"
                             placeholder="Text"
-                            value={props.value.editNotificationMessage.text.value}
+                            value={props.value.text.value}
                             onChange={(e) => props.select("text", e.target.value)}
                         />
                     </div>
@@ -99,8 +228,8 @@ const EditNotificationMessage = (props) => {
                         <div className="inputTitle">User </div>
                         <InputObject
                             id="accountStatuses"
-                            value={props.value.editNotificationMessage.user.value.id}
-                            options={props.value.editNotificationMessage.accounts.value}
+                            value={props.value.user.value.id}
+                            options={props.value.accounts.value}
                             placeholder="User"
                             onClick={(val, text) => props.selectParameter('user', val, text)}
                         />
@@ -109,16 +238,16 @@ const EditNotificationMessage = (props) => {
                         <div className="inputTitle">Administrator</div>
                         <InputObject
                             id="roles"
-                            value={props.value.editNotificationMessage.administrator.value.id}
-                            options={props.value.editNotificationMessage.accounts.value}
+                            value={props.value.administrator.value.id}
+                            options={props.value.accounts.value}
                             placeholder="Administrator"
                             onClick={(val, text) => props.selectParameter('administrator', val, text)}
                         />
                     </div>
                 </div>
-                );
+            );
         }
-        else if (state.Loading == true) {
+        else if (managingState.Loading == true) {
             return
             (
                 <div className="items loading">
@@ -128,40 +257,6 @@ const EditNotificationMessage = (props) => {
             );
         }
     }
-
-    const beforeRender = () => {
-        console.log("BeforeRender");
-        if (params.id != null) {
-            setValue({ AddOrChange: "Change", Loading: true });
-            props.load(params.id);
-            console.log(params.id);
-            console.log(state.AddOrChange);
-
-        }
-        else {
-            setValue({ AddOrChange: "Add", Loading: true });
-            props.clearState();
-            props.loadParameters();
-            console.log(state.AddOrChange);
-
-        }
-    }
-
-    useEffect(() => {
-        console.log("propsLoading changed");
-        if (params.id != null) {
-            setValue({ AddOrChange: "Change", Loading: props.value.editNotificationMessage.loading });
-        }
-        else if (params.id == null) {
-            setValue({ AddOrChange: "Add", Loading: props.value.editNotificationMessage.loading });
-        }
-        console.log(state.AddOrChange);
-    }, [props.value.editNotificationMessage.loading]);
-
-    useLayoutEffect(() => {
-        beforeRender();
-    }, []);
-
 
     console.log(props);
     return (

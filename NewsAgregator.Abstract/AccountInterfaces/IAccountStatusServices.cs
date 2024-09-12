@@ -10,15 +10,15 @@ namespace NewsAgregator.Abstract.AccountInterfaces
 {
     public interface IAccountStatusServices
     {
-        
-        public Task<List<AccountStatusVM>> TakeAccountStatuses();
 
-        public Task<AccountStatusVM> TakeAccountStatusById(Guid id);
+        public Task<List<AccountStatusVM>> TakeAccountStatusesAsync();
 
-        public Task AddAccountStatus(AccountStatusVM accountStatus);
+        public Task<AccountStatusVM> TakeAccountStatusByIdAsync(Guid id);
 
-        public Task DeleteAccountStatus(Guid id);
+        public Task AddAccountStatusAsync(AccountStatusVM accountStatus);
 
-        public Task UpdateAccountStatus(AccountStatusVM updatedAccountStatus);
+        public Task DeleteAccountStatusAsync(Guid id);
+
+        public Task UpdateAccountStatusAsync(AccountStatusVM updatedAccountStatus);
     }
 }

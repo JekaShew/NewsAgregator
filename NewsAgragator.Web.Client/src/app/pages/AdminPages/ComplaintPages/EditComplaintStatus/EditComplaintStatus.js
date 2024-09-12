@@ -7,7 +7,7 @@ import { add, save, select, clearState, loadData } from './actions';
 import '../../../AdminPages/EditPage.css';
 
 const useValidation = (value, validations) => {
-    const [isEmpty, setEmpty] = useState({ value: true, errorMessage:"The field can't be Empty!" });
+    const [isEmpty, setEmpty] = useState({ value: true, errorMessage: "The field can't be Empty!" });
     const [minLengthError, setMinLengthError] = useState({ value: false, errorMessage: "" });
     const [maxLengthError, setMaxLengthError] = useState({ value: false, errorMessage: "" });
     const [emailError, setEmailError] = useState({ value: false, errorMessage: "The value is not Email!" });
@@ -17,23 +17,23 @@ const useValidation = (value, validations) => {
         for (const validation in validations) {
             switch (validation) {
                 case 'isEmpty':
-                    value? setEmpty({value: false }) : setEmpty({value: true, errorMessage: "The field can't be Empty!"})
+                    value ? setEmpty({ value: false }) : setEmpty({ value: true, errorMessage: "The field can't be Empty!" })
                     break;
                 case 'minLength':
-                    value.length < validations[validation]? 
-                    setMinLengthError({value: true, errorMessage: "The value's length should be more than " + validations[validation] + "!"}) :
-                    setMinLengthError({value: false}) ;
+                    value.length < validations[validation] ?
+                        setMinLengthError({ value: true, errorMessage: "The value's length should be more than " + validations[validation] + "!" }) :
+                        setMinLengthError({ value: false });
                     break;
                 case 'maxLength':
-                    value.length > validations[validation] ? 
-                        setMaxLengthError({value: true, errorMessage: "The value's length should be less than " + validations[validation] + "!" }) :
-                        setMaxLengthError({value: false});
+                    value.length > validations[validation] ?
+                        setMaxLengthError({ value: true, errorMessage: "The value's length should be less than " + validations[validation] + "!" }) :
+                        setMaxLengthError({ value: false });
                     break;
                 case 'isEmail':
                     const re = /\S+@\S+\.\S+/;
-                    re.test(String(value).toLowerCase()) ? 
-                        setEmailError({value: true, errorMessage: "The value is not Email!"}) : 
-                        setEmailError({value: false});
+                    re.test(String(value).toLowerCase()) ?
+                        setEmailError({ value: true, errorMessage: "The value is not Email!" }) :
+                        setEmailError({ value: false });
                     break;
             }
         }
@@ -44,7 +44,7 @@ const useValidation = (value, validations) => {
             setInputValid(false);
         else
             setInputValid(true);
-            console.log(inputValid);
+        console.log(inputValid);
     }, [isEmpty, minLengthError, maxLengthError, emailError]);
 
     return {
@@ -56,15 +56,19 @@ const useValidation = (value, validations) => {
     }
 }
 
-const useInput = (initialValue,validations ) => {
-    const [value, setValue] = useState(initialValue);
+const useInput = (validations) => {
+    const [value, setValue] = useState("");
     const [isDirty, setDirty] = useState(false);
-    const valid = useValidation(value, validations);  
+    const valid = useValidation(value, validations);
 
-    const onChange = (e,select,inputTitle) => {
+    const onChange = (e, select, inputTitle) => {
         setValue(e.target.value);
         select(inputTitle, e.target.value);
 
+    }
+
+    const onInitialize = (propValue) => {
+        setValue(propValue);
     }
 
     const onBlur = (e) => {
@@ -73,6 +77,7 @@ const useInput = (initialValue,validations ) => {
 
     return {
         value,
+        onInitialize,
         onChange,
         onBlur,
         isDirty,
@@ -80,54 +85,85 @@ const useInput = (initialValue,validations ) => {
     }
 }
 
-const renderValidationMessages = (inputName) =>{
-    if(inputName.isDirty){
-        if(inputName.isEmpty.value)
-            return  (<div style={{color:'red'}}>{inputName.isEmpty.errorMessage}</div>)
-        else if(inputName.minLengthError.value) 
-            return  (<div style={{color:'red'}}>{inputName.minLengthError.errorMessage}</div>)
-        else if(inputName.maxLengthError.value) 
-            return  (<div style={{color:'red'}}>{inputName.maxLengthError.errorMessage}</div>)
-        else if(inputName.emailError.value) 
-            return  (<div style={{color:'red'}}>{inputName.emailError.errorMessage}</div>)
-        else 
-            return(<div style={{display:'block'}}></div>)
+const renderValidationMessages = (inputName) => {
+    if (inputName.isDirty) {
+        if (inputName.isEmpty.value)
+            return (<div style={{ color: 'red' }}>{inputName.isEmpty.errorMessage}</div>)
+        else if (inputName.minLengthError.value)
+            return (<div style={{ color: 'red' }}>{inputName.minLengthError.errorMessage}</div>)
+        else if (inputName.maxLengthError.value)
+            return (<div style={{ color: 'red' }}>{inputName.maxLengthError.errorMessage}</div>)
+        else if (inputName.emailError.value)
+            return (<div style={{ color: 'red' }}>{inputName.emailError.errorMessage}</div>)
+        else
+            return (<div style={{ display: 'block' }}></div>)
     }
 }
 
 const EditComplaintStatus = (props) => {
 
-    const title = useInput(props.value.editComplaintStatus.title.value, {isEmpty:true, minLength:3});
-
+    const title = useInput({ isEmpty: true, minLength: 3 });
 
     const navigate = useNavigate();
     const params = useParams();
-    const [state, setValue] = useState({ AddOrChange: "", Loading: true, });
+    const [managingState, setValue] = useState({ AddOrChange: "", Loading: true, });
+
+    useLayoutEffect(() => {
+        beforeRender();
+    }, []);
+
+    const beforeRender = () => {
+        console.log("BeforeRender");
+        if (params.id != null) {
+            setValue({ AddOrChange: "Change", Loading: true });
+            props.loadData(params.id);
+        }
+        else {
+            setValue({ AddOrChange: "Add", Loading: true });
+            props.clearState();
+        }
+    }
+
+    useEffect(() => {
+        console.log("propsLoading changed");
+        if (params.id != null
+            && managingState.AddOrChange == "Change"
+            && !props.value.loading) {
+            title.onInitialize(props.value.title.value);
+            setValue({ AddOrChange: "Change", Loading: props.value.loading });
+        }
+        else if (params.id == null && !props.value.loading) {
+            title.onInitialize("");
+            setValue({ AddOrChange: "Add", Loading: props.value.loading });
+        }
+        console.log(managingState.AddOrChange);
+    }, [props.value.loading]);
 
     const addORchangeBtn = () => {
         let disabled = false;
-        if(!title.inputValid)
+        if (!title.inputValid)
             disabled = true;
         else
-        disabled = false;
+            disabled = false;
 
-        if (state.AddOrChange == "Add")
+        if (managingState.AddOrChange == "Add")
             return (<button disabled={disabled} className="btnAddChange" onClick={() => addComplaintStatus()}>Add</button>);
-        else if (state.AddOrChange == "Change")
+        else if (managingState.AddOrChange == "Change")
             return (<button disabled={disabled} className="btnAddChange" onClick={() => changeComplaintStatus()}>Change</button>);
 
     }
 
     const changeComplaintStatus = () => {
-        let data = Object.fromEntries(Object.entries(props.value.editComplaintStatus).map(e => [e[0], e[1].value]));
+        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
+        data.id = params.id;
 
         let formData = new FormData();
+
         for (var key in data) {
             if (data[key]) {
                 formData.append(key, data[key]);
             }
         }
-        formData.append('id', params.id);
 
         props.save(formData);
     }
@@ -137,7 +173,9 @@ const EditComplaintStatus = (props) => {
     }
 
     const addComplaintStatus = () => {
-        let data = Object.fromEntries(Object.entries(props.value.editComplaintStatus).map(e => [e[0], e[1].value]));
+        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
+
+        data.id = null;
 
         let formData = new FormData();
 
@@ -146,8 +184,6 @@ const EditComplaintStatus = (props) => {
                 formData.append(key, data[key]);
             }
         }
-
-        formData.append('id', null);
 
         props.add(formData);
     };
@@ -165,7 +201,7 @@ const EditComplaintStatus = (props) => {
                             type="text"
                             placeholder="Title"
                             value={title.value}
-                            onChange={(e) => title.onChange(e,props.select,"title")}
+                            onChange={(e) => title.onChange(e, props.select, "title")}
                             onBlur={(e) => title.onBlur(e)}
                         />
                     </div>
@@ -178,7 +214,7 @@ const EditComplaintStatus = (props) => {
                             className="input"
                             type="text"
                             placeholder="Description"
-                            value={props.value.editComplaintStatus.description.value}
+                            value={props.value.description.value}
                             onChange={(e) => props.select("description", e.target.value)}
                         />
                     </div>
@@ -195,39 +231,6 @@ const EditComplaintStatus = (props) => {
             );
         }
     }
-
-    const beforeRender = () => {
-        console.log("BeforeRender");
-        if (params.id != null) {
-            setValue({ AddOrChange: "Change", Loading: true });
-            props.loadData(params.id);
-            console.log(params.id);
-            console.log(state.AddOrChange);
-
-        }
-        else {
-            setValue({ AddOrChange: "Add", Loading: true });
-            props.clearState();
-            console.log(state.AddOrChange);
-
-        }
-    }
-
-    useEffect(() => {
-        console.log("propsLoading changed");
-        if (params.id != null) {
-            setValue({ AddOrChange: "Change", Loading: props.value.editComplaintStatus.loading });
-        }
-        else if (params.id == null) {
-            setValue({ AddOrChange: "Add", Loading: props.value.editComplaintStatus.loading });
-        }
-        console.log(state.AddOrChange);
-    }, [props.value.editComplaintStatus.loading]);
-
-    useLayoutEffect(() => {
-        beforeRender();
-    }, []);
-
 
     console.log(props);
     return (

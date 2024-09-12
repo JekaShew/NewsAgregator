@@ -18,7 +18,7 @@ const ModalConfirmation = (props) => {
                         </button>
                     </div>
                     <div className="modal-body">
-                        Are You sure You want to delete {props.title} ? 
+                        Are You sure You want to delete {props.title} ?
                     </div>
                     <div className="modal-footer">
                         <button onClick={() => props.onDelete(props.id)} type="button" className="btn btn-danger">Delete</button>

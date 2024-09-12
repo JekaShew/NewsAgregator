@@ -77,7 +77,7 @@ const Comments = (props) => {
                         ))}
                     </tbody>
                 </table>
-                 )
+            )
         }
         else
             return

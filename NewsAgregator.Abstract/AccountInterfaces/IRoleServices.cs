@@ -9,14 +9,14 @@ namespace NewsAgregator.Abstract.AccountInterfaces
 {
     public interface IRoleServices
     {
-        public Task<List<RoleVM>> TakeRoles();
+        public Task<List<RoleVM>> TakeRolesAsync();
 
-        public Task<RoleVM> TakeRoleById(Guid id);
+        public Task<RoleVM> TakeRoleByIdAsync(Guid id);
 
-        public Task AddRole(RoleVM role);
+        public Task AddRoleAsync(RoleVM role);
 
-        public Task DeleteRole(Guid id);
+        public Task DeleteRoleAsync(Guid id);
 
-        public Task UpdateRole(RoleVM updatedRole);
+        public Task UpdateRoleAsync(RoleVM updatedRole);
     }
 }

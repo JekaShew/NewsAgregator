@@ -35,7 +35,7 @@ const InputObject = ({ value, options, placeholder, onClick }) => {
         setSelectedObject({ Id: id, Text: text });
         console.log(selectedObject.Id, selectedObject.Text);
         console.log(id, text);
-        
+
         onClick(id, text);
         setShow(false);
     };

@@ -1,10 +1,10 @@
-.editPage{
+.editPage {
     background-color: rgba(194, 197, 38, 0.979);
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    display:flex;
+    display: flex;
     flex-direction: column;
-    width:90%;
+    width: 90%;
     margin: auto;
 }
 
@@ -20,20 +20,20 @@
     width: 80%;
 }
 
-.editPageInputs{
-    display:flex;
+.editPageInputs {
+    display: flex;
     flex-direction: column;
 }
 
-.divInput{
+.divInput {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    width:80%;
+    width: 80%;
     margin: 1rem auto 1rem auto;
 }
 
-.inputTitle{
+.inputTitle {
     padding: 20px;
     margin-bottom: 20px;
     font-family: 'Arial', sans-serif; /* Шрифт */
@@ -41,28 +41,28 @@
     color: #333333; /* Цвет текста */
     text-transform: uppercase; /* Приведение текста к верхнему регистру */
     letter-spacing: 1px; /* Расстояние между буквами */
-    margin:0.2rem auto 0.2rem auto;
+    margin: 0.2rem auto 0.2rem auto;
     width: 30%;
 }
 
-.input{
+.input {
     font-family: 'Arial', sans-serif; /* Шрифт */
     font-size: 1rem; /* Размер шрифта */
     padding: 0.1rem;
     border: 2px solid #cccccc;
     border-radius: 5px;
     transition: border-color 0.3s ease;
-    width:65%
+    width: 65%
 }
 
-.input:focus {
-    outline: none;
-    border-color: #007BFF;
-}
+    .input:focus {
+        outline: none;
+        border-color: #007BFF;
+    }
 
-.btnAddChange{
-    width:8rem;
-    height:2rem;
+.btnAddChange {
+    width: 8rem;
+    height: 2rem;
     font-family: 'Arial', sans-serif; /* Шрифт */
     font-size: 1rem; /* Размер шрифта */
     margin: 1rem 2rem 1rem 2rem;
@@ -79,7 +79,7 @@
 .btnsAboveTable {
     margin: 0.2rem auto 0.2rem auto;
     display: flex;
-    flex-direction:row;
+    flex-direction: row;
     justify-content: space-between;
     width: 90%;
 }
@@ -111,18 +111,13 @@
 .tableRow {
     /*border-right: 5px solid black;
     border-left: 5px solid black;*/
-    text-align:center;
+    text-align: center;
 }
 
 .tableRowActions {
-display:flex;
-flex-direction:row;
-text-align:center;
-width:100%;
-margin:0 auto;
-
-
-
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    width: 100%;
+    margin: 0 auto;
 }
-
-

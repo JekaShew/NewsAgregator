@@ -68,16 +68,32 @@ export const clearState = () => ({
 
     data:
     {
-        id: '',
-        title: '',
-        text: '',
+        id: {
+            value: '',
+        },
+        title: {
+            value: '',
+        },
+        text: {
+            value: '',
+        },
 
-        comment: '',
+        comment: {
+            value: '',
+        },
         news: '',
-        complaintStatus: '',
-        complaintType: '',
-        user: '',
-        administrator: '',
+        complaintStatus: {
+            value: '',
+        },
+        complaintType: {
+            value: '',
+        },
+        user: {
+            value: '',
+        },
+        administrator: {
+            value: '',
+        },
         comments: '',
         newses: '',
         complaintStatuses: '',

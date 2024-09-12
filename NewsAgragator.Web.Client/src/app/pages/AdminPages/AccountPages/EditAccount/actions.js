@@ -68,15 +68,32 @@ export const clearState = () => ({
     type: 'ACCOUNT_LOAD_SUCCESS',
 
     data:
-    { 
-        id: '',  
-        userName: '',
-        fio: '',
-        email: '',
-        phone: '',
-        desiredNewsRating: '',
-        login: '',
-        password: '',
+    {
+        id: '',
+        userName: {
+            value: '',
+        },
+        fio: {
+            value: '',
+        },
+        email: {
+            value: '',
+        },
+        phone: {
+            value: '',
+        },
+        desiredNewsRating: {
+            value: '',
+        },
+        login: {
+            value: '',
+        },
+        password: {
+            value: '',
+        },
+        confirmationPassword: {
+            value: '',
+        },
         accountStatuses: '',
         roles: '',
     }

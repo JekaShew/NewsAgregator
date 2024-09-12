@@ -1,3 +1,5 @@
+import { text } from "@fortawesome/fontawesome-svg-core";
+
 export default {
 
     editAccount: {
@@ -6,7 +8,7 @@ export default {
             value: '',
         },
         userName: {
-            value:'',
+            value: '',
         },
         fio: {
             value: '',
@@ -98,7 +100,7 @@ export default {
         text: {
             value: '',
         },
-       
+
         comment: {
             value: '',
             options: {
@@ -151,43 +153,43 @@ export default {
     complaints: {
         loading: true,
         value:
-        [
-            {
-                id: {
-                    value: '',
-                },
-                title: {
-                    value: '',
-                },
-                text: {
-                    value: '',
-                },
+            [
+                {
+                    id: {
+                        value: '',
+                    },
+                    title: {
+                        value: '',
+                    },
+                    text: {
+                        value: '',
+                    },
 
-                comment: {
-                    value: '',  
-                },
+                    comment: {
+                        value: '',
+                    },
 
-                news: {
-                    value: '',  
-                },
+                    news: {
+                        value: '',
+                    },
 
-                complaintStatus: {
-                    value: '',  
-                },
+                    complaintStatus: {
+                        value: '',
+                    },
 
-                complaintType: {
-                    value: '',   
-                },
+                    complaintType: {
+                        value: '',
+                    },
 
-                user: {
-                    value: '',    
-                },
+                    user: {
+                        value: '',
+                    },
 
-                administrator: {
-                    value: '',    
+                    administrator: {
+                        value: '',
+                    },
                 },
-            },
-        ],
+            ],
     },
 
     editComment: {
@@ -201,7 +203,7 @@ export default {
         date: {
             value: '',
         },
-    
+
         account: {
             value: '',
             options: {
@@ -222,27 +224,27 @@ export default {
     comments: {
         loading: true,
         value:
-        [
-            {
-                id: {
-                    value: '',
-                },
-                text: {
-                    value: '',
-                },
-                date: {
-                    value: '',
-                },
+            [
+                {
+                    id: {
+                        value: '',
+                    },
+                    text: {
+                        value: '',
+                    },
+                    date: {
+                        value: '',
+                    },
 
-                account: {
-                    value: '',       
-                },
+                    account: {
+                        value: '',
+                    },
 
-                news: {
-                    value: '',                   
+                    news: {
+                        value: '',
+                    },
                 },
-            },
-        ],
+            ],
     },
 
     editNews: {
@@ -256,48 +258,61 @@ export default {
         text: {
             value: '',
         },
+        textHTML: {
+            value: '',
+        },
+        description: {
+            value: '',
+        },
+        sourceUrl: {
+            value: '',
+        },
         date: {
             value: '',
         },
         positiveRating: {
             value: '',
         },
-      
+
         newsStatus: {
             value: '',
             options: {
                 text: '',
                 value: '',
             }
-        },     
+        },
+        newsStatuses: [{
+            value: '',
+            text: '',
+        }]
     },
 
     news: {
         loading: true,
         value:
-        [
-            {
-                id: {
-                    value: '',
-                },
-                title: {
-                    value: '',
-                },
-                text: {
-                    value: '',
-                },
-                date: {
-                    value: '',
-                },
-                positiveRating: {
-                    value: '',
-                },
+            [
+                {
+                    id: {
+                        value: '',
+                    },
+                    title: {
+                        value: '',
+                    },
+                    text: {
+                        value: '',
+                    },
+                    date: {
+                        value: '',
+                    },
+                    positiveRating: {
+                        value: '',
+                    },
 
-                newsStatus: {
-                    value: '',
-                },     
-            },
-        ],
+                    newsStatus: {
+                        value: '',
+                    },
+                },
+            ],
     },
 
     editNotificationMessage: {
@@ -311,7 +326,7 @@ export default {
         text: {
             value: '',
         },
-    
+
         user: {
             value: '',
             options: {
@@ -331,26 +346,26 @@ export default {
     notificationMessages: {
         loading: true,
         value:
-        [
-            {
-                id: {
-                    value: '',
-                },
-                title: {
-                    value: '',
-                },
-                text: {
-                    value: '',
-                },
+            [
+                {
+                    id: {
+                        value: '',
+                    },
+                    title: {
+                        value: '',
+                    },
+                    text: {
+                        value: '',
+                    },
 
-                user: {
-                    value: '',           
+                    user: {
+                        value: '',
+                    },
+                    administrator: {
+                        value: '',
+                    },
                 },
-                administrator: {
-                    value: '',   
-                },
-            },
-        ],
+            ],
     },
 
     editWeather: {
@@ -397,17 +412,17 @@ export default {
 
         weatherStatusMorning: {
             value: '',
-            
+
         },
 
         weatherStatusDay: {
             value: '',
-            
+
         },
 
         weatherStatusEvening: {
             value: '',
-           
+
         },
 
         weatherStatusNight: {
@@ -430,69 +445,69 @@ export default {
     weathers: {
         loading: true,
         value:
-        [
-            {
-                id: {
-                    value: '',
-                },
-                city: {
-                    value: '',
-                },
-                temperatureMorning: {
-                    value: '',
-                },
-                temperatureDay: {
-                    value: '',
-                },
-                temperatureEvening: {
-                    value: '',
-                },
-                temperatureNight: {
-                    value: '',
-                },
-                temperatureCommon: {
-                    value: '',
-                },
-                date: {
-                    value: '',
-                },
-                percipittaion: {
-                    value: '',
-                },
-                wind: {
-                    value: '',
-                },
-                windDirection: {
-                    value: '',
-                },
-                pressure: {
-                    value: '',
-                },
-                humidity: {
-                    value: '',
-                },
+            [
+                {
+                    id: {
+                        value: '',
+                    },
+                    city: {
+                        value: '',
+                    },
+                    temperatureMorning: {
+                        value: '',
+                    },
+                    temperatureDay: {
+                        value: '',
+                    },
+                    temperatureEvening: {
+                        value: '',
+                    },
+                    temperatureNight: {
+                        value: '',
+                    },
+                    temperatureCommon: {
+                        value: '',
+                    },
+                    date: {
+                        value: '',
+                    },
+                    percipittaion: {
+                        value: '',
+                    },
+                    wind: {
+                        value: '',
+                    },
+                    windDirection: {
+                        value: '',
+                    },
+                    pressure: {
+                        value: '',
+                    },
+                    humidity: {
+                        value: '',
+                    },
 
-                weatherStatusMorning: {
-                    value: '',  
-                },
+                    weatherStatusMorning: {
+                        value: '',
+                    },
 
-                weatherStatusDay: {
-                    value: '',
-                },
+                    weatherStatusDay: {
+                        value: '',
+                    },
 
-                weatherStatusEvening: {
-                    value: '',  
-                },
+                    weatherStatusEvening: {
+                        value: '',
+                    },
 
-                weatherStatusNight: {
-                    value: '', 
-                },
+                    weatherStatusNight: {
+                        value: '',
+                    },
 
-                weatherStatusCommon: {
-                    value: '',                  
+                    weatherStatusCommon: {
+                        value: '',
+                    },
                 },
-            },
-        ],
+            ],
     },
 
     editAccountStatus: {
@@ -501,29 +516,29 @@ export default {
             value: '',
         },
         title: {
-            value:'123',
+            value: '123',
         },
         description: {
-            value:'qwe',
+            value: 'qwe',
         }
     },
 
     accountStatuses: {
-        loading:true,
+        loading: true,
         value:
-        [
-            {
-                id: {
-                    value: '',
+            [
+                {
+                    id: {
+                        value: '',
+                    },
+                    title: {
+                        value: '',
+                    },
+                    description: {
+                        value: '',
+                    },
                 },
-                title: {
-                    value: '',
-                },
-                description: {
-                    value: '',
-                },
-            },
-        ],
+            ],
     },
 
     editNewsStatus: {
@@ -532,29 +547,29 @@ export default {
             value: '',
         },
         title: {
-            value:'123',
+            value: '',
         },
         description: {
-            value:'qwe',
+            value: '',
         }
     },
 
     newsStatuses: {
         loading: true,
         value:
-        [
-            {
-                id: {
-                    value: '',
+            [
+                {
+                    id: {
+                        value: '',
+                    },
+                    title: {
+                        value: '',
+                    },
+                    description: {
+                        value: '',
+                    },
                 },
-                title: {
-                    value: '',
-                },
-                description: {
-                    value: '',
-                },
-            },
-        ],
+            ],
     },
 
     editWeatherStatus: {
@@ -563,29 +578,29 @@ export default {
             value: '',
         },
         title: {
-            value:'123',
+            value: '',
         },
         description: {
-            value:'qwe',
+            value: '',
         }
     },
 
     weatherStatuses: {
         loading: true,
         value:
-        [
-            {
-                id: {
-                    value: '',
+            [
+                {
+                    id: {
+                        value: '',
+                    },
+                    title: {
+                        value: '',
+                    },
+                    description: {
+                        value: '',
+                    },
                 },
-                title: {
-                    value: '',
-                },
-                description: {
-                    value: '',
-                },
-            },
-        ],
+            ],
     },
 
     editPolicy: {
@@ -594,29 +609,29 @@ export default {
             value: '',
         },
         title: {
-            value: '123',
+            value: '',
         },
         description: {
-            value: 'qwe',
+            value: '',
         }
     },
 
     policies: {
         loading: true,
         value:
-        [
-            {
-                id: {
-                    value: '',
+            [
+                {
+                    id: {
+                        value: '',
+                    },
+                    title: {
+                        value: '',
+                    },
+                    description: {
+                        value: '',
+                    },
                 },
-                title: {
-                    value: '',
-                },
-                description: {
-                    value: '',
-                },
-            },
-        ],
+            ],
     },
 
     editComplaintStatus: {
@@ -625,29 +640,29 @@ export default {
             value: '',
         },
         title: {
-            value: '123',
+            value: '',
         },
         description: {
-            value: 'qwe',
+            value: '',
         }
     },
 
     complaintStatuses: {
         loading: true,
         value:
-        [
-            {
-                id: {
-                    value: '',
+            [
+                {
+                    id: {
+                        value: '',
+                    },
+                    title: {
+                        value: '',
+                    },
+                    description: {
+                        value: '',
+                    },
                 },
-                title: {
-                    value: '',
-                },
-                description: {
-                    value: '',
-                },
-            },
-        ],
+            ],
     },
 
     editComplaintType: {
@@ -656,36 +671,30 @@ export default {
             value: '',
         },
         title: {
-            value: '123',
+            value: '',
         },
         description: {
-            value: 'qwe',
+            value: '',
         }
     },
 
     complaintTypes: {
         loading: true,
         value:
-        [
-            {
-                id: {
-                    value: '',
+            [
+                {
+                    id: {
+                        value: '',
+                    },
+                    title: {
+                        value: '',
+                    },
+                    description: {
+                        value: '',
+                    },
                 },
-                title: {
-                    value: '',
-                },
-                description: {
-                    value: '',
-                },
-            },
-        ],
+            ],
     },
-
-
-
-
-
-
 
     editRole: {
 
@@ -694,10 +703,6 @@ export default {
     roles: {
 
     },
-
-
-    
-
 
     account: {
 

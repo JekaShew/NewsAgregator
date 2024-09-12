@@ -25,11 +25,11 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _complaintTypeServices.AddComplaintType(complaintTypeVM);
+                    await _complaintTypeServices.AddComplaintTypeAsync(complaintTypeVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
-               
+
             }
             catch (Exception ex)
             {
@@ -44,7 +44,7 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
         {
             try
             {
-                var result = await _complaintTypeServices.TakeComplaintTypes();
+                var result = await _complaintTypeServices.TakeComplaintTypesAsync();
                 if (result != null)
                     return Ok(result);
                 else
@@ -63,7 +63,7 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
         {
             try
             {
-                var result = await _complaintTypeServices.TakeComplaintTypeById(id);
+                var result = await _complaintTypeServices.TakeComplaintTypeByIdAsync(id);
                 if (result != null)
                     return Ok(result);
                 else
@@ -82,7 +82,7 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
         {
             try
             {
-                await _complaintTypeServices.DeleteComplaintType(id);
+                await _complaintTypeServices.DeleteComplaintTypeAsync(id);
                 return Ok();
             }
             catch (Exception ex)
@@ -100,11 +100,11 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _complaintTypeServices.UpdateComplaintType(complaintTypeVM);
+                    await _complaintTypeServices.UpdateComplaintTypeAsync(complaintTypeVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
-                
+
             }
             catch (Exception ex)
             {

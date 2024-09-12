@@ -23,7 +23,7 @@ namespace NewsAgregator.Web.Controllers.MessageControllers
         {
             try
             {
-                var result = await _notificationMessageServices.GetNotificationMessageParameters();
+                var result = await _notificationMessageServices.GetNotificationMessageParametersAsync();
 
                 return Ok(result);
             }
@@ -37,15 +37,15 @@ namespace NewsAgregator.Web.Controllers.MessageControllers
         [HttpPost("add")]
         public async Task<IActionResult> Add(NotificationMessageVM notificationMessageVM)
         {
-            try 
+            try
             {
                 if (ModelState.IsValid)
                 {
-                    await _notificationMessageServices.AddNotificationMessage(notificationMessageVM);
+                    await _notificationMessageServices.AddNotificationMessageAsync(notificationMessageVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
-               
+
             }
             catch (Exception ex)
             {
@@ -59,7 +59,7 @@ namespace NewsAgregator.Web.Controllers.MessageControllers
         {
             try
             {
-                var result = await _notificationMessageServices.TakeNotificationMessages();
+                var result = await _notificationMessageServices.TakeNotificationMessagesAsync();
                 if (result != null)
                     return Ok(result);
                 else
@@ -77,7 +77,7 @@ namespace NewsAgregator.Web.Controllers.MessageControllers
         {
             try
             {
-                var result = await _notificationMessageServices.TakeNotificationMessageById(id);
+                var result = await _notificationMessageServices.TakeNotificationMessageByIdAsync(id);
                 if (result != null)
                     return Ok(result);
                 else
@@ -95,7 +95,7 @@ namespace NewsAgregator.Web.Controllers.MessageControllers
         {
             try
             {
-                await _notificationMessageServices.DeleteNotificationMessage(id);
+                await _notificationMessageServices.DeleteNotificationMessageAsync(id);
                 return Ok();
             }
             catch (Exception ex)
@@ -112,11 +112,11 @@ namespace NewsAgregator.Web.Controllers.MessageControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _notificationMessageServices.UpdateNotificationMessage(notificationMessageVM);
+                    await _notificationMessageServices.UpdateNotificationMessageAsync(notificationMessageVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
-               
+
             }
             catch (Exception ex)
             {

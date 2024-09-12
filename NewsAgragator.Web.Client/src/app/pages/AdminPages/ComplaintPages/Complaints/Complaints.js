@@ -84,7 +84,7 @@ const Complaints = (props) => {
                         ))}
                     </tbody>
                 </table>
-                )
+            )
         }
         else
             return

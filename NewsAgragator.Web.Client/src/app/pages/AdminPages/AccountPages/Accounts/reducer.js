@@ -11,7 +11,7 @@ export default (state = initialState, action) => {
                 accounts:
                 {
                     loading: false,
-                    
+
                     value: action.data.map(tpr => ({
                         ...Object.fromEntries(Object.entries(tpr).map(x => ([
                             x[0],
@@ -20,7 +20,7 @@ export default (state = initialState, action) => {
                             },
                         ]))),
                         accountStatus: {
-                             ...Object.fromEntries(Object.entries(tpr.accountStatus).map(x => ([
+                            ...Object.fromEntries(Object.entries(tpr.accountStatus).map(x => ([
                                 x[0],
                                 {
                                     value: x[1],
@@ -85,7 +85,7 @@ export default (state = initialState, action) => {
                 }
             }
 
-        
+
 
         case "ACCOUNT_LOADALL_START":
             return {
@@ -121,7 +121,7 @@ export default (state = initialState, action) => {
                                     value: '',
                                 },
                                 accountStatus: {
-                                    id:'',
+                                    id: '',
                                     text: '',
                                 },
                                 role: {

@@ -101,7 +101,7 @@ const Weathers = (props) => {
                         ))}
                     </tbody>
                 </table>
-                 )
+            )
         }
         else
             return

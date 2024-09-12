@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using NewsAgregator.Abstract.WeatherInterfaces;
 using NewsAgregator.Data;
+using NewsAgregator.Data.Mappers;
 using NewsAgregator.Data.Models;
 using NewsAgregator.ViewModels.Data;
 using System;
@@ -15,44 +16,43 @@ namespace NewsAgregator.Services.WeatherServices
     public class WeatherStatusServices : IWeatherStatusServices
     {
         private readonly AppDBContext _appDBContext;
-        private readonly IMapper _mapper;
-        public WeatherStatusServices(AppDBContext appDBContext, IMapper mapper)
+        public WeatherStatusServices(AppDBContext appDBContext)
         {
             _appDBContext = appDBContext;
-            _mapper = mapper;
         }
-        public async Task AddWeatherStatus(WeatherStatusVM weatherStatus)
+        public async Task AddWeatherStatusAsync(WeatherStatusVM weatherStatus)
         {
-            var newWeatherStatus = _mapper.Map<Data.Models.WeatherStatus>(weatherStatus);
+            var newWeatherStatus = WeatherStatusMapper.WeatherStatusVMToWeatherStatus(weatherStatus);
             newWeatherStatus.Id = Guid.NewGuid();
 
             await _appDBContext.AddAsync(newWeatherStatus);
             await _appDBContext.SaveChangesAsync();
         }
 
-        public async Task DeleteWeatherStatus(Guid id)
+        public async Task DeleteWeatherStatusAsync(Guid id)
         {
             _appDBContext.WeatherStatuses.Remove(await _appDBContext.WeatherStatuses.FirstOrDefaultAsync(ws => ws.Id == id));
             await _appDBContext.SaveChangesAsync();
         }
 
-        public async Task<WeatherStatusVM> TakeWeatherStatusById(Guid id)
+        public async Task<WeatherStatusVM> TakeWeatherStatusByIdAsync(Guid id)
         {
-            var weatherStatus = _mapper.Map<WeatherStatusVM>(await _appDBContext.WeatherStatuses.AsNoTracking().FirstOrDefaultAsync(ws => ws.Id == id));
+            var weatherStatus = WeatherStatusMapper.WeatherStatusToWeatherStatusVM(await _appDBContext.WeatherStatuses.AsNoTracking().FirstOrDefaultAsync(ws => ws.Id == id));
 
             return weatherStatus;
         }
 
-        public async Task<List<WeatherStatusVM>> TakeWeatherStatuses()
+        public async Task<List<WeatherStatusVM>> TakeWeatherStatusesAsync()
         {
-            var weatherStatusVMs = _mapper.Map<List<WeatherStatusVM>>(await _appDBContext.WeatherStatuses.AsNoTracking().ToListAsync());
+            var weatherStatusVMs = (await _appDBContext.WeatherStatuses.AsNoTracking().ToListAsync()).Select(ws => WeatherStatusMapper.WeatherStatusToWeatherStatusVM(ws)).ToList();
 
             return weatherStatusVMs;
         }
 
-        public async Task UpdateWeatherStatus(WeatherStatusVM updatedWeatherStatus)
+        public async Task UpdateWeatherStatusAsync(WeatherStatusVM updatedWeatherStatus)
         {
             var weatherStatus = await _appDBContext.WeatherStatuses.FirstOrDefaultAsync(ws => ws.Id == updatedWeatherStatus.Id);
+            //weatherStatus = WeatherStatusMapper.WeatherStatusVMToWeatherStatus(updatedWeatherStatus);
 
             if (weatherStatus != null)
             {
@@ -61,7 +61,7 @@ namespace NewsAgregator.Services.WeatherServices
 
                 await _appDBContext.SaveChangesAsync();
             }
-            else return;
+
         }
     }
 }

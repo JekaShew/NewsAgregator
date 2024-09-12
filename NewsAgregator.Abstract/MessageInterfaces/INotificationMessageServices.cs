@@ -10,15 +10,15 @@ namespace NewsAgregator.Abstract.MessageInterfaces
 {
     public interface INotificationMessageServices
     {
-        public Task<List<NotificationMessageVM>> TakeNotificationMessages();
+        public Task<List<NotificationMessageVM>> TakeNotificationMessagesAsync();
 
-        public Task<NotificationMessageVM> TakeNotificationMessageById(Guid id);
+        public Task<NotificationMessageVM> TakeNotificationMessageByIdAsync(Guid id);
 
-        public Task AddNotificationMessage(NotificationMessageVM notificationMessage);
+        public Task AddNotificationMessageAsync(NotificationMessageVM notificationMessage);
 
-        public Task DeleteNotificationMessage(Guid id);
+        public Task DeleteNotificationMessageAsync(Guid id);
 
-        public Task UpdateNotificationMessage(NotificationMessageVM updatedNotificationMessage);
-        public Task<NotificationMessageParameters> GetNotificationMessageParameters();
+        public Task UpdateNotificationMessageAsync(NotificationMessageVM updatedNotificationMessage);
+        public Task<NotificationMessageParameters> GetNotificationMessageParametersAsync();
     }
 }

@@ -72,10 +72,18 @@ export const clearState = () => ({
         text: '',
         date: '',
 
-        account: '',
-        news: '',
-        newses: '',
-        accounts:'',
+        account: {
+            value: '',
+        },
+        news: {
+            value: '',
+        },
+        newses: {
+            value: '',
+        },
+        accounts: {
+            value: '',
+        },
     }
 })
 

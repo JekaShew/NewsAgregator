@@ -23,7 +23,7 @@ namespace NewsAgregator.Web.Controllers.WeatherControllers
         {
             try
             {
-                var result = await _weatherServices.GetWeatherParameters();
+                var result = await _weatherServices.GetWeatherParametersAsync();
 
                 return Ok(result);
             }
@@ -41,11 +41,11 @@ namespace NewsAgregator.Web.Controllers.WeatherControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _weatherServices.AddWeather(weatherVM);
+                    await _weatherServices.AddWeatherAsync(weatherVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
-                
+
             }
             catch (Exception ex)
             {
@@ -59,7 +59,7 @@ namespace NewsAgregator.Web.Controllers.WeatherControllers
         {
             try
             {
-                var result = await _weatherServices.TakeWeathers();
+                var result = await _weatherServices.TakeWeathersAsync();
                 if (result != null)
                     return Ok(result);
                 else
@@ -77,7 +77,7 @@ namespace NewsAgregator.Web.Controllers.WeatherControllers
         {
             try
             {
-                var result = await _weatherServices.TakeWeatherById(id);
+                var result = await _weatherServices.TakeWeatherByIdAsync(id);
                 if (result != null)
                     return Ok(result);
                 else
@@ -95,7 +95,7 @@ namespace NewsAgregator.Web.Controllers.WeatherControllers
         {
             try
             {
-                await _weatherServices.DeleteWeather(id);
+                await _weatherServices.DeleteWeatherAsync(id);
                 return Ok();
             }
             catch (Exception ex)
@@ -112,11 +112,11 @@ namespace NewsAgregator.Web.Controllers.WeatherControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _weatherServices.UpdateWeather(weatherVM);
+                    await _weatherServices.UpdateWeatherAsync(weatherVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
-                
+
             }
             catch (Exception ex)
             {

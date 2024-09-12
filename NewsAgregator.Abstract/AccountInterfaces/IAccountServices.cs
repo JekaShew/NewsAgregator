@@ -10,15 +10,19 @@ namespace NewsAgregator.Abstract.AccountInterfaces
 {
     public interface IAccountServices
     {
-        public Task<List<AccountVM>> TakeAccounts();
+        public Task<List<AccountVM>> TakeAccountsAsync();
 
-        public Task<AccountVM> TakeAccountById(Guid id);
+        public Task<AccountVM> TakeAccountByIdAsync(Guid id);
 
-        public Task AddAccount(AccountVM account);
+        public Task AddAccountAsync(AccountVM account);
 
-        public Task DeleteAccount(Guid id);
+        public Task DeleteAccountAsync(Guid id);
 
-        public Task UpdateAccount(AccountVM updatedAccount);
-        public Task<AccountParameters> GetAccountParameters();
+        public Task UpdateAccountAsync(AccountVM updatedAccount);
+        public Task<AccountParameters> GetAccountParametersAsync();
+        public Task<bool> CheckIsLoginRegisteredAsync(string login);
+        public Task<bool> CheckPassword(string login, string password);
+        public Task<bool> ChangePassword(string login, string secretWord);
+
     }
 }

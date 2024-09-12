@@ -10,15 +10,15 @@ namespace NewsAgregator.Abstract.WeatherInterfaces
 {
     public interface IWeatherServices
     {
-        public Task<List<WeatherVM>> TakeWeathers();
+        public Task<List<WeatherVM>> TakeWeathersAsync();
 
-        public Task<WeatherVM> TakeWeatherById(Guid id);
+        public Task<WeatherVM> TakeWeatherByIdAsync(Guid id);
 
-        public Task AddWeather(WeatherVM weather);
+        public Task AddWeatherAsync(WeatherVM weather);
 
-        public Task DeleteWeather(Guid id);
+        public Task DeleteWeatherAsync(Guid id);
 
-        public Task UpdateWeather(WeatherVM updatedWeather);
-        public Task<WeatherParameters> GetWeatherParameters();
+        public Task UpdateWeatherAsync(WeatherVM updatedWeather);
+        public Task<WeatherParameters> GetWeatherParametersAsync();
     }
 }

@@ -10,9 +10,8 @@ namespace NewsAgregator.ViewModels.Data
 {
     public class ComplaintTypeVM
     {
-        [Required]
         public Guid Id { get; set; }
-        [Required,MinLength(3)]
+        [Required, MinLength(3)]
         public string? Title { get; set; }
         public string? Description { get; set; }
 

@@ -11,14 +11,16 @@ namespace NewsAgregator.ViewModels.Data
 {
     public class AccountVM
     {
-        [Required]
+
         public Guid Id { get; set; }
-        [Required, MinLength(3)]
+        [Required]
         public string? UserName { get; set; }
-        [Required,MinLength(3)]
+        [Required, MinLength(3)]
         public string? Login { get; set; }
-        [Required,MinLength(5)]
+        [Required, MinLength(5)]
         public string? Password { get; set; }
+        [Required, MinLength(6)]
+        public string? SecretWord { get; set; }
         [Required]
         public string? FIO { get; set; }
         [Required, EmailAddress]
@@ -46,21 +48,21 @@ namespace NewsAgregator.ViewModels.Data
 
         public List<CommentVM>? Comments { get; set; }
 
-        public void FromDataModel(NewsAgregator.Data.Models.AccountStatus accountStatus, NewsAgregator.Data.Models.Role role)
-        {            
-            AccountStatus = new Parameter
-            {
-                Id = accountStatus != null? accountStatus.Id : null,
-                Text = accountStatus != null ? accountStatus.Title : "",
+        //public void FromDataModel(NewsAgregator.Data.Models.AccountStatus accountStatus, NewsAgregator.Data.Models.Role role)
+        //{
+        //    AccountStatus = new Parameter
+        //    {
+        //        Id = accountStatus != null ? accountStatus.Id : null,
+        //        Text = accountStatus != null ? accountStatus.Title : "",
 
-            };
- 
-            Role = new Parameter
-            {
-                Id = role != null? role.Id : null,
-                Text = role != null? role.Title : "",
-            };
- 
-        }
+        //    };
+
+        //    Role = new Parameter
+        //    {
+        //        Id = role != null ? role.Id : null,
+        //        Text = role != null ? role.Title : "",
+        //    };
+
+        //}
     }
 }

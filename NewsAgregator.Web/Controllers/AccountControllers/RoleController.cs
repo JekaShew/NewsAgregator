@@ -24,11 +24,11 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _roleServices.AddRole(roleVM);
+                    await _roleServices.AddRoleAsync(roleVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
-                
+
             }
             catch (Exception ex)
             {
@@ -43,7 +43,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         {
             try
             {
-                var result = await _roleServices.TakeRoles();
+                var result = await _roleServices.TakeRolesAsync();
                 if (result != null)
                     return Ok(result);
                 else
@@ -60,8 +60,9 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         [HttpGet("takebyid")]
         public async Task<IActionResult> TakeById(Guid id)
         {
-            try {
-                var result = await _roleServices.TakeRoleById(id);
+            try
+            {
+                var result = await _roleServices.TakeRoleByIdAsync(id);
                 if (result != null)
                     return Ok(result);
                 else
@@ -80,7 +81,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         {
             try
             {
-                await _roleServices.DeleteRole(id);
+                await _roleServices.DeleteRoleAsync(id);
                 return Ok();
             }
             catch (Exception ex)
@@ -97,11 +98,11 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _roleServices.UpdateRole(roleVM);
+                    await _roleServices.UpdateRoleAsync(roleVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
-                
+
             }
             catch (Exception ex)
             {
