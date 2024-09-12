@@ -10,8 +10,8 @@ namespace NewsAgregator.Data.Models
     {
         public Guid Id { get; set; }
         public string? Title { get; set; }
-        public string? Description { get; set; }    
+        public string? Description { get; set; }
 
-        public List<Account>? Accounts{ get; set; }
+        public List<Account>? Accounts { get; set; }
     }
 }

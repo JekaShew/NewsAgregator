@@ -12,22 +12,22 @@ namespace NewsAgregator.Data.Models
         public string? Title { get; set; }
         public string? Text { get; set; }
 
-        public Guid? CommentId { get; set; } 
+        public Guid? CommentId { get; set; }
         public Comment? Comment { get; set; }
 
         public Guid? NewsId { get; set; }
         public News? News { get; set; }
 
         public Guid? ComplaintStatusId { get; set; }
-        public ComplaintStatus? ComplaintStatus { get; set; }   
-        
+        public ComplaintStatus? ComplaintStatus { get; set; }
+
         public Guid? ComplaintTypeId { get; set; }
-        public ComplaintType? ComplaintType { get; set; }  
-        
+        public ComplaintType? ComplaintType { get; set; }
+
         public Guid? UserId { get; set; }
         public Account? User { get; set; }
 
         public Guid? AdministratorId { get; set; }
-        public Account? Administrator { get; set; }    
+        public Account? Administrator { get; set; }
     }
 }

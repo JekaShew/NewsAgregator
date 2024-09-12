@@ -18,7 +18,7 @@ namespace NewsAgregator.Data.Models
         public Guid? NewsId { get; set; }
         public News? News { get; set; }
 
-        public List<Complaint>? Complaints { get; set; } 
-        
+        public List<Complaint>? Complaints { get; set; }
+
     }
 }
