@@ -2,28 +2,28 @@ import initialState from "../../../../../initialState";
 
 
 
-export default (state = initialState, action) => {
+export default (state = initialState.editWeather, action) => {
     switch (action.type) {
 
         case "WEATHER_SELECT":
             return {
                 ...state,
-                editWeather:
-                {
-                    ...state.editWeather,
+                // editWeather:
+                // {
+                //     ...state.editWeather,
                     [action.name]:
                     {
                         value: action.val,
                     },
-                }
+                // }
             }
 
         case "WEATHER_SELECT_PARAMETER":
             return {
                 ...state,
-                editWeather:
-                {
-                    ...state.editWeather,
+                // editWeather:
+                // {
+                //     ...state.editWeather,
                     [action.name]:
                     {
 
@@ -31,15 +31,15 @@ export default (state = initialState, action) => {
                         text: action.val.text,
 
                     },
-                }
+                // }
             }
 
         case "WEATHER_LOAD_PARAMETERS_START":
             return {
                 ...state,
-                editWeather:
-                {
-                    loading: true,
+                // editWeather:
+                // {
+                    loadingParameters: true,
                     id: {
                         value: '',
                     },
@@ -116,17 +116,17 @@ export default (state = initialState, action) => {
                             text: '',
                         },
                     },
-                }
+                // }
             }
 
         case 'WEATHER_LOAD_PARAMETERS_SUCCESS':
             return {
                 ...state,
-                editWeather:
-                {
-                    ...state.editWeather,
+                // editWeather:
+                // {
+                //     ...state.editWeather,
                     
-                    loading: false,
+                    loadingParameters: false,
                     ...Object.fromEntries(Object.entries(action.data).map(x => ([
                         x[0],
                         {
@@ -134,36 +134,36 @@ export default (state = initialState, action) => {
                             value: x[1],
                         }
                     ])))
-                }
+                // }
 
             }
 
         case "WEATHER_LOAD_START":
             return {
                 ...state,
-                ...state.editWeather,
-                editWeather:
-                {
-                    loading: true,
+                // ...state.editWeather,
+                // editWeather:
+                // {
+                    loadingData: true,
 
-                }
+                // }
             }
 
         case "WEATHER_LOAD_SUCCESS":
             return {
                 ...state,
-                editWeather:
-                {
-                    ...state.editWeather,
-                    ...state.editWeather.weatherStatuses,
-                    loading: false,
+                // editWeather:
+                // {
+                //     ...state.editWeather,
+                    ...state.weatherStatuses,
+                    loadingData: false,
                     ...Object.fromEntries(Object.entries(action.data).map(x => ([
                         x[0],
                         {
                             value: x[1],
                         }
                     ]))),
-                }
+                // }
             }
 
         default:

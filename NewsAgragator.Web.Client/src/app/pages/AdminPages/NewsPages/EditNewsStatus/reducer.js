@@ -2,27 +2,27 @@ import initialState from "../../../../../initialState";
 
 
 
-export default (state = initialState, action) => {
+export default (state = initialState.editNewsStatus, action) => {
     switch (action.type) {
 
         case "NEWSSTATUS_SELECT":
             return {
                 ...state,
-                editNewsStatus:
-                {
-                    ...state.editNewsStatus,
+                // editNewsStatus:
+                // {
+                //     ...state.editNewsStatus,
                     [action.name]:
                     {
                         value: action.val,
                     },
-                }
+                // }
             }
 
         case "NEWSSTATUS_LOAD_START":
             return {
                 ...state,
-                editNewsStatus:
-                {
+                // editNewsStatus:
+                // {
                     loading: true,
                     id: {
                         value: '',
@@ -33,15 +33,15 @@ export default (state = initialState, action) => {
                     description: {
                         value: '',
                     }
-                }
+                // }
             }
 
         case "NEWSSTATUS_LOAD_SUCCESS":
             return {
                 ...state,
-                editNewsStatus:
-                {
-                    ...state.editNewsStatus,
+                // editNewsStatus:
+                // {
+                //     ...state.editNewsStatus,
                     loading: false,
                     ...Object.fromEntries(Object.entries(action.data).map(x => ([
                         x[0],
@@ -49,7 +49,7 @@ export default (state = initialState, action) => {
                             value: x[1],
                         }
                     ]))),
-                }
+                // }
             }
 
         default:

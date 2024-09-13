@@ -39,7 +39,7 @@ export default (state = initialState.editNotificationMessage, action) => {
                 ...state,
                 // editNotificationMessage:
                 // {
-                loading: true,
+                loadingParameters: true,
                 id: {
                     value: '',
                 },
@@ -78,7 +78,7 @@ export default (state = initialState.editNotificationMessage, action) => {
                 // editNotificationMessage:
                 // {
                 //     ...state.editNotificationMessage,
-                loading: false,
+                loadingParameters: false,
                 ...Object.fromEntries(Object.entries(action.data).map(x => ([
                     x[0],
                     {
@@ -96,7 +96,7 @@ export default (state = initialState.editNotificationMessage, action) => {
                 // ...state.editNotificationMessage,
                 // editNotificationMessage:
                 // {
-                loading: true,
+                loadingData: true,
 
                 // }
             }
@@ -108,7 +108,7 @@ export default (state = initialState.editNotificationMessage, action) => {
                 // {
                 //     ...state.editNotificationMessage,
                 ...state.accounts,
-                loading: false,
+                loadingData: false,
                 ...Object.fromEntries(Object.entries(action.data).map(x => ([
                     x[0],
                     {

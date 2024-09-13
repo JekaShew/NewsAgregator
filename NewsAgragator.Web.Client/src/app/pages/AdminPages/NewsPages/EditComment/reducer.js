@@ -2,28 +2,28 @@ import initialState from "../../../../../initialState";
 
 
 
-export default (state = initialState, action) => {
+export default (state = initialState.editComment, action) => {
     switch (action.type) {
 
         case "COMMENT_SELECT":
             return {
                 ...state,
-                editComment:
-                {
-                    ...state.editComment,
+                // editComment:
+                // {
+                //     ...state.editComment,
                     [action.name]:
                     {
                         value: action.val,
                     },
-                }
+                // }
             }
 
         case "COMMENT_SELECT_PARAMETER":
             return {
                 ...state,
-                editComment:
-                {
-                    ...state.editComment,
+                // editComment:
+                // {
+                //     ...state.editComment,
                     [action.name]:
                     {
 
@@ -31,15 +31,15 @@ export default (state = initialState, action) => {
                         text: action.val.text,
 
                     },
-                }
+                // }
             }
 
         case "COMMENT_LOAD_PARAMETERS_START":
             return {
                 ...state,
-                editComment:
-                {
-                    loading: true,
+                // editComment:
+                // {
+                    loadingParameters: true,
                     id: {
                         value: '',
                     },
@@ -75,16 +75,16 @@ export default (state = initialState, action) => {
                             text: '',
                         },       
                     },
-                }
+                // }
             }
 
         case 'COMMENT_LOAD_PARAMETERS_SUCCESS':
             return {
                 ...state,
-                editComment:
-                {
-                    ...state.editComment,
-                    loading: false,
+                // editComment:
+                // {
+                //     ...state.editComment,
+                    loadingParameters: false,
                     ...Object.fromEntries(Object.entries(action.data).map(x => ([
                         x[0],
                         {
@@ -92,37 +92,37 @@ export default (state = initialState, action) => {
                             value: x[1],
                         }
                     ])))
-                }
+                // }
 
             }
 
         case "COMMENT_LOAD_START":
             return {
                 ...state,
-                ...state.editComment,
-                editComment:
-                {
-                    loading: true,
+                // ...state.editComment,
+                // editComment:
+                // {
+                    loadingData: true,
 
-                }
+                // }
             }
 
         case "COMMENT_LOAD_SUCCESS":
             return {
                 ...state,
-                editComment:
-                {
-                    ...state.editComment,
-                    ...state.editComment.accounts,
-                    ...state.editComment.newses,
-                    loading: false,
+                // editComment:
+                // {
+                //     ...state.editComment,
+                    ...state.accounts,
+                    ...state.newses,
+                    loadingData: false,
                     ...Object.fromEntries(Object.entries(action.data).map(x => ([
                         x[0],
                         {
                             value: x[1],
                         }
                     ]))),
-                }
+                // }
             }
 
         default:

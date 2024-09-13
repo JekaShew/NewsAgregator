@@ -2,27 +2,27 @@ import initialState from "../../../../../initialState";
 
 
 
-export default (state = initialState, action) => {
+export default (state = initialState.editWeatherStatus, action) => {
     switch (action.type) {
 
         case "WEATHERSTATUS_SELECT":
             return {
                 ...state,
-                editWeatherStatus:
-                {
-                    ...state.editWeatherStatus,
+                // editWeatherStatus:
+                // {
+                //     ...state.editWeatherStatus,
                     [action.name]:
                     {
                         value: action.val,
                     },
-                }
+                // }
             }
 
         case "WEATHERSTATUS_LOAD_START":
             return {
                 ...state,
-                editWeatherStatus:
-                {
+                // editWeatherStatus:
+                // {
                     loading: true,
                     id: {
                         value: '',
@@ -33,15 +33,15 @@ export default (state = initialState, action) => {
                     description: {
                         value: '',
                     }
-                }
+                // }
             }
 
         case "WEATHERSTATUS_LOAD_SUCCESS":
             return {
                 ...state,
-                editWeatherStatus:
-                {
-                    ...state.editWeatherStatus,
+                // editWeatherStatus:
+                // {
+                //     ...state.editWeatherStatus,
                     loading: false,
                     ...Object.fromEntries(Object.entries(action.data).map(x => ([
                         x[0],
@@ -49,7 +49,7 @@ export default (state = initialState, action) => {
                             value: x[1],
                         }
                     ]))),
-                }
+                // }
             }
 
         default:

@@ -2,28 +2,28 @@ import initialState from "../../../../../initialState";
 
 
 
-export default (state = initialState, action) => {
+export default (state = initialState.editComplaint, action) => {
     switch (action.type) {
 
         case "COMPLAINT_SELECT":
             return {
                 ...state,
-                editComplaint:
-                {
-                    ...state.editComplaint,
+                // editComplaint:
+                // {
+                //     ...state.editComplaint,
                     [action.name]:
                     {
                         value: action.val,
                     },
-                }
+                // }
             }
 
         case "COMPLAINT_SELECT_PARAMETER":
             return {
                 ...state,
-                editComplaint:
-                {
-                    ...state.editComplaint,
+                // editComplaint:
+                // {
+                //     ...state.editComplaint,
                     [action.name]:
                     {
 
@@ -31,15 +31,15 @@ export default (state = initialState, action) => {
                         text: action.val.text,
 
                     },
-                }
+                // }
             }
 
         case "COMPLAINT_LOAD_PARAMETERS_START":
             return {
                 ...state,
-                editComplaint:
-                {
-                    loading: true,
+                // editComplaint:
+                // {
+                    loadingParameters: true,
                     id: {
                         value: '',
                     },
@@ -115,16 +115,16 @@ export default (state = initialState, action) => {
                             text: '',
                         },
                     },
-                }
+                // }
             }
 
         case 'COMPLAINT_LOAD_PARAMETERS_SUCCESS':
             return {
                 ...state,
-                editComplaint:
-                {
-                    ...state.editComplaint,                   
-                    loading: false,
+                // editComplaint:
+                // {
+                //     ...state.editComplaint,                   
+                loadingParameters: false,
                     ...Object.fromEntries(Object.entries(action.data).map(x => ([
                         x[0],
                         {
@@ -133,33 +133,33 @@ export default (state = initialState, action) => {
                         },     
                     ])))
                    
-                }
+                // }
 
             }
 
         case "COMPLAINT_LOAD_START":
             return {
                 ...state,
-                ...state.editComplaint,
-                editComplaint:
-                {
-                    loading: true,
+                // ...state.editComplaint,
+                // editComplaint:
+                // {
+                    loadingData: true,
 
-                }
+                // }
             }
 
         case "COMPLAINT_LOAD_SUCCESS":
             return {
                 ...state,
-                editComplaint:
-                {
-                    ...state.editComplaint,
-                    ...state.editComplaint.comments,
-                    ...state.editComplaint.newses,
-                    ...state.editComplaint.complaintStatuses,
-                    ...state.editComplaint.complaintTypes,
-                    ...state.editComplaint.accounts,
-                    loading: false,
+                // editComplaint:
+                // {
+                //     ...state.editComplaint,
+                    ...state.comments,
+                    ...state.newses,
+                    ...state.complaintStatuses,
+                    ...state.complaintTypes,
+                    ...state.accounts,
+                    loadingData: false,
                     ...Object.fromEntries(Object.entries(action.data).map(x => ([
                         x[0],
                         {
@@ -167,7 +167,7 @@ export default (state = initialState, action) => {
                         }
                     ]))),
                 }
-            }
+            // }
 
         default:
             return state
