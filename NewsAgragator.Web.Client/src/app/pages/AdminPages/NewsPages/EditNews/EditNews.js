@@ -57,15 +57,19 @@ const useValidation = (value, validations) => {
     }
 }
 
-const useInput = (initialValue,validations ) => {
-    const [value, setValue] = useState(initialValue);
+const useInput = (validations) => {
+    const [value, setValue] = useState("");
     const [isDirty, setDirty] = useState(false);
-    const valid = useValidation(value, validations);  
+    const valid = useValidation(value, validations);
 
-    const onChange = (e,select,inputTitle) => {
+    const onChange = (e, select, inputTitle) => {
         setValue(e.target.value);
         select(inputTitle, e.target.value);
 
+    }
+
+    const onInitialize = (propValue) => {
+        setValue(propValue);
     }
 
     const onBlur = (e) => {
@@ -74,6 +78,7 @@ const useInput = (initialValue,validations ) => {
 
     return {
         value,
+        onInitialize,
         onChange,
         onBlur,
         isDirty,
@@ -99,22 +104,66 @@ const renderValidationMessages = (inputName) =>{
 
 const EditNews = (props) => {
 
-    const text = useInput(props.value.editNews.text.value, {isEmpty:true, minLength:3, maxLength:3000});
-
     const navigate = useNavigate();
     const params = useParams();
-    const [state, setValue] = useState({ AddOrChange: "", Loading: true, });
+    const [managingState, setValue] = useState({ AddOrChange: "", Loading: true, });
+    const title = useInput({ isEmpty: true, minLength: 3 });
+    const description = useInput({ isEmpty: true, minLength: 3 });
+    const sourceUrl = useInput({ isEmpty: true, minLength: 3 });
+    const date = useInput({ isEmpty: true, minLength: 3 });
+
+    useLayoutEffect(() => {
+        beforeRender();
+    }, []);
+
+    const beforeRender = () => {
+        console.log("BeforeRender");
+        if (params.id != null) {
+            setValue({ AddOrChange: "Change", Loading: true });
+            props.load(params.id);
+        }
+        else {
+            setValue({ AddOrChange: "Add", Loading: true });
+            props.clearState();
+            props.loadParameters();
+        }
+    }
+
+    useEffect(() => {
+        console.log("propsLoading changed");
+        if (params.id != null
+            && managingState.AddOrChange == "Change"
+            && !props.value.loadingParameters
+            && !props.value.loadingData) 
+        {
+            title.onInitialize(props.value.title.value);
+            description.onInitialize(props.value.description.value);
+            sourceUrl.onInitialize(props.value.sourceUrl.value);
+            date.onInitialize(props.value.date.value);
+            setValue({ AddOrChange: "Change", Loading: props.value.loadingData });
+        }
+        else if (params.id == null
+            && managingState.AddOrChange == "Add"
+            && !props.value.loadingParameters) 
+        {
+            title.onInitialize("");
+            description.onInitialize("");
+            sourceUrl.onInitialize("");
+            date.onInitialize("");
+            setValue({ AddOrChange: "Add", Loading: props.value.loadingParameters });
+        }
+    }, [props.value.loadingParameters, props.value.loadingData]);
 
     const addORchangeBtn = () => {
         let disabled = false;
-        if(!text.inputValid)
+        if(!title.inputValid || !description.inputValid || sourceUrl.inputValid || date.inputValid)
             disabled = true;
         else
         disabled = false;
 
-        if (state.AddOrChange == "Add")
+        if (managingState.AddOrChange == "Add")
             return (<button disabled={disabled} className="btnAddChange" onClick={() => addNews()}>Add</button>);
-        else if (state.AddOrChange == "Change")
+        else if (managingState.AddOrChange == "Change")
             return (<button disabled={disabled} className="btnAddChange" onClick={() => changeNews()}>Change</button>);
 
     }
@@ -124,7 +173,7 @@ const EditNews = (props) => {
     }
 
     const changeNews = () => {
-        let data = Object.fromEntries(Object.entries(props.value.editNews).map(e => [e[0], e[1].value]));
+        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
         data.positiveRating = Number.parseInt(data.positiveRating);
         data.newsStatusId = data.newsStatus.id;
         data.id = params.id;
@@ -136,14 +185,12 @@ const EditNews = (props) => {
                 formData.append(key, data[key]);
             }
         }
-        //formData.append('id', params.id);
-        //formData.append('newsStatusId', props.value.editNews.newsStatus.value.id);
 
         props.save(formData);
     }
 
     const addNews = () => {
-        let data = Object.fromEntries(Object.entries(props.value.editNews).map(e => [e[0], e[1].value]));
+        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
         data.positiveRating = Number.parseInt(data.positiveRating);
         data.newsStatusId = data.newsStatus.id;
         data.id = null;
@@ -156,16 +203,13 @@ const EditNews = (props) => {
             }
         }
 
-        //formData.append('newsStatusId', props.value.editNews.newsStatus.value.id);
-        //formData.append('id', null);
-
         props.add(formData);
     };
 
     const renderInputs = () => {
         console.log("renderInputs");
 
-        if (state.Loading == false) {
+        if (managingState.Loading == false) {
 
             return (
                 <div className="editPageInputs">
@@ -175,41 +219,87 @@ const EditNews = (props) => {
                             className="input"
                             type="text"
                             placeholder="Title"
-                            value={props.value.editNews.title.value}
-                            onChange={(e) => props.select("title", e.target.value)}
+                            value={title.value}
+                            onChange={(e) => title.onChange(e,props.select,"title")}
+                            onBlur={(e) => title.onBlur(e)}  
                         />
                     </div>
+                    {
+                        renderValidationMessages(title)
+                    }
+                    <div className="divInput">
+                        <div className="inputTitle">Description</div>
+                        <input
+                            className="input"
+                            type="text"
+                            placeholder="Description"
+                            value={description.value}
+                            onChange={(e) => description.onChange(e,props.select,"description")}
+                            onBlur={(e) => description.onBlur(e)}
+                        />
+                    </div>
+                    {
+                        renderValidationMessages(description)
+                    }
+
                     <div className="divInput">
                         <div className="inputTitle">Text</div>
                         <input
                             className="input"
                             type="text"
                             placeholder="Text"
-                            value={text.value}
-                            onChange={(e) => text.onChange(e,props.select,"text")}
-                            onBlur={(e) => text.onBlur(e)}
+                            value={props.value.text.value}
+                            onChange={(e) => props.select("text", e.target.value)}
+                        />
+                    </div>
+                    <div className="divInput">
+                        <div className="inputTitle">Text HTML</div>
+                        <input
+                            className="input"
+                            type="text"
+                            placeholder="Text HTML"
+                            value={props.value.textHTML.value}
+                            onChange={(e) => props.select("textHTML", e.target.value)}
+                        />
+                    </div>
+                    <div className="divInput">
+                        <div className="inputTitle">Source URL</div>
+                        <input
+                            className="input"
+                            type="text"
+                            placeholder="Source URL"
+                            value={sourceUrl.value}
+                            onChange={(e) => sourceUrl.onChange(e,props.select,"sourceUrl")}
+                            onBlur={(e) => sourceUrl.onBlur(e)} 
                         />
                     </div>
                     {
-                        renderValidationMessages(text)
+                        renderValidationMessages(sourceUrl)
                     }
+
                     <div className="divInput">
                         <div className="inputTitle">Date</div>
                         <input
                             className="input"
                             type="text"
                             placeholder="Date"
-                            value={props.value.editNews.date.value}
-                            onChange={(e) => props.select("date", e.target.value)}
+                            value={date.value}
+                            onChange={(e) => date.onChange(e,props.select,"date")}
+                            onBlur={(e) => date.onBlur(e)}
+                            
                         />
                     </div>
+                    {
+                        renderValidationMessages(date)
+                    }
+
                     <div className="divInput">
                         <div className="inputTitle">Positive Rating</div>
                         <input
                             className="input"
                             type="text"
                             placeholder="Positive Rating"
-                            value={props.value.editNews.positiveRating.value}
+                            value={props.value.positiveRating.value}
                             onChange={(e) => props.select("positiveRating", e.target.value)}
                         />
                     </div>
@@ -217,8 +307,8 @@ const EditNews = (props) => {
                         <div className="inputTitle">News Status</div>
                         <InputObject
                             id="newsStatus"
-                            value={props.value.editNews.newsStatus.value.id}
-                            options={props.value.editNews.newsStatuses.value}
+                            value={props.value.newsStatus.value.id}
+                            options={props.value.newsStatuses.value}
                             placeholder="News Status"
                             onClick={(val, text) => props.selectParameter('newsStatus', val, text)}
                         />
@@ -226,7 +316,7 @@ const EditNews = (props) => {
                 </div>
                 );
         }
-        else if (state.Loading == true) {
+        else if (managingState.Loading == true) {
             return
             (
                 <div className="items loading">
@@ -235,42 +325,7 @@ const EditNews = (props) => {
                 </div>
             );
         }
-    }
-
-
-
-    const beforeRender = () => {
-        console.log("BeforeRender");
-        if (params.id != null) {
-            setValue({ AddOrChange: "Change", Loading: true });
-            props.load(params.id);
-            console.log(params.id);
-            console.log(state.AddOrChange);
-
-        }
-        else {
-            setValue({ AddOrChange: "Add", Loading: true });
-            props.clearState();
-            props.loadParameters();
-            console.log(state.AddOrChange);
-
-        }
-    }
-
-    useEffect(() => {
-        console.log("propsLoading changed");
-        if (params.id != null) {
-            setValue({ AddOrChange: "Change", Loading: props.value.editNews.loading });
-        }
-        else if (params.id == null) {
-            setValue({ AddOrChange: "Add", Loading: props.value.editNews.loading });
-        }
-        console.log(state.AddOrChange);
-    }, [props.value.editNews.loading]);
-
-    useLayoutEffect(() => {
-        beforeRender();
-    }, []);
+    }   
 
     console.log(props);
     return (

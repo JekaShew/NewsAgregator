@@ -191,7 +191,7 @@ const EditComplaintStatus = (props) => {
     const renderInputs = () => {
         console.log("renderInputs");
 
-        if (state.Loading == false) {
+        if (managingState.Loading == false) {
             return (
                 <div className="editPageInputs">
                     <div className="divInput">
@@ -221,7 +221,7 @@ const EditComplaintStatus = (props) => {
                 </div>
             );
         }
-        else if (state.Loading == true) {
+        else if (managingState.Loading == true) {
             return
             (
                 <div className="items loading">

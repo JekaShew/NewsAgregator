@@ -42,7 +42,11 @@ export const clearState = () => ({
 
     data:
     {
-        title: '',
-        description: '',
+        title: {
+            value: '',
+        },
+        description: {
+            value: '',
+        },
     }
 })

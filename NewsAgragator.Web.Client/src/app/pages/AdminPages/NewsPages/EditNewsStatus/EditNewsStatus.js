@@ -56,15 +56,19 @@ const useValidation = (value, validations) => {
     }
 }
 
-const useInput = (initialValue,validations ) => {
-    const [value, setValue] = useState(initialValue);
+const useInput = (validations) => {
+    const [value, setValue] = useState("");
     const [isDirty, setDirty] = useState(false);
-    const valid = useValidation(value, validations);  
+    const valid = useValidation(value, validations);
 
-    const onChange = (e,select,inputTitle) => {
+    const onChange = (e, select, inputTitle) => {
         setValue(e.target.value);
         select(inputTitle, e.target.value);
 
+    }
+
+    const onInitialize = (propValue) => {
+        setValue(propValue);
     }
 
     const onBlur = (e) => {
@@ -73,6 +77,7 @@ const useInput = (initialValue,validations ) => {
 
     return {
         value,
+        onInitialize,
         onChange,
         onBlur,
         isDirty,
@@ -97,22 +102,56 @@ const renderValidationMessages = (inputName) =>{
 
 const EditNewsStatus = (props) => {
 
-    const title = useInput(props.value.editNewsStatus.title.value, {isEmpty:true, minLength:3});
+    const title = useInput({isEmpty:true, minLength:3});
 
     const navigate = useNavigate();
     const params = useParams();
-    const [state, setValue] = useState({ AddOrChange: "", Loading: true, });
+    const [managingState, setValue] = useState({ AddOrChange: "", Loading: true, });
+
+    useLayoutEffect(() => {
+        beforeRender();
+    }, []);
+
+    const beforeRender = () => {
+        console.log("BeforeRender");
+        if (params.id != null) {
+            setValue({ AddOrChange: "Change", Loading: true });
+            props.loadData(params.id);
+
+        }
+        else {
+            setValue({ AddOrChange: "Add", Loading: true });
+            props.clearState();
+
+        }
+    }
+
+    useEffect(() => {
+        console.log("propsLoading changed");
+        if (params.id != null
+            && managingState.AddOrChange == "Change"
+            && !props.value.loading) 
+        {
+            title.onInitialize(props.value.title.value);
+            setValue({ AddOrChange: "Change", Loading: props.value.loading });
+        }
+        else if (params.id == null && !props.value.loading) 
+        {
+            title.onInitialize("");
+            setValue({ AddOrChange: "Add", Loading: props.value.loading });
+        }
+    }, [props.value.loading]);
 
     const addORchangeBtn = () => {
         let disabled = false;
-        if(!title.inputValid)
+        if (!title.inputValid)
             disabled = true;
         else
-        disabled = false;
+            disabled = false;
 
-        if (state.AddOrChange == "Add")
+        if (managingState.AddOrChange == "Add")
             return (<button disabled={disabled} className="btnAddChange" onClick={() => addNewsStatus()}>Add</button>);
-        else if (state.AddOrChange == "Change")
+        else if (managingState.AddOrChange == "Change")
             return (<button disabled={disabled} className="btnAddChange" onClick={() => changeNewsStatus()}>Change</button>);
 
     }
@@ -122,21 +161,22 @@ const EditNewsStatus = (props) => {
     }
 
     const changeNewsStatus = () => {
-        let data = Object.fromEntries(Object.entries(props.value.editNewsStatus).map(e => [e[0], e[1].value]));
-
+        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
+        data.id = params.id;
+        
         let formData = new FormData();
         for (var key in data) {
             if (data[key]) {
                 formData.append(key, data[key]);
             }
         }
-        formData.append('id', params.id);
 
         props.save(formData);
     }
 
     const addNewsStatus = () => {
-        let data = Object.fromEntries(Object.entries(props.value.editNewsStatus).map(e => [e[0], e[1].value]));
+        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
+        data.id = null;
 
         let formData = new FormData();
 
@@ -145,8 +185,6 @@ const EditNewsStatus = (props) => {
                 formData.append(key, data[key]);
             }
         }
-
-        formData.append('id', null);
 
         props.add(formData);
     };
@@ -154,7 +192,7 @@ const EditNewsStatus = (props) => {
     const renderInputs = () => {
         console.log("renderInputs");
 
-        if (state.Loading == false) {
+        if (managingState.Loading == false) {
             return (
                 <div className="editPageInputs">
                     <div className="divInput">
@@ -164,7 +202,7 @@ const EditNewsStatus = (props) => {
                             type="text"
                             placeholder="Title"
                             value={title.value}
-                            onChange={(e) => title.onChange(e,props.select,"title")}
+                            onChange={(e) => title.onChange(e, props.select, "title")}
                             onBlur={(e) => title.onBlur(e)}
                         />
                     </div>
@@ -177,14 +215,14 @@ const EditNewsStatus = (props) => {
                             className="input"
                             type="text"
                             placeholder="Description"
-                            value={props.value.editNewsStatus.description.value}
+                            value={props.value.description.value}
                             onChange={(e) => props.select("description", e.target.value)}
                         />
                     </div>
                 </div>
             );
         }
-        else if (state.Loading == true) {
+        else if (managingState.Loading == true) {
             return
             (
                 <div className="items loading">
@@ -194,38 +232,6 @@ const EditNewsStatus = (props) => {
             );
         }
     }
-
-    const beforeRender = () => {
-        console.log("BeforeRender");
-        if (params.id != null) {
-            setValue({ AddOrChange: "Change", Loading: true });
-            props.loadData(params.id);
-            console.log(params.id);
-            console.log(state.AddOrChange);
-
-        }
-        else {
-            setValue({ AddOrChange: "Add", Loading: true });
-            props.clearState();
-            console.log(state.AddOrChange);
-
-        }
-    }
-
-    useEffect(() => {
-        console.log("propsLoading changed");
-        if (params.id != null) {
-            setValue({ AddOrChange: "Change", Loading: props.value.editNewsStatus.loading });
-        }
-        else if (params.id == null) {
-            setValue({ AddOrChange: "Add", Loading: props.value.editNewsStatus.loading });
-        }
-        console.log(state.AddOrChange);
-    }, [props.value.editNewsStatus.loading]);
-
-    useLayoutEffect(() => {
-        beforeRender();
-    }, []);
 
     console.log(props);
     return ( 

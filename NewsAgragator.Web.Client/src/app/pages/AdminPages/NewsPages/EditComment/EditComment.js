@@ -57,15 +57,19 @@ const useValidation = (value, validations) => {
     }
 }
 
-const useInput = (initialValue,validations ) => {
-    const [value, setValue] = useState(initialValue);
+const useInput = (validations) => {
+    const [value, setValue] = useState("");
     const [isDirty, setDirty] = useState(false);
-    const valid = useValidation(value, validations);  
+    const valid = useValidation(value, validations);
 
-    const onChange = (e,select,inputTitle) => {
+    const onChange = (e, select, inputTitle) => {
         setValue(e.target.value);
         select(inputTitle, e.target.value);
 
+    }
+
+    const onInitialize = (propValue) => {
+        setValue(propValue);
     }
 
     const onBlur = (e) => {
@@ -74,6 +78,7 @@ const useInput = (initialValue,validations ) => {
 
     return {
         value,
+        onInitialize,
         onChange,
         onBlur,
         isDirty,
@@ -98,12 +103,47 @@ const renderValidationMessages = (inputName) =>{
 
 const EditComment = (props) => {
 
-    const text = useInput(props.value.editComment.text.value, {isEmpty:true});
-    const date = useInput(props.value.editComment.date.value, {isEmpty:true});
-
     const navigate = useNavigate();
     const params = useParams();
-    const [state, setValue] = useState({ AddOrChange: "", Loading: true, });
+    const [managingState, setValue] = useState({ AddOrChange: "", Loading: true, });
+    const text = useInput({isEmpty:true});
+    const date = useInput({isEmpty:true});
+
+    useLayoutEffect(() => {
+        beforeRender();
+    }, []);
+
+    const beforeRender = () => {
+        console.log("BeforeRender");
+        if (params.id != null) {
+            setValue({ AddOrChange: "Change", Loading: true });
+            props.load(params.id);
+        }
+        else {
+            setValue({ AddOrChange: "Add", Loading: true });
+            props.clearState();
+            props.loadParameters();
+        }
+    }
+
+    useEffect(() => {
+        console.log("propsLoading changed");
+        if (params.id != null
+            && managingState.AddOrChange == "Change"
+            && !props.value.loadingParameters
+            && !props.value.loadingData) {
+            text.onInitialize(props.value.text.value);
+            date.onInitialize(props.value.date.value);
+            setValue({ AddOrChange: "Change", Loading: props.value.loadingData });
+        }
+        else if (params.id == null
+            && managingState.AddOrChange == "Add"
+            && !props.value.loadingParameters) {
+            text.onInitialize("");
+            date.onInitialize("");
+            setValue({ AddOrChange: "Add", Loading: props.value.loadingParameters });
+        }
+    }, [props.value.loadingParameters, props.value.loadingData]);
 
     const addORchangeBtn = () => {
         let disabled = false;
@@ -112,9 +152,9 @@ const EditComment = (props) => {
         else
         disabled = false;
 
-        if (state.AddOrChange == "Add")
+        if (managingState.AddOrChange == "Add")
             return (<button disabled={disabled} className="btnAddChange" onClick={() => addComment()}>Add</button>);
-        else if (state.AddOrChange == "Change")
+        else if (managingState.AddOrChange == "Change")
             return (<button disabled={disabled} className="btnAddChange" onClick={() => changeComment()}>Change</button>);
 
     }
@@ -124,11 +164,10 @@ const EditComment = (props) => {
     }
 
     const changeComment = () => {
-        let data = Object.fromEntries(Object.entries(props.value.editComment).map(e => [e[0], e[1].value]));
+        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
         data.newsId = data.news.id;
         data.accountId = data.account.id;
         data.id = params.id;
-
 
         let formData = new FormData();
 
@@ -142,12 +181,11 @@ const EditComment = (props) => {
     }
 
     const addComment = () => {
-        let data = Object.fromEntries(Object.entries(props.value.editComment).map(e => [e[0], e[1].value]));
+        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
         data.newsId = data.news.id;
         data.accountId = data.account.id;
         data.id = null;
-        console.log("AddComment");
-        console.log(data)
+
         let formData = new FormData();
 
         for (var key in data) {
@@ -162,7 +200,7 @@ const EditComment = (props) => {
     const renderInputs = () => {
         console.log("renderInputs");
 
-        if (state.Loading == false) {
+        if (managingState.Loading == false) {
             return (
                 <div className="editPageInputs">
                     <div className="divInput">
@@ -197,8 +235,8 @@ const EditComment = (props) => {
                         <div className="inputTitle">Account </div>
                         <InputObject
                             id="account"
-                            value={props.value.editComment.account.value.id}
-                            options={props.value.editComment.accounts.value}
+                            value={props.value.account.value.id}
+                            options={props.value.accounts.value}
                             placeholder="Account"
                             onClick={(val, text) => props.selectParameter('account', val, text)}
                         />
@@ -207,8 +245,8 @@ const EditComment = (props) => {
                         <div className="inputTitle">News</div>
                         <InputObject
                             id="news"
-                            value={props.value.editComment.news.value.id}
-                            options={props.value.editComment.newses.value}
+                            value={props.value.news.value.id}
+                            options={props.value.newses.value}
                             placeholder="News"
                             onClick={(val, text) => props.selectParameter('news', val, text)}
                         />
@@ -216,7 +254,7 @@ const EditComment = (props) => {
                 </div>
                  );
         }
-        else if (state.Loading == true) {
+        else if (managingState.Loading == true) {
             return
             (
                 <div className="items loading">
@@ -226,39 +264,6 @@ const EditComment = (props) => {
             );
         }
     }
-
-    const beforeRender = () => {
-        console.log("BeforeRender");
-        if (params.id != null) {
-            setValue({ AddOrChange: "Change", Loading: true });
-            props.load(params.id);
-            console.log(params.id);
-            console.log(state.AddOrChange);
-
-        }
-        else {
-            setValue({ AddOrChange: "Add", Loading: true });
-            props.clearState();
-            props.loadParameters();
-            console.log(state.AddOrChange);
-
-        }
-    }
-
-    useEffect(() => {
-        console.log("propsLoading changed");
-        if (params.id != null) {
-            setValue({ AddOrChange: "Change", Loading: props.value.editComment.loading });
-        }
-        else if (params.id == null) {
-            setValue({ AddOrChange: "Add", Loading: props.value.editComment.loading });
-        }
-        console.log(state.AddOrChange);
-    }, [props.value.editComment.loading]);
-
-    useLayoutEffect(() => {
-        beforeRender();
-    }, []);
 
     console.log(props);
     return (

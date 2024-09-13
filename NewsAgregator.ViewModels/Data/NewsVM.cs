@@ -11,12 +11,15 @@ namespace NewsAgregator.ViewModels.Data
 {
     public class NewsVM
     {
-        [Required]
         public Guid Id { get; set; }
+        [Required, MinLength(3)]
         public string? Title { get; set; }
-        [Required, MinLength(3), MaxLength(3000)]
+        [Required, MinLength(3)]
+        public string? Description { get; set; }
         public string? Text { get; set; }
-
+        public string? TextHTML { get; set; }
+        [Required, MinLength(3)]
+        public string SourceUrl { get; set; }
         public DateTime? Date { get; set; }
         public float? PositiveRating { get; set; }
         public string? Source { get; set; }

@@ -11,12 +11,15 @@ namespace NewsAgregator.Data.Models
     {
         [Required]
         public Guid Id { get; set; }
-        [Required]
+        [Required, MinLength(3)]
         public string? Title { get; set; }
+        [Required, MinLength(3)]
         public string? Description { get; set; }
         public string? Text { get; set; }
+        public string? TextHTML { get; set; }
         public DateTime? Date { get; set; }
         public float? PositiveRating { get; set; }
+        [Required, MinLength(3)]
         public string SourceUrl { get; set; }
 
         public Guid? SourceId { get; set; }

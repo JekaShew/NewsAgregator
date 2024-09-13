@@ -61,6 +61,12 @@ export default (state = initialState.editAccount, action) => {
                 password: {
                     value: '',
                 },
+                confirmationPassword: {
+                    value: '',
+                },
+                secretWord: {
+                    value: '',
+                },
 
                 accountStatus: {
                     value: {

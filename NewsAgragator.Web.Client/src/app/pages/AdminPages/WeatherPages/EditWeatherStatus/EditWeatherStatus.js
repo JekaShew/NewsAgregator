@@ -117,14 +117,11 @@ const EditWeatherStatus = (props) => {
         if (params.id != null) {
             setValue({ AddOrChange: "Change", Loading: true });
             props.loadData(params.id);
-            console.log(params.id);
-            console.log(state.AddOrChange);
 
         }
         else {
             setValue({ AddOrChange: "Add", Loading: true });
             props.clearState();
-            console.log(state.AddOrChange);
 
         }
     }
@@ -133,15 +130,16 @@ const EditWeatherStatus = (props) => {
         console.log("propsLoading changed");
         if (params.id != null
             && managingState.AddOrChange == "Change"
-            && !props.value.loading) {
+            && !props.value.loading) 
+        {
             title.onInitialize(props.value.title.value);
             setValue({ AddOrChange: "Change", Loading: props.value.loading });
         }
-        else if (params.id == null && !props.value.loading) {
+        else if (params.id == null && !props.value.loading) 
+        {
             title.onInitialize("");
             setValue({ AddOrChange: "Add", Loading: props.value.loading });
         }
-        console.log(state.AddOrChange);
     }, [props.value.loading]);
 
     const addORchangeBtn = () => {

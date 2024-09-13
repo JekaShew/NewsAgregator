@@ -57,15 +57,19 @@ const useValidation = (value, validations) => {
     }
 }
 
-const useInput = (initialValue,validations ) => {
-    const [value, setValue] = useState(initialValue);
+const useInput = (validations) => {
+    const [value, setValue] = useState("");
     const [isDirty, setDirty] = useState(false);
-    const valid = useValidation(value, validations);  
+    const valid = useValidation(value, validations);
 
-    const onChange = (e,select,inputTitle) => {
+    const onChange = (e, select, inputTitle) => {
         setValue(e.target.value);
         select(inputTitle, e.target.value);
 
+    }
+
+    const onInitialize = (propValue) => {
+        setValue(propValue);
     }
 
     const onBlur = (e) => {
@@ -74,6 +78,7 @@ const useInput = (initialValue,validations ) => {
 
     return {
         value,
+        onInitialize,
         onChange,
         onBlur,
         isDirty,
@@ -98,11 +103,48 @@ const renderValidationMessages = (inputName) =>{
 
 const EditWeather = (props) => {
 
-    const city = useInput(props.value.editWeather.city.value, {isEmpty:true, minLength:2});
+    
 
     const navigate = useNavigate();
     const params = useParams();
-    const [state, setValue] = useState({ AddOrChange: "", Loading: true, });
+    const [managingState, setValue] = useState({ AddOrChange: "", Loading: true, });
+    const city = useInput({isEmpty:true, minLength:2});
+
+    useLayoutEffect(() => {
+        beforeRender();
+    }, []);
+
+    const beforeRender = () => {
+        console.log("BeforeRender");
+        if (params.id != null) {
+            setValue({ AddOrChange: "Change", Loading: true });
+            props.load(params.id);
+        }
+        else {
+            setValue({ AddOrChange: "Add", Loading: true });
+            props.clearState();
+            props.loadParameters();
+        }
+    }
+
+    useEffect(() => {
+        console.log("propsLoading changed");
+        if (params.id != null
+            && managingState.AddOrChange == "Change"
+            && !props.value.loadingParameters
+            && !props.value.loadingData) 
+        {
+            city.onInitialize(props.value.title.value);
+            setValue({ AddOrChange: "Change", Loading: props.value.loadingData });
+        }
+        else if (params.id == null
+            && managingState.AddOrChange == "Add"
+            && !props.value.loadingParameters) 
+        {
+            city.onInitialize("");
+            setValue({ AddOrChange: "Add", Loading: props.value.loadingParameters });
+        }
+    }, [props.value.loadingParameters, props.value.loadingData]);
 
     const addORchangeBtn = () => {
         let disabled = false;
@@ -111,9 +153,9 @@ const EditWeather = (props) => {
         else
         disabled = false;
 
-        if (state.AddOrChange == "Add")
+        if (managingState.AddOrChange == "Add")
             return (<button disabled={disabled} className="btnAddChange" onClick={() => addWeather()}>Add</button>);
-        else if (state.AddOrChange == "Change")
+        else if (managingState.AddOrChange == "Change")
             return (<button disabled={disabled} className="btnAddChange" onClick={() => changeWeather()}>Change</button>);
 
     }
@@ -123,7 +165,7 @@ const EditWeather = (props) => {
     }
 
     const changeWeather = () => {
-        let data = Object.fromEntries(Object.entries(props.value.editWeather).map(e => [e[0], e[1].value]));
+        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
         data.temperatureCommon = Number.parseInt(data.temperatureCommon);
         data.temperatureMorning = Number.parseInt(data.temperatureMorning);
         data.temperatureDay = Number.parseInt(data.temperatureDay);
@@ -153,7 +195,7 @@ const EditWeather = (props) => {
     }
 
     const addWeather = () => {
-        let data = Object.fromEntries(Object.entries(props.value.editWeather).map(e => [e[0], e[1].value]));
+        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
         data.temperatureCommon = Number.parseInt(data.temperatureCommon);
         data.temperatureMorning = Number.parseInt(data.temperatureMorning);
         data.temperatureDay = Number.parseInt(data.temperatureDay);
@@ -185,9 +227,7 @@ const EditWeather = (props) => {
     const renderInputs = () => {
         console.log("renderInputs");
 
-        if (state.Loading == false) {
-            console.log(state.Loading);
-            console.log(props.value.editWeather);
+        if (managingState.Loading == false) {
             return (
                 <div className="editPageInputs">
                     <div className="divInput">
@@ -210,7 +250,7 @@ const EditWeather = (props) => {
                             className="input"
                             type="number"
                             placeholder="Temperature Morning"
-                            value={props.value.editWeather.temperatureMorning.value}
+                            value={props.value.temperatureMorning.value}
                             onChange={(e) => props.select("temperatureMorning", e.target.value)}
                         />
                     </div>
@@ -220,7 +260,7 @@ const EditWeather = (props) => {
                             className="input"
                             type="number"
                             placeholder="Temperature Day"
-                            value={props.value.editWeather.temperatureDay.value}
+                            value={props.value.temperatureDay.value}
                             onChange={(e) => props.select("temperatureDay", e.target.value)}
                         />
                     </div>
@@ -230,7 +270,7 @@ const EditWeather = (props) => {
                             className="input"
                             type="number"
                             placeholder="Temperature Evening"
-                            value={props.value.editWeather.temperatureEvening.value}
+                            value={props.value.temperatureEvening.value}
                             onChange={(e) => props.select("temperatureEvening", e.target.value)}
                         />
                     </div>
@@ -240,7 +280,7 @@ const EditWeather = (props) => {
                             className="input"
                             type="number"
                             placeholder="Temperature Night"
-                            value={props.value.editWeather.temperatureNight.value}
+                            value={props.value.temperatureNight.value}
                             onChange={(e) => props.select("temperatureNight", e.target.value)}
                         />
                     </div>
@@ -250,7 +290,7 @@ const EditWeather = (props) => {
                             className="input"
                             type="number"
                             placeholder="Temperature Common"
-                            value={props.value.editWeather.temperatureCommon.value}
+                            value={props.value.temperatureCommon.value}
                             onChange={(e) => props.select("temperatureCommon", e.target.value)}
                         />
                     </div>
@@ -260,7 +300,7 @@ const EditWeather = (props) => {
                             className="input"
                             type="text"
                             placeholder="Date"
-                            value={props.value.editWeather.date.value}
+                            value={props.value.date.value}
                             onChange={(e) => props.select("date", e.target.value)}
                         />
                     </div>
@@ -271,7 +311,7 @@ const EditWeather = (props) => {
                             className="input"
                             type="text"
                             placeholder="Percipitaion"
-                            value={props.value.editWeather.percipitaion.value}
+                            value={props.value.percipitaion.value}
                             onChange={(e) => props.select("percipitaion", e.target.value)}
                         />
                     </div>
@@ -281,7 +321,7 @@ const EditWeather = (props) => {
                             className="input"
                             type="text"
                             placeholder="Wind"
-                            value={props.value.editWeather.wind.value}
+                            value={props.value.wind.value}
                             onChange={(e) => props.select("wind", e.target.value)}
                         />
                     </div>
@@ -291,7 +331,7 @@ const EditWeather = (props) => {
                             className="input"
                             type="text"
                             placeholder="Wind Direction"
-                            value={props.value.editWeather.windDirection.value}
+                            value={props.value.windDirection.value}
                             onChange={(e) => props.select("windDirection", e.target.value)}
                         />
                     </div>
@@ -301,7 +341,7 @@ const EditWeather = (props) => {
                             className="input"
                             type="number"
                             placeholder="Pressure"
-                            value={props.value.editWeather.pressure.value}
+                            value={props.value.pressure.value}
                             onChange={(e) => props.select("pressure", e.target.value)}
                         />
                     </div>
@@ -311,7 +351,7 @@ const EditWeather = (props) => {
                             className="input"
                             type="number"
                             placeholder="Humidity"
-                            value={props.value.editWeather.humidity.value}
+                            value={props.value.humidity.value}
                             onChange={(e) => props.select("humidity", e.target.value)}
                         />
                     </div>
@@ -320,8 +360,8 @@ const EditWeather = (props) => {
                         <div className="inputTitle">Weather Status Morning</div>
                         <InputObject
                             id="weatherStatusMorning"
-                            value={props.value.editWeather.weatherStatusMorning.value.id}
-                            options={props.value.editWeather.weatherStatuses.value}
+                            value={props.value.weatherStatusMorning.value.id}
+                            options={props.value.weatherStatuses.value}
                             placeholder="Weather Status Morning"
                             onClick={(val, text) => props.selectParameter('weatherStatusMorning', val, text)}
                         />
@@ -330,8 +370,8 @@ const EditWeather = (props) => {
                         <div className="inputTitle">Weather Status Day</div>
                         <InputObject
                             id="weatherStatusDay"
-                            value={props.value.editWeather.weatherStatusDay.value.id}
-                            options={props.value.editWeather.weatherStatuses.value}
+                            value={props.value.weatherStatusDay.value.id}
+                            options={props.value.weatherStatuses.value}
                             placeholder="Weather Status Day"
                             onClick={(val, text) => props.selectParameter('weatherStatusDay', val, text)}
                         />
@@ -340,8 +380,8 @@ const EditWeather = (props) => {
                         <div className="inputTitle">Weather Status Evening</div>
                         <InputObject
                             id="weatherStatusEvening"
-                            value={props.value.editWeather.weatherStatusEvening.value.id}
-                            options={props.value.editWeather.weatherStatuses.value}
+                            value={props.value.weatherStatusEvening.value.id}
+                            options={props.value.weatherStatuses.value}
                             placeholder="Weather Status Evening"
                             onClick={(val, text) => props.selectParameter('weatherStatusEvening', val, text)}
                         />
@@ -350,8 +390,8 @@ const EditWeather = (props) => {
                         <div className="inputTitle">Weather Status Night</div>
                         <InputObject
                             id="weatherStatusNight"
-                            value={props.value.editWeather.weatherStatusNight.value.id}
-                            options={props.value.editWeather.weatherStatuses.value}
+                            value={props.value.weatherStatusNight.value.id}
+                            options={props.value.weatherStatuses.value}
                             placeholder="Weather Status Night"
                             onClick={(val, text) => props.selectParameter('weatherStatusNight', val, text)}
                         />
@@ -360,8 +400,8 @@ const EditWeather = (props) => {
                         <div className="inputTitle">Weather Status Common</div>
                         <InputObject
                             id="weatherStatusCommon"
-                            value={props.value.editWeather.weatherStatusCommon.value.id}
-                            options={props.value.editWeather.weatherStatuses.value}
+                            value={props.value.weatherStatusCommon.value.id}
+                            options={props.value.weatherStatuses.value}
                             placeholder="Weather Status Common"
                             onClick={(val, text) => props.selectParameter('weatherStatusCommon', val, text)}
                         />
@@ -369,7 +409,7 @@ const EditWeather = (props) => {
                 </div>
                 );
         }
-        else if (state.Loading == true) {
+        else if (managingState.Loading == true) {
             return
             (
                 <div className="items loading">
@@ -379,40 +419,6 @@ const EditWeather = (props) => {
             );
         }
     }
-
-    const beforeRender = () => {
-        console.log("BeforeRender");
-        if (params.id != null) {
-            setValue({ AddOrChange: "Change", Loading: true });
-            props.load(params.id);
-            console.log(params.id);
-            console.log(state.AddOrChange);
-
-        }
-        else {
-            setValue({ AddOrChange: "Add", Loading: true });
-            props.clearState();
-            props.loadParameters();
-            console.log(state.AddOrChange);
-
-        }
-    }
-
-    useEffect(() => {
-        console.log("propsLoading changed");
-        if (params.id != null) {
-            setValue({ AddOrChange: "Change", Loading: props.value.editWeather.loading });
-        }
-        else if (params.id == null) {
-            setValue({ AddOrChange: "Add", Loading: props.value.editWeather.loading });
-        }
-        console.log(state.AddOrChange);
-    }, [props.value.editWeather.loading]);
-
-    useLayoutEffect(() => {
-        beforeRender();
-    }, []);
-
 
     console.log(props);
     return (

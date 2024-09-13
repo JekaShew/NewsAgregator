@@ -39,9 +39,9 @@ const useValidation = (value, validations) => {
                     setEmailError({value: true, errorMessage: "The value is not Email!"});
                     break;
                 case 'confirmationPassword':
-                    const pass = props.value.editAccount.password.value;
+                    const pass = props.value.password.value;
                     value != pass ? 
-                    setConfirmationPasswordError({value: true, errorMessage: "Password mismatch!"}) : 
+                    setConfirmationPasswordError({value: true, errorMessage: "Password missmatch!"}) : 
                     setConfirmationPasswordError({value: false});
                     break;
             }
@@ -66,14 +66,19 @@ const useValidation = (value, validations) => {
     }
 }
 
-const useInput = (initialValue,validations ) => {
-    const [value, setValue] = useState(initialValue);
+const useInput = (validations) => {
+    const [value, setValue] = useState("");
     const [isDirty, setDirty] = useState(false);
-    const valid = useValidation(value, validations);  
+    const valid = useValidation(value, validations);
 
-    const onChange = (e,select,inputTitle) => {
+    const onChange = (e, select, inputTitle) => {
         setValue(e.target.value);
         select(inputTitle, e.target.value);
+
+    }
+
+    const onInitialize = (propValue) => {
+        setValue(propValue);
     }
 
     const onBlur = (e) => {
@@ -82,6 +87,7 @@ const useInput = (initialValue,validations ) => {
 
     return {
         value,
+        onInitialize,
         onChange,
         onBlur,
         isDirty,
@@ -108,27 +114,75 @@ const renderValidationMessages = (inputName) =>{
 
 const EditAccount = (props) => {
 
-    const userName = useInput(props.value.editAccount.userName.value, {isEmpty:true, minLength:3});
-    const login = useInput(props.value.editAccount.login.value, {isEmpty:true, minLength:3});
-    const password = useInput(props.value.editAccount.password.value, {isEmpty:true, minLength:5});
-    //const confirmationPassword = useInput(props.value.editAccount.userName.value, {isEmpty:true, confirmationPassword:true});
-    const fio = useInput(props.value.editAccount.fio.value, {isEmpty:true});
-    const email = useInput(props.value.editAccount.email.value, {isEmpty:true, isEmail:true});
+    
 
     const navigate = useNavigate();
     const params = useParams();
-    const [state, setValue] = useState({ AddOrChange: "", Loading: true, });
+    const [managingState, setValue] = useState({ AddOrChange: "", Loading: true, });
+    const userName = useInput({isEmpty:true, minLength:3});
+    const login = useInput({isEmpty:true, minLength:3});
+    const password = useInput({isEmpty:true, minLength:5});
+    const confirmationPassword = useInput({isEmpty:true, confirmationPassword:true});
+    const secretWord = useInput({isEmpty:true, minLength:6});
+    const fio = useInput({isEmpty:true});
+    const email = useInput({isEmpty:true, isEmail:true});
+
+    useLayoutEffect(() => {
+        beforeRender();
+    }, []);
+
+    const beforeRender = () => {
+        console.log("BeforeRender");
+        if (params.id != null) {
+            setValue({ AddOrChange: "Change", Loading: true });
+            props.load(params.id);
+        }
+        else {
+            setValue({ AddOrChange: "Add", Loading: true });
+            props.clearState();
+            props.loadParameters();
+        }
+    }
+
+    useEffect(() => {
+        console.log("propsLoading changed");
+        if (params.id != null
+            && managingState.AddOrChange == "Change"
+            && !props.value.loadingParameters
+            && !props.value.loadingData) 
+        {
+            userName.onInitialize(props.value.userName.value);
+            login.onInitialize(props.value.login.value);
+            password.onInitialize(props.value.password.value);
+            confirmationPassword.onInitialize(props.value.password.value);
+            fio.onInitialize(props.value.fio.value);
+            email.onInitialize(props.value.email.value);
+            setValue({ AddOrChange: "Change", Loading: props.value.loadingData });
+        }
+        else if (params.id == null
+            && managingState.AddOrChange == "Add"
+            && !props.value.loadingParameters) 
+        {
+            userName.onInitialize("");
+            login.onInitialize("");
+            password.onInitialize("");
+            confirmationPassword.onInitialize("");
+            fio.onInitialize("");
+            email.onInitialize("");
+            setValue({ AddOrChange: "Add", Loading: props.value.loadingParameters });
+        }
+    }, [props.value.loadingParameters, props.value.loadingData]);
 
     const addORchangeBtn = () => {     
         let disabled = false;
-        if(!userName.inputValid && !login.inputValid && !password.inputValid && !fio.inputValid && !email.inputValid)
+        if(!userName.inputValid || !login.inputValid || !password.inputValid || !fio.inputValid || !email.inputValid || !confirmationPassword.inputValid)
             disabled = true;
         else
         disabled = false;
 
-        if (state.AddOrChange == "Add")
+        if (managingState.AddOrChange == "Add")
             return (<button disabled={disabled} className="btnAddChange" onClick={() => addAccount()}>Add</button>);
-        else if (state.AddOrChange == "Change")
+        else if (managingState.AddOrChange == "Change")
             return (<button disabled={disabled} className="btnAddChange" onClick={() => changeAccount()}>Change</button>);
     }
 
@@ -137,33 +191,30 @@ const EditAccount = (props) => {
     }
 
     const changeAccount = () => {
-        let data = Object.fromEntries(Object.entries(props.value.editAccount).map(e => [e[0], e[1].value]));
+        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
         data.desiredNewsRating = Number.parseInt(data.desiredNewsRating);
         data.accountStatusId = data.accountStatus.id;
         data.roleId = data.role.id;
         data.id = params.id;
 
         let formData = new FormData();
-
         for (var key in data) {
             if (data[key]) {
                 formData.append(key, data[key]);
             }
         }
+
         props.save(formData);
     }
 
     const addAccount = () => {
-        let data = Object.fromEntries(Object.entries(props.value.editAccount).map(e => [e[0], e[1].value]));
+        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
         data.desiredNewsRating = Number.parseInt(data.desiredNewsRating);
         data.accountStatusId = data.accountStatus.id;
         data.roleId = data.role.id;
         data.id = null;
-        console.log("AddAccount");
-        console.log(props.value.editAccount);
-        console.log(data);
-        let formData = new FormData();
 
+        let formData = new FormData();
         for (var key in data) {
             if (data[key]) {
                 formData.append(key, data[key]);
@@ -174,7 +225,7 @@ const EditAccount = (props) => {
     };
 
     const renderInputs = () => {        
-        if (state.Loading == false) {
+        if (managingState.Loading == false) {
             return (
                 <div className="editPageInputs">
                     <div className="divInput">
@@ -225,7 +276,7 @@ const EditAccount = (props) => {
                             className="input"
                             type="text"
                             placeholder="Phone"
-                            value={props.value.editAccount.phone.value}
+                            value={props.value.phone.value}
                             onChange={(e) => props.select("phone", e.target.value)}
                         />
                     </div>
@@ -235,7 +286,7 @@ const EditAccount = (props) => {
                             className="input"
                             type="number"
                             placeholder="Desired News Rating"
-                            value={props.value.editAccount.desiredNewsRating.value}
+                            value={props.value.desiredNewsRating.value}
                             onChange={(e) => props.select("desiredNewsRating", e.target.value)}
                         />
                     </div>
@@ -268,11 +319,40 @@ const EditAccount = (props) => {
                         renderValidationMessages(password)
                     }
                     <div className="divInput">
+                        <div className="inputTitle">Confirmation Password</div>
+                        <input
+                            className="input"
+                            type="text"
+                            placeholder="Confirmation Password"
+                            value={confirmationPassword.value}
+                            onChange={(e) => confirmationPassword.onChange(e,props.select,"confirmationPassword")}
+                            onBlur={(e) => confirmationPassword.onBlur(e)}
+                        />
+                    </div>
+                    {
+                        renderValidationMessages(confirmationPassword)
+                    }
+
+                    <div className="divInput">
+                        <div className="inputTitle">Secret Word</div>
+                        <input
+                            className="input"
+                            type="text"
+                            placeholder="Secret Word"
+                            value={secretWord.value}
+                            onChange={(e) => secretWord.onChange(e,props.select,"secretWord")}
+                            onBlur={(e) => secretWord.onBlur(e)}
+                        />
+                    </div>
+                    {
+                        renderValidationMessages(secretWord)
+                    }
+                    <div className="divInput">
                         <div className="inputTitle">Account Status</div>
                         <InputObject
                             id="accountStatuses"
-                            value={props.value.editAccount.accountStatus.value.id}
-                            options={props.value.editAccount.accountStatuses.value}
+                            value={props.value.accountStatus.value.id}
+                            options={props.value.accountStatuses.value}
                             placeholder="Account Status"
                             onClick={(val, text) => props.selectParameter('accountStatus', val,text)}
                         />
@@ -281,8 +361,8 @@ const EditAccount = (props) => {
                         <div className="inputTitle">Role</div>
                         <InputObject
                             id="roles"
-                            value={props.value.editAccount.role.value.id}
-                            options={props.value.editAccount.roles.value}
+                            value={props.value.role.value.id}
+                            options={props.value.roles.value}
                             placeholder="Role"
                             onClick={(val,text) => props.selectParameter('role', val, text)}
                         />
@@ -290,7 +370,7 @@ const EditAccount = (props) => {
                 </div>
             );
         }
-        else if (state.Loading == true) {
+        else if (managingState.Loading == true) {
             return
             (
                 <div className="items loading">
@@ -301,32 +381,6 @@ const EditAccount = (props) => {
         }
     }
 
-    
-
-    const beforeRender = () => {
-        if (params.id != null) {
-            setValue({ AddOrChange: "Change", Loading: true });
-            props.load(params.id);            
-        }
-        else {
-            setValue({ AddOrChange: "Add", Loading: true });
-            props.clearState();
-            props.loadParameters();
-        }
-    }
-
-    useEffect(() => {
-            if (params.id != null) {
-                setValue({ AddOrChange: "Change", Loading: props.value.editAccount.loading });
-            }
-            else if (params.id == null) {
-                setValue({ AddOrChange: "Add", Loading: props.value.editAccount.loading });
-            }
-    }, [props.value.editAccount.loading]);
-
-    useLayoutEffect(() => {
-        beforeRender();
-    }, []);
 
     return (
 

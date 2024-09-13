@@ -46,7 +46,13 @@ export default (state = initialState.editNews, action) => {
                     title: {
                         value: '',
                     },
+                    textHTML: {
+                        value: '',
+                    },
                     text: {
+                        value: '',
+                    },
+                    sourceUrl: {
                         value: '',
                     },
                     date: {

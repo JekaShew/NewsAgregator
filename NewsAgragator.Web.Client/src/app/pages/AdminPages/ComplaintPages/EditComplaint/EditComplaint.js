@@ -57,15 +57,19 @@ const useValidation = (value, validations) => {
     }
 }
 
-const useInput = (initialValue,validations ) => {
-    const [value, setValue] = useState(initialValue);
+const useInput = (validations) => {
+    const [value, setValue] = useState("");
     const [isDirty, setDirty] = useState(false);
-    const valid = useValidation(value, validations);  
+    const valid = useValidation(value, validations);
 
-    const onChange = (e,select,inputTitle) => {
+    const onChange = (e, select, inputTitle) => {
         setValue(e.target.value);
         select(inputTitle, e.target.value);
 
+    }
+
+    const onInitialize = (propValue) => {
+        setValue(propValue);
     }
 
     const onBlur = (e) => {
@@ -74,6 +78,7 @@ const useInput = (initialValue,validations ) => {
 
     return {
         value,
+        onInitialize,
         onChange,
         onBlur,
         isDirty,
@@ -98,12 +103,47 @@ const renderValidationMessages = (inputName) =>{
 
 const EditComplaint = (props) => {
 
-    const title = useInput(props.value.editComplaint.title.value, {isEmpty:true, minLength:2});
-    const text = useInput(props.value.editComplaint.text.value, {isEmpty:true, minLength:5});
-
     const navigate = useNavigate();
     const params = useParams();
-    const [state, setValue] = useState({ AddOrChange: "", Loading: true, });
+    const [managingState, setValue] = useState({ AddOrChange: "", Loading: true, });
+    const title = useInput({isEmpty:true, minLength:2});
+    const text = useInput({isEmpty:true, minLength:5});
+
+    useLayoutEffect(() => {
+        beforeRender();
+    }, []);
+
+    const beforeRender = () => {
+        console.log("BeforeRender");
+        if (params.id != null) {
+            setValue({ AddOrChange: "Change", Loading: true });
+            props.load(params.id);
+        }
+        else {
+            setValue({ AddOrChange: "Add", Loading: true });
+            props.clearState();
+            props.loadParameters();
+        }
+    }
+
+    useEffect(() => {
+        console.log("propsLoading changed");
+        if (params.id != null
+            && managingState.AddOrChange == "Change"
+            && !props.value.loadingParameters
+            && !props.value.loadingData) {
+            title.onInitialize(props.value.title.value);
+            text.onInitialize(props.value.text.value);
+            setValue({ AddOrChange: "Change", Loading: props.value.loadingData });
+        }
+        else if (params.id == null
+            && managingState.AddOrChange == "Add"
+            && !props.value.loadingParameters) {
+            title.onInitialize("");
+            text.onInitialize("");
+            setValue({ AddOrChange: "Add", Loading: props.value.loadingParameters });
+        }
+    }, [props.value.loadingParameters, props.value.loadingData]);
 
     const addORchangeBtn = () => {
         let disabled = false;
@@ -112,9 +152,9 @@ const EditComplaint = (props) => {
         else
         disabled = false;
 
-        if (state.AddOrChange == "Add")
+        if (managingState.AddOrChange == "Add")
             return (<button disabled={disabled} className="btnAddChange" onClick={() => addComplaint()}>Add</button>);
-        else if (state.AddOrChange == "Change")
+        else if (managingState.AddOrChange == "Change")
             return (<button disabled={disabled} className="btnAddChange" onClick={() => changeComplaint()}>Change</button>);
 
     }
@@ -124,7 +164,7 @@ const EditComplaint = (props) => {
     }
 
     const changeComplaint = () => {
-        let data = Object.fromEntries(Object.entries(props.value.editComplaint).map(e => [e[0], e[1].value]));
+        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
         data.commentId = data.comment.id;
         data.newsId = data.news.id;
         data.complaintStatusId = data.complaintStatus.id;
@@ -132,7 +172,6 @@ const EditComplaint = (props) => {
         data.userId = data.user.id;
         data.administratorId = data.administrator.id;
         data.id = params.id;;
-
 
         let formData = new FormData();
 
@@ -146,7 +185,7 @@ const EditComplaint = (props) => {
     }
 
     const addComplaint = () => {
-        let data = Object.fromEntries(Object.entries(props.value.editComplaint).map(e => [e[0], e[1].value]));
+        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
         data.commentId = data.comment.id;
         data.newsId = data.news.id;
         data.complaintStatusId = data.complaintStatus.id;
@@ -154,7 +193,6 @@ const EditComplaint = (props) => {
         data.userId = data.user.id;
         data.administratorId = data.administrator.id;
         data.id = null;
-
 
         let formData = new FormData();
 
@@ -169,8 +207,7 @@ const EditComplaint = (props) => {
 
     const renderInputs = () => {
         console.log("renderInputs");
-        console.log(props.value.editComplaint);
-        if (state.Loading == false) {
+        if (managingState.Loading == false) {
             return (
                 <div className="editPageInputs">
                     <div className="divInput">
@@ -205,8 +242,8 @@ const EditComplaint = (props) => {
                         <div className="inputTitle">Comment</div>
                         <InputObject
                             id="comment"
-                            value={props.value.editComplaint.comment.value.id}
-                            options={props.value.editComplaint.comments.value}
+                            value={props.value.comment.value.id}
+                            options={props.value.comments.value}
                             placeholder="Comment"
                             onClick={(val, text) => props.selectParameter('comment', val,text)}
                         />
@@ -215,8 +252,8 @@ const EditComplaint = (props) => {
                         <div className="inputTitle">News</div>
                         <InputObject
                             id="news"
-                            value={props.value.editComplaint.news.value.id}
-                            options={props.value.editComplaint.newses.value}
+                            value={props.value.news.value.id}
+                            options={props.value.newses.value}
                             placeholder="News"
                             onClick={(val, text) => props.selectParameter('news', val, text)}
                         />
@@ -225,8 +262,8 @@ const EditComplaint = (props) => {
                         <div className="inputTitle">Complaint Status</div>
                         <InputObject
                             id="compalintStatus"
-                            value={props.value.editComplaint.complaintStatus.value.id}
-                            options={props.value.editComplaint.complaintStatuses.value}
+                            value={props.value.complaintStatus.value.id}
+                            options={props.value.complaintStatuses.value}
                             placeholder="Compalint Status"
                             onClick={(val, text) => props.selectParameter('complaintStatus', val, text)}
                         />
@@ -235,8 +272,8 @@ const EditComplaint = (props) => {
                         <div className="inputTitle">Complaint Type</div>
                         <InputObject
                             id="complaintType"
-                            value={props.value.editComplaint.complaintType.value.id}
-                            options={props.value.editComplaint.complaintTypes.value}
+                            value={props.value.complaintType.value.id}
+                            options={props.value.complaintTypes.value}
                             placeholder="Complaint Type"
                             onClick={(val, text) => props.selectParameter('complaintType', val, text)}
                         />
@@ -245,8 +282,8 @@ const EditComplaint = (props) => {
                         <div className="inputTitle">User</div>
                         <InputObject
                             id="user"
-                            value={props.value.editComplaint.user.value.id}
-                            options={props.value.editComplaint.accounts.value}
+                            value={props.value.user.value.id}
+                            options={props.value.accounts.value}
                             placeholder="User"
                             onClick={(val, text) => props.selectParameter('user', val, text)}
                         />
@@ -255,8 +292,8 @@ const EditComplaint = (props) => {
                         <div className="inputTitle">Administrator</div>
                         <InputObject
                             id="administrator"
-                            value={props.value.editComplaint.administrator.value.id}
-                            options={props.value.editComplaint.accounts.value}
+                            value={props.value.administrator.value.id}
+                            options={props.value.accounts.value}
                             placeholder="Administrator"
                             onClick={(val, text) => props.selectParameter('administrator', val, text)}
                         />
@@ -264,7 +301,7 @@ const EditComplaint = (props) => {
                 </div>
                 );
         }
-        else if (state.Loading == true) {
+        else if (managingState.Loading == true) {
             return
             (
                 <div className="items loading">
@@ -275,41 +312,6 @@ const EditComplaint = (props) => {
         }
     }
 
-    const beforeRender = () => {
-        console.log("BeforeRender");
-        if (params.id != null) {
-            setValue({ AddOrChange: "Change", Loading: true });
-            props.load(params.id);
-            console.log(params.id);
-            console.log(state.AddOrChange);
-
-        }
-        else {
-            setValue({ AddOrChange: "Add", Loading: true });
-            props.clearState();
-            props.loadParameters();
-            console.log(state.AddOrChange);
-
-        }
-    }
-
-    useEffect(() => {
-        console.log("propsLoading changed");
-        if (params.id != null) {
-            setValue({ AddOrChange: "Change", Loading: props.value.editComplaint.loading });
-        }
-        else if (params.id == null) {
-            setValue({ AddOrChange: "Add", Loading: props.value.editComplaint.loading });
-        }
-        console.log(state.AddOrChange);
-    }, [props.value.editComplaint.loading]);
-
-    useLayoutEffect(() => {
-        beforeRender();
-    }, []);
-
-
-    /*console.log(props);*/
     return (
 
         <Wrapper>

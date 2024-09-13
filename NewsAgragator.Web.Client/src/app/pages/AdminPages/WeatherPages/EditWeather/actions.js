@@ -68,18 +68,40 @@ export const clearState = () => ({
     data:
     {
         id: '',
-        city: '',
-        temperatureMorning: '',
-        temperatureDay: '',
-        temperatureEvening: '',
-        temperatureNight: '',
-        temperatureCommon: '',
+        city: {
+            value: '',
+        },
+        temperatureMorning: {
+            value: '',
+        },
+        temperatureDay: {
+            value: '',
+        },
+        temperatureEvening: {
+            value: '',
+        },
+        temperatureNight: {
+            value: '',
+        },
+        temperatureCommon: {
+            value: '',
+        },
         date: '',
-        percipitaion: '',
-        wind: '',
-        windDirection: '',
-        pressure: '',
-        humidity: '',
+        percipitaion: {
+            value: '',
+        },
+        wind: {
+            value: '',
+        },
+        windDirection: {
+            value: '',
+        },
+        pressure: {
+            value: '',
+        },
+        humidity: {
+            value: '',
+        },
 
         weatherStatuses:'',
         weatherStatusMorning: '',

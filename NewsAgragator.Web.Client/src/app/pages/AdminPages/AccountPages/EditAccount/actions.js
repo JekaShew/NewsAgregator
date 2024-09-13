@@ -94,6 +94,9 @@ export const clearState = () => ({
         confirmationPassword: {
             value: '',
         },
+        secretWord: {
+            value: '',
+        },
         accountStatuses: '',
         roles: '',
     }

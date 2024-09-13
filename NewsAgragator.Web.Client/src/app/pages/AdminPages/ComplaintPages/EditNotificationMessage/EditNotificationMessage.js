@@ -109,6 +109,10 @@ const EditNotificationMessage = (props) => {
     const [managingState, setValue] = useState({ AddOrChange: "", Loading: true, });
     const title = useInput({ isEmpty: true, minLength: 3 });
 
+    useLayoutEffect(() => {
+        beforeRender();
+    }, []);
+
     const beforeRender = () => {
         console.log("BeforeRender");
         if (params.id != null) {
@@ -138,10 +142,7 @@ const EditNotificationMessage = (props) => {
             setValue({ AddOrChange: "Add", Loading: props.value.loadingParameters });
         }
     }, [props.value.loadingParameters, props.value.loadingData]);
-
-    useLayoutEffect(() => {
-        beforeRender();
-    }, []);
+    
 
     const addORchangeBtn = () => {
         let disabled = false;
