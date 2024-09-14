@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using NewsAgregator.Abstract.AccountInterfaces;
 using NewsAgregator.Data;
+using NewsAgregator.Data.Mappers;
 using NewsAgregator.Data.Models;
 using NewsAgregator.ViewModels.Data;
 using System;
@@ -15,17 +16,15 @@ namespace NewsAgregator.Services.AccountServices
     public class PolicyServices : IPolicyServices
     {
         private readonly AppDBContext _appDBContext;
-        private readonly IMapper _mapper;
 
-        public PolicyServices(AppDBContext appDBContext, IMapper mapper)
+        public PolicyServices(AppDBContext appDBContext)
         {
             _appDBContext = appDBContext;
-            _mapper = mapper;
         }
 
-        public async Task AddPolicy(PolicyVM policy)
+        public async Task AddPolicy(PolicyVM policyVM)
         {
-            var newPolicy = _mapper.Map<Data.Models.Policy>(policy);
+            var newPolicy = PolicyMapper.PolicyVMToPolicy(policyVM);
             newPolicy.Id = Guid.NewGuid();
 
             await _appDBContext.AddAsync(newPolicy);
@@ -40,7 +39,7 @@ namespace NewsAgregator.Services.AccountServices
 
         public async Task<List<PolicyVM>> TakePolicies()
         {
-            var policyVMs = _mapper.Map<List<PolicyVM>>(await _appDBContext.Policies.AsNoTracking().ToListAsync());
+            var policyVMs = (await _appDBContext.Policies.AsNoTracking().ToListAsync()).Select(p => PolicyMapper.PolicyToPolicyVM(p)).ToList();
 
             return policyVMs;
             
@@ -48,19 +47,19 @@ namespace NewsAgregator.Services.AccountServices
 
         public async Task<PolicyVM> TakePolicyById(Guid id)
         {
-            var policy = _mapper.Map<PolicyVM>(await _appDBContext.Policies.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id));
+            var policy = PolicyMapper.PolicyToPolicyVM(await _appDBContext.Policies.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id));
 
             return policy;
         }
 
-        public async Task UpdatePolicy(PolicyVM updatedPolicy)
+        public async Task UpdatePolicy(PolicyVM updatedPolicyVM)
         {
-            var policy = await _appDBContext.Policies.FirstOrDefaultAsync(p => p.Id == updatedPolicy.Id);
+            var policy = await _appDBContext.Policies.FirstOrDefaultAsync(p => p.Id == updatedPolicyVM.Id);
 
             if (policy != null)
             {
-                policy.Title = updatedPolicy.Title;
-                policy.Description = updatedPolicy.Description;
+                policy.Title = updatedPolicyVM.Title;
+                policy.Description = updatedPolicyVM.Description;
 
                 await _appDBContext.SaveChangesAsync();
             }

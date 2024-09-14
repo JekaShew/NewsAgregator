@@ -1,50 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using NewsAgregator.Abstract.ComplaintInterfaces;
 using NewsAgregator.Abstract.NewsInterfaces;
 using NewsAgregator.ViewModels.Data;
-using NewsAgregator.Web.Controllers.AccountControllers;
 
 namespace NewsAgregator.Web.Controllers.NewsControllers
 {
-    [Route("/api/newsstatus")]
-    public class NewsStatusController : Controller
+    public class SourceController : Controller
     {
-        private readonly INewsStatusServices _newsStatusServices;
-        private readonly ILogger<NewsStatusController> _logger;
+        private readonly ISourceServices _sourceServices;
+        private readonly ILogger<SourceController> _logger;
 
-        public NewsStatusController(INewsStatusServices newsStatusServices, ILogger<NewsStatusController> logger)
+        public SourceController(ISourceServices sourceServices, ILogger<SourceController> logger)
         {
-            _newsStatusServices = newsStatusServices;
+            _sourceServices = sourceServices;
             _logger = logger;
         }
 
-        [HttpPost("add")]
-        public async Task<IActionResult> Add(NewsStatusVM newsStatusVM)
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    await _newsStatusServices.AddNewsStatusAsync(newsStatusVM);
-                    return Ok();
-                }
-                else return BadRequest(ModelState);
-               
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return StatusCode(500, ex.Message);
-            }
-        }
 
         [HttpGet("takeall")]
         public async Task<IActionResult> TakeAll()
         {
             try
             {
-                var result = await _newsStatusServices.TakeNewsStatusesAsync();
-                if (result != null)
+                var result = await _sourceServices.TakeSourcesAsync();
+                if (result.Count != 0)
                     return Ok(result);
                 else
                     return NotFound();
@@ -54,14 +32,15 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
                 _logger.LogError(ex.Message);
                 return StatusCode(500, ex.Message);
             }
+
         }
 
         [HttpGet("takebyid/{id}")]
-        public async Task<IActionResult> TakeById(Guid id)
+        public async Task<IActionResult> TakeById([FromRoute]Guid id)
         {
             try
             {
-                var result = await _newsStatusServices.TakeNewsStatusByIdAsync(id);
+                var result = await _sourceServices.TakeSourceByIdAsync(id);
                 if (result != null)
                     return Ok(result);
                 else
@@ -72,14 +51,15 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
                 _logger.LogError(ex.Message);
                 return StatusCode(500, ex.Message);
             }
+
         }
 
         [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete([FromRoute]Guid id)
         {
             try
             {
-                await _newsStatusServices.DeleteNewsStatusAsync(id);
+                await _sourceServices.DeleteSourceAsync(id);
                 return Ok();
             }
             catch (Exception ex)
@@ -87,16 +67,17 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
                 _logger.LogError(ex.Message);
                 return StatusCode(500, ex.Message);
             }
+
         }
 
         [HttpPost("update")]
-        public async Task<IActionResult> Update(NewsStatusVM newsStatusVM)
+        public async Task<IActionResult> Update(SourceVM sourceVM)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    await _newsStatusServices.UpdateNewsStatusAsync(newsStatusVM);
+                    await _sourceServices.UpdateSourceAsync(sourceVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
@@ -106,7 +87,9 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
             {
                 _logger.LogError(ex.Message);
                 return StatusCode(500, ex.Message);
-            }          
+            }
+
         }
+
     }
 }

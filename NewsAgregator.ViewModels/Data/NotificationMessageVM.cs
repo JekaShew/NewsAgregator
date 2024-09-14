@@ -11,7 +11,6 @@ namespace NewsAgregator.ViewModels.Data
 {
     public class NotificationMessageVM
     {
-        [Required]
         public Guid Id { get; set; }
         public string? Title { get; set; }
         public string? Text { get; set; }
@@ -23,21 +22,21 @@ namespace NewsAgregator.ViewModels.Data
         public Guid? AdministratorId { get; set; }
         public Parameter? Administrator { get; set; }
 
-        public void FromDataModel( Account user, Account administrator)
-        {
-            User = new Parameter
-            {
-                Id = user != null ? user.Id : null,
-                Text = user != null ? user.UserName : "",
+        //public void FromDataModel( Account user, Account administrator)
+        //{
+        //    User = new Parameter
+        //    {
+        //        Id = user != null ? user.Id : null,
+        //        Text = user != null ? user.UserName : "",
 
-            };
+        //    };
 
-            Administrator = new Parameter
-            {
-                Id = administrator != null ? administrator.Id : null,
-                Text = administrator != null ? administrator.UserName : "",
-            };
+        //    Administrator = new Parameter
+        //    {
+        //        Id = administrator != null ? administrator.Id : null,
+        //        Text = administrator != null ? administrator.UserName : "",
+        //    };
 
-        }
+        //}
     }
 }

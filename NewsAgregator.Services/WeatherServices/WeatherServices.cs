@@ -16,11 +16,9 @@ namespace NewsAgregator.Services.WeatherServices
     public class WeatherServices : IWeatherServices
     {
         private readonly AppDBContext _appDBContext;
-        private readonly IMapper _mapper;
-        public WeatherServices(AppDBContext appDBContext, IMapper mapper)
+        public WeatherServices(AppDBContext appDBContext)
         {
             _appDBContext = appDBContext;
-            _mapper = mapper;
         }
 
         public async Task<WeatherParameters> GetWeatherParameters()

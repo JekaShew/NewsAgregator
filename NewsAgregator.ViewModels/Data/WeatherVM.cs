@@ -11,7 +11,6 @@ namespace NewsAgregator.ViewModels.Data
 {
     public class WeatherVM
     {
-        [Required]
         public Guid Id { get; set; }
         [Required, MinLength(2)]
         public string? City { get; set; }

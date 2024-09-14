@@ -24,7 +24,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _accountStatusServices.AddAccountStatus(accountStatusVM);
+                    await _accountStatusServices.AddAccountStatusAsync(accountStatusVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
@@ -43,7 +43,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         {
             try
             {
-                var result = await _accountStatusServices.TakeAccountStatuses();
+                var result = await _accountStatusServices.TakeAccountStatusesAsync();
                 if (result.Count != 0)
                     return Ok(result);
                 else
@@ -62,7 +62,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         {
             try
             {
-                var result = await _accountStatusServices.TakeAccountStatusById(id);
+                var result = await _accountStatusServices.TakeAccountStatusByIdAsync(id);
                 if (result != null)
                     return Ok(result);
                 else
@@ -81,7 +81,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         {
             try
             {
-                await _accountStatusServices.DeleteAccountStatus(id);
+                await _accountStatusServices.DeleteAccountStatusAsync(id);
                 return Ok();
             }
             catch (Exception ex)
@@ -99,7 +99,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
             {
                 if (ModelState.IsValid)
                 {
-                    await _accountStatusServices.UpdateAccountStatus(accountStatusVM);
+                    await _accountStatusServices.UpdateAccountStatusAsync(accountStatusVM);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
