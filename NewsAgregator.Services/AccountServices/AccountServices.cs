@@ -1,9 +1,11 @@
 ﻿using AutoMapper;
+using Mapper.Mappers.PropertiesMappers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using NewsAgregator.Abstract.AccountInterfaces;
 using NewsAgregator.Data;
 using NewsAgregator.Data.Models;
+using NewsAgregator.Mapper.DataMappers;
 using NewsAgregator.ViewModels.Additional;
 using NewsAgregator.ViewModels.Data;
 using System;
@@ -39,8 +41,8 @@ namespace NewsAgregator.Services.AccountServices
             var newAccount = AccountMapper.AccountVMToAccount(accountVM);
 
             newAccount.Id = Guid.NewGuid();
-            newAccount.SecurityStamp = await GetHash(accountVM.SecretWord);
-            newAccount.PasswordHash = await GetPasswordHash(accountVM.Password, await GetHash(accountVM.SecretWord));
+            newAccount.SecurityStamp = await GetHashAsync(accountVM.SecretWord);
+            newAccount.PasswordHash = await GetPasswordHashAsync(accountVM.Password, await GetHashAsync(accountVM.SecretWord));
 
             await _appDBContext.Accounts.AddAsync(newAccount);
             await _appDBContext.SaveChangesAsync();
@@ -102,7 +104,7 @@ namespace NewsAgregator.Services.AccountServices
                 await _appDBContext.SaveChangesAsync();
             }
         }
-        private async Task<string> GetPasswordHash(string password, string securityStamp)
+        private async Task<string> GetPasswordHashAsync(string password, string securityStamp)
         {
             using (var md5 = MD5.Create())
             {
@@ -114,7 +116,7 @@ namespace NewsAgregator.Services.AccountServices
             }
         }
 
-        private async Task<string> GetHash(string stringToHash)
+        private async Task<string> GetHashAsync(string stringToHash)
         {
             using (var md5 = MD5.Create())
             {
@@ -131,15 +133,15 @@ namespace NewsAgregator.Services.AccountServices
             return await _appDBContext.Accounts.AnyAsync(a => a.Login.Equals(login));
         }
 
-        public async Task<bool> CheckPassword(string login, string password)
+        public async Task<bool> CheckPasswordAsync(string login, string password)
         {
             var account = await _appDBContext.Accounts.Where(a => a.Login == login).FirstOrDefaultAsync();
-            var enteredPasswordHash = await GetPasswordHash(password, account.SecurityStamp);
+            var enteredPasswordHash = await GetPasswordHashAsync(password, account.SecurityStamp);
 
             return await _appDBContext.Accounts.AnyAsync(a => a.Login.Equals(account.Login) && a.PasswordHash.Equals(enteredPasswordHash));
         }
 
-        public Task<bool> ChangePassword(string login, string secretWord)
+        public async Task<bool> ChangePasswordAsync(string login, string secretWord)
         {
             throw new NotImplementedException();
         }

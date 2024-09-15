@@ -1,8 +1,10 @@
 ﻿using AutoMapper;
+using Mapper.Mappers.PropertiesMappers;
 using Microsoft.EntityFrameworkCore;
 using NewsAgregator.Abstract.WeatherInterfaces;
 using NewsAgregator.Data;
 using NewsAgregator.Data.Models;
+using NewsAgregator.Mapper.DataMappers;
 using NewsAgregator.ViewModels.Additional;
 using NewsAgregator.ViewModels.Data;
 using System;
@@ -25,56 +27,30 @@ namespace NewsAgregator.Services.WeatherServices
         {
             var weatherParameters = new WeatherParameters()
             {
-                WeatherStatuses = await _appDBContext.WeatherStatuses.Select(accs => new Parameter { Id = accs.Id, Text = accs.Title }).ToListAsync(),
+                WeatherStatuses = (await _appDBContext.WeatherStatuses.ToListAsync()).Select(ws => WeatherParametersMapper.WeatherStatusToParameter(ws)).ToList(),
             };
             return weatherParameters;
 
         }
 
-        public async Task ConvertWeatherParameters(WeatherVM weatherVM)
+        public async Task AddWeatherAsync(WeatherVM weatherVM)
         {
-            var weatherStatusCommon = await _appDBContext.WeatherStatuses
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(accs => accs.Id == weatherVM.WeatherStatusCommonId);
-            var weatherStatusMorning = await _appDBContext.WeatherStatuses
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(accs => accs.Id == weatherVM.WeatherStatusMorningId);
-            var weatherStatusDay = await _appDBContext.WeatherStatuses
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(accs => accs.Id == weatherVM.WeatherStatusDayId);
-            var weatherStatusEvening = await _appDBContext.WeatherStatuses
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(accs => accs.Id == weatherVM.WeatherStatusEveningId);
-            var weatherStatusNight = await _appDBContext.WeatherStatuses
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(accs => accs.Id == weatherVM.WeatherStatusNightId);
-
-            weatherVM.FromDataModel(weatherStatusCommon, weatherStatusMorning, weatherStatusDay, weatherStatusEvening, weatherStatusNight);
-        }
-
-        public async Task AddWeather(WeatherVM weather)
-        {
-            var newWeather = _mapper.Map<Data.Models.Weather>(weather);
+            var newWeather = WeatherMapper.WeatherVMToWeather(weatherVM);
             newWeather.Id = Guid.NewGuid();
-            newWeather.WeatherStatusMorning = null;
-            newWeather.WeatherStatusDay = null;
-            newWeather.WeatherStatusEvening = null;
-            newWeather.WeatherStatusNight = null;
-            newWeather.WeatherStatusCommon = null;
 
             await _appDBContext.AddAsync(newWeather);
             await _appDBContext.SaveChangesAsync();
         }
 
-        public async Task DeleteWeather(Guid id)
+        public async Task DeleteWeatherAsync(Guid id)
         {
             _appDBContext.Weathers.Remove(await _appDBContext.Weathers.FirstOrDefaultAsync(w => w.Id == id));
             await _appDBContext.SaveChangesAsync();
         }
 
-        public async Task<WeatherVM> TakeWeatherById(Guid id)
+        public async Task<WeatherVM> TakeWeatherByIdAsync(Guid id)
         {
-            var weather = _mapper.Map<WeatherVM>(await _appDBContext.Weathers
+            var weather = WeatherMapper.WeatherToWeatherVM(await _appDBContext.Weathers
                 .AsNoTracking()
                 .Include(wsd => wsd.WeatherStatusDay)
                 .Include(wsm => wsm.WeatherStatusMorning)
@@ -84,63 +60,51 @@ namespace NewsAgregator.Services.WeatherServices
                 .FirstOrDefaultAsync(w => w.Id == id));
 
             var weatherParameters = await GetWeatherParameters();
-            await ConvertWeatherParameters(weather);
             weather.WeatherStatuses = weatherParameters.WeatherStatuses;
 
             return weather;
         }
 
-        public async Task<List<WeatherVM>> TakeWeathers()
+        public async Task<List<WeatherVM>> TakeWeathersAsync()
         {
-            var weatherVMs = _mapper.Map<List<WeatherVM>>(await _appDBContext.Weathers
+            var weatherVMs = (await _appDBContext.Weathers
                 .AsNoTracking()
                 .Include(wsd => wsd.WeatherStatusDay)
                 .Include(wsm => wsm.WeatherStatusMorning)
                 .Include(wse => wse.WeatherStatusEvening)
                 .Include(wsn => wsn.WeatherStatusNight)
                 .Include(wsc => wsc.WeatherStatusCommon)
-                .ToListAsync());
-
-            foreach (var weatherVM in weatherVMs)
-            {
-                await ConvertWeatherParameters(weatherVM);  
-            }
+                .ToListAsync()).Select(w => WeatherMapper.WeatherToWeatherVM(w)).ToList();
 
             return weatherVMs;
         }
 
-        public async Task UpdateWeather(WeatherVM updatedWeather)
+        public async Task UpdateWeatherAsync(WeatherVM updatedWeatherVM)
         {
-            var weather = await _appDBContext.Weathers.FirstOrDefaultAsync(w => w.Id == updatedWeather.Id);
+            var weather = await _appDBContext.Weathers.FirstOrDefaultAsync(w => w.Id == updatedWeatherVM.Id);
 
             if (weather != null)
             {
-                weather.City = updatedWeather.City;
-                weather.TemperatureMorning = updatedWeather.TemperatureMorning;
-                weather.TemperatureDay = updatedWeather.TemperatureDay;
-                weather.TemperatureEvening = updatedWeather.TemperatureEvening;
-                weather.TemperatureNight = updatedWeather.TemperatureNight;
-                weather.TemperatureCommon = updatedWeather.TemperatureCommon;
-                weather.Date = updatedWeather.Date;
-                weather.Percipitaion = updatedWeather.Percipitaion;
-                weather.Wind = updatedWeather.Wind;
-                weather.WindDirection = updatedWeather.WindDirection;
-                weather.Pressure = updatedWeather.Pressure;
-                weather.Humidity = updatedWeather.Humidity;
-                weather.WeatherStatusMorningId = updatedWeather.WeatherStatusMorningId;
-                weather.WeatherStatusMorning = null;
-                weather.WeatherStatusDayId = updatedWeather.WeatherStatusDayId;
-                weather.WeatherStatusDay = null;
-                weather.WeatherStatusEveningId = updatedWeather.WeatherStatusEveningId;
-                weather.WeatherStatusEvening = null;
-                weather.WeatherStatusNightId = updatedWeather.WeatherStatusNightId;
-                weather.WeatherStatusNight = null;
-                weather.WeatherStatusCommonId = updatedWeather.WeatherStatusCommonId;
-                weather.WeatherStatusCommon = null;
+                weather.City = updatedWeatherVM.City;
+                weather.TemperatureMorning = updatedWeatherVM.TemperatureMorning;
+                weather.TemperatureDay = updatedWeatherVM.TemperatureDay;
+                weather.TemperatureEvening = updatedWeatherVM.TemperatureEvening;
+                weather.TemperatureNight = updatedWeatherVM.TemperatureNight;
+                weather.TemperatureCommon = updatedWeatherVM.TemperatureCommon;
+                weather.Date = updatedWeatherVM.Date;
+                weather.Percipitaion = updatedWeatherVM.Percipitaion;
+                weather.Wind = updatedWeatherVM.Wind;
+                weather.WindDirection = updatedWeatherVM.WindDirection;
+                weather.Pressure = updatedWeatherVM.Pressure;
+                weather.Humidity = updatedWeatherVM.Humidity;
+                weather.WeatherStatusMorningId = updatedWeatherVM.WeatherStatusMorningId;
+                weather.WeatherStatusDayId = updatedWeatherVM.WeatherStatusDayId;
+                weather.WeatherStatusEveningId = updatedWeatherVM.WeatherStatusEveningId;
+                weather.WeatherStatusNightId = updatedWeatherVM.WeatherStatusNightId;
+                weather.WeatherStatusCommonId = updatedWeatherVM.WeatherStatusCommonId;
 
                 await _appDBContext.SaveChangesAsync();
             }
-            else return;
         }
     }
 }

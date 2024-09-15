@@ -20,7 +20,7 @@ namespace NewsAgregator.Services.NewsServices
         {
             _appDBContext = appDBContext;
         }
-        public async Task AddNewsStatus(NewsStatusVM newsStatusVM)
+        public async Task AddNewsStatusAsync(NewsStatusVM newsStatusVM)
         {
             var newNewsStatus =NewsStatusMapper.NewsStatusVMToNewsStatus(newsStatusVM);
             newNewsStatus.Id = Guid.NewGuid();
@@ -29,27 +29,27 @@ namespace NewsAgregator.Services.NewsServices
             await _appDBContext.SaveChangesAsync();
         }
 
-        public async Task DeleteNewsStatus(Guid id)
+        public async Task DeleteNewsStatusAsync(Guid id)
         {
             _appDBContext.NewsStatuses.Remove(await _appDBContext.NewsStatuses.FirstOrDefaultAsync(ns => ns.Id == id));
             await _appDBContext.SaveChangesAsync();
         }
 
-        public async Task<NewsStatusVM> TakeNewsStatusById(Guid id)
+        public async Task<NewsStatusVM> TakeNewsStatusByIdAsync(Guid id)
         {
-            var newsStatus = NewsStatusMapper.NewsStatusToNewsStatusVM(await _appDBContext.NewsStatuses.AsNoTracking().FirstOrDefaultAsync(ns => ns.Id == id));
+            var newsStatusVM = NewsStatusMapper.NewsStatusToNewsStatusVM(await _appDBContext.NewsStatuses.AsNoTracking().FirstOrDefaultAsync(ns => ns.Id == id));
 
-            return newsStatus;
+            return newsStatusVM;
         }
 
-        public async Task<List<NewsStatusVM>> TakeNewsStatuses()
+        public async Task<List<NewsStatusVM>> TakeNewsStatusesAsync()
         {
             var newsStatusVMs = (await _appDBContext.NewsStatuses.AsNoTracking().ToListAsync()).Select(ns => NewsStatusMapper.NewsStatusToNewsStatusVM(ns)).ToList();
 
             return newsStatusVMs;
         }
 
-        public async Task UpdateNewsStatus(NewsStatusVM updatedNewsStatusVM)
+        public async Task UpdateNewsStatusAsync(NewsStatusVM updatedNewsStatusVM)
         {
             var newsStatus = await _appDBContext.NewsStatuses.FirstOrDefaultAsync(ns => ns.Id == updatedNewsStatusVM.Id);
 

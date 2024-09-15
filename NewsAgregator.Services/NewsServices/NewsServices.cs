@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using HtmlAgilityPack;
+using Mapper.Mappers.ParametersMappers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using NewsAgregator.Abstract.NewsInterfaces;
 using NewsAgregator.Data;
 using NewsAgregator.Data.Models;
+using NewsAgregator.Mapper.DataMappers;
 using NewsAgregator.ViewModels.Additional;
 using NewsAgregator.ViewModels.Data;
 using System;
@@ -26,12 +28,10 @@ namespace NewsAgregator.Services.NewsServices
     public class NewsServices : INewsServices
     {
         private readonly AppDBContext _appDBContext;
-        private readonly IMapper _mapper;
         private readonly ILogger<NewsServices> _logger;
-        public NewsServices(AppDBContext appDBContext, IMapper mapper, ILogger<NewsServices> logger)
+        public NewsServices(AppDBContext appDBContext, ILogger<NewsServices> logger)
         {
             _appDBContext = appDBContext;
-            _mapper = mapper;
             _logger = logger;
         }
 
@@ -39,27 +39,16 @@ namespace NewsAgregator.Services.NewsServices
         {
             var newsParameters = new NewsParameters()
             {
-                NewsStatuses = await _appDBContext.NewsStatuses.Select(ns => new Parameter { Id = ns.Id, Text = ns.Title }).ToListAsync(),
-               
+                NewsStatuses = (await _appDBContext.NewsStatuses.ToListAsync()).Select(ns=> NewsParametersMapper.NewsStatusToParameter(ns)).ToList(),               
             };
             return newsParameters;
 
         }
 
-        public async Task ConvertNewsParameters(NewsVM newsVM)
+        public async Task AddNewsAsync(NewsVM newsVM)
         {
-            var newsStatus = await _appDBContext.NewsStatuses
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(accs => accs.Id == newsVM.NewsStatusId);
-
-            newsVM.FromDataModel(newsStatus);
-        }
-
-        public async Task AddNewsAsync(NewsVM news)
-        {
-            var newNews = _mapper.Map<Data.Models.News>(news);
+            var newNews = NewsMapper.NewsVMToNews(newsVM);
             newNews.Id = Guid.NewGuid();
-            newNews.NewsStatus = null;
 
             await _appDBContext.AddAsync(newNews);
             await _appDBContext.SaveChangesAsync();
@@ -73,13 +62,12 @@ namespace NewsAgregator.Services.NewsServices
 
         public async Task<NewsVM> TakeNewsByIdAsync(Guid id)
         {
-            var news = _mapper.Map<NewsVM>(await _appDBContext.Newses
+            var news = NewsMapper.NewsToNewsVM(await _appDBContext.Newses
                 .AsNoTracking()
                 .Include(ns => ns.NewsStatus)
                 .FirstOrDefaultAsync(n => n.Id == id));
 
             var newsParameters = await GetNewsParametersAsync();
-            await ConvertNewsParameters(news);
             news.NewsStatuses = newsParameters.NewsStatuses;
 
             return news;
@@ -87,40 +75,34 @@ namespace NewsAgregator.Services.NewsServices
 
         public async Task<List<NewsVM>> TakeNewsesAsync()
         {
-            var newsVMs = _mapper.Map<List<NewsVM>>(await _appDBContext.Newses
+            var newsVMs = (await _appDBContext.Newses
                 .AsNoTracking()
                 .Include(ns => ns.NewsStatus)
-                .ToListAsync());
-
-            foreach (var newsVM in newsVMs)
-            {
-                var newsStatus = await _appDBContext.NewsStatuses
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(accs => accs.Id == newsVM.NewsStatusId);
-
-                newsVM.FromDataModel(newsStatus);
-            }
+                .ToListAsync()).Select(n=> NewsMapper.NewsToNewsVM(n)).ToList();
 
             return newsVMs;
         }
 
-        public async Task UpdateNewsAsync(NewsVM updatedNews)
+        public async Task UpdateNewsAsync(NewsVM updatedNewsVM)
         {
-            var news = await _appDBContext.Newses.FirstOrDefaultAsync(n => n.Id == updatedNews.Id);
+            var news = await _appDBContext.Newses.FirstOrDefaultAsync(n => n.Id == updatedNewsVM.Id);
 
             if (news != null)
             {
-                news.Title = updatedNews.Title;
-                news.Text = updatedNews.Text;
-                news.Date = updatedNews.Date;
-                news.PositiveRating = updatedNews.PositiveRating;
-                news.NewsStatusId = updatedNews.NewsStatusId;
-                news.NewsStatus = null;
+                news.Title = updatedNewsVM.Title;
+                news.Description = updatedNewsVM.Description;
+                news.Text = updatedNewsVM.Text;
+                news.TextHTML = updatedNewsVM.TextHTML;
+                news.SourceUrl = updatedNewsVM.SourceUrl;
+                news.Date = updatedNewsVM.Date;
+                news.PositiveRating = updatedNewsVM.PositiveRating;
+                news.NewsStatusId = updatedNewsVM.NewsStatusId;
 
                 await _appDBContext.SaveChangesAsync();
             }
-            else return;
         }
+
+
 
         public async Task AggregateNewsAsync()
         {

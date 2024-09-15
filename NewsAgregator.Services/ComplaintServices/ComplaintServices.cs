@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using NewsAgregator.Abstract.ComplaintInterfaces;
 using NewsAgregator.Data;
 using NewsAgregator.Data.Models;
+using NewsAgregator.Mapper.DataMappers;
+using NewsAgregator.Mapper.PropertiesMappers;
 using NewsAgregator.ViewModels.Additional;
 using NewsAgregator.ViewModels.Data;
 using System;
@@ -16,76 +18,44 @@ namespace NewsAgregator.Services.ComplaintServices
     public class ComplaintServices : IComplaintServices
     {
         private readonly AppDBContext _appDBContext;
-        private readonly IMapper _mapper;
-        public ComplaintServices(AppDBContext appDBContext, IMapper mapper)
+        public ComplaintServices(AppDBContext appDBContext)
         {
             _appDBContext = appDBContext;
-            _mapper = mapper;
         }
 
-        public async Task<ComplaintParameters> GetComplaintParameters()
+        public async Task<ComplaintParameters> GetComplaintParametersAsync()
         {
             var complaintParameters = new ComplaintParameters()
             {
-                Comments = await _appDBContext.Comments.Select(accs => new Parameter { Id = accs.Id, Text = accs.Text }).ToListAsync(),
-                Newses = await _appDBContext.Newses.Select(accs => new Parameter { Id = accs.Id, Text = accs.Title }).ToListAsync(),
-                ComplaintStatuses = await _appDBContext.ComplaintStatuses.Select(accs => new Parameter { Id = accs.Id, Text = accs.Title }).ToListAsync(),
-                ComplaintTypes = await _appDBContext.ComplaintTypes.Select(accs => new Parameter { Id = accs.Id, Text = accs.Title }).ToListAsync(),
-                Accounts = await _appDBContext.Accounts.Select(accs => new Parameter { Id = accs.Id, Text = accs.UserName }).ToListAsync(),
+                Comments = (await _appDBContext.Comments.ToListAsync()).Select(c => ComplaintParametersMapper.CommentToParameter(c)).ToList(),
+                Newses = (await _appDBContext.Newses.ToListAsync()).Select(n => ComplaintParametersMapper.NewsToParameter(n)).ToList(),
+                ComplaintStatuses = (await _appDBContext.ComplaintStatuses.ToListAsync()).Select(cs => ComplaintParametersMapper.ComplaintStatusToParameter(cs)).ToList(),
+                ComplaintTypes = (await _appDBContext.ComplaintTypes.ToListAsync()).Select(ct => ComplaintParametersMapper.ComplaintTypeToParameter(ct)).ToList(),
+                Accounts = (await _appDBContext.Accounts.ToListAsync()).Select(a => ComplaintParametersMapper.AccountToParameter(a)).ToList(),
 
             };
             return complaintParameters;
 
         }
 
-        public async Task ConvertComplaintParameters(ComplaintVM complaintVM)
+        public async Task AddComplaintAsync(ComplaintVM complaint)
         {
-            var comment = await _appDBContext.Comments
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(accs => accs.Id == complaintVM.CommentId);
-            var news = await _appDBContext.Newses
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(accs => accs.Id == complaintVM.NewsId);
-            var complaintStatus = await _appDBContext.ComplaintStatuses
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(accs => accs.Id == complaintVM.ComplaintStatusId);
-            var complaintType = await _appDBContext.ComplaintTypes
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(accs => accs.Id == complaintVM.ComplaintTypeId);
-            var user = await _appDBContext.Accounts
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(accs => accs.Id == complaintVM.UserId);
-            var administrator = await _appDBContext.Accounts
-                        .AsNoTracking()
-                        .FirstOrDefaultAsync(accs => accs.Id == complaintVM.AdministratorId);
-
-            complaintVM.FromDataModel(comment, news, complaintStatus, complaintType, user, administrator);
-        }
-
-        public async Task AddComplaint(ComplaintVM complaint)
-        {
-            var newComplaint = _mapper.Map<Data.Models.Complaint>(complaint);
+            var newComplaint = ComplaintMapper.ComplaintVMToComplaint(complaint);
             newComplaint.Id = Guid.NewGuid();
-            newComplaint.Comment = null;
-            newComplaint.News = null;
-            newComplaint.ComplaintStatus = null;
-            newComplaint.ComplaintType = null;
-            newComplaint.User = null;
-            newComplaint.Administrator = null;
 
             await _appDBContext.AddAsync(newComplaint);
             await _appDBContext.SaveChangesAsync();
         }
 
-        public async Task DeleteComplaint(Guid id)
+        public async Task DeleteComplaintAsync(Guid id)
         {
             _appDBContext.Complaints.Remove(await _appDBContext.Complaints.FirstOrDefaultAsync(c => c.Id == id));
             await _appDBContext.SaveChangesAsync();
         }
 
-        public async Task<ComplaintVM> TakeComplaintById(Guid id)
+        public async Task<ComplaintVM> TakeComplaintByIdAsync(Guid id)
         {
-            var complaint = _mapper.Map<ComplaintVM>(await _appDBContext.Complaints
+            var complaintVM = ComplaintMapper.ComplaintToComplaintVM(await _appDBContext.Complaints
                 .AsNoTracking()
                 .Include(c => c.Comment)
                 .Include(n => n.News)
@@ -95,22 +65,21 @@ namespace NewsAgregator.Services.ComplaintServices
                 .Include(a => a.Administrator)
                 .FirstOrDefaultAsync(c => c.Id == id));
 
-            var compalintParameters = await GetComplaintParameters();
-            await ConvertComplaintParameters(complaint);
+            var compalintParameters = await GetComplaintParametersAsync();
 
-            complaint.Comments = compalintParameters.Comments;
-            complaint.Newses = compalintParameters.Newses;
-            complaint.ComplaintStatuses = compalintParameters.ComplaintStatuses;
-            complaint.ComplaintTypes = compalintParameters.ComplaintTypes;
-            complaint.Accounts = compalintParameters.Accounts;
+            complaintVM.Comments = compalintParameters.Comments;
+            complaintVM.Newses = compalintParameters.Newses;
+            complaintVM.ComplaintStatuses = compalintParameters.ComplaintStatuses;
+            complaintVM.ComplaintTypes = compalintParameters.ComplaintTypes;
+            complaintVM.Accounts = compalintParameters.Accounts;
 
-            return complaint;
+            return complaintVM;
         }
 
-        public async Task<List<ComplaintVM>> TakeComplaints()
+        public async Task<List<ComplaintVM>> TakeComplaintsAsync()
         {
 
-            var complaintVMs = _mapper.Map<List<ComplaintVM>>(await _appDBContext.Complaints
+            var complaintVMs = (await _appDBContext.Complaints
                 .AsNoTracking()
                 .Include(c => c.Comment)
                 .Include(n => n.News)
@@ -118,40 +87,28 @@ namespace NewsAgregator.Services.ComplaintServices
                 .Include(ct => ct.ComplaintType)
                 .Include(u => u.User)
                 .Include(a => a.Administrator)
-                .ToListAsync());
-
-            foreach (var complaintVM in complaintVMs)
-            {
-                await ConvertComplaintParameters(complaintVM);
-            }
+                .ToListAsync()).Select(c => ComplaintMapper.ComplaintToComplaintVM(c)).ToList();
 
             return complaintVMs;
         }
 
-        public async Task UpdateComplaint(ComplaintVM updatedComplaint)
+        public async Task UpdateComplaintAsync(ComplaintVM updatedComplaintVM)
         {
-            var complaint = await _appDBContext.Complaints.FirstOrDefaultAsync(accs => accs.Id == updatedComplaint.Id);
+            var complaint = await _appDBContext.Complaints.FirstOrDefaultAsync(accs => accs.Id == updatedComplaintVM.Id);
 
             if (complaint != null)
             {
-                complaint.Title = updatedComplaint.Title;
-                complaint.Text = updatedComplaint.Text;
-                complaint.CommentId = updatedComplaint.CommentId;
-                complaint.Comment = null;
-                complaint.NewsId= updatedComplaint.NewsId;
-                complaint.News = null;
-                complaint.ComplaintStatusId = updatedComplaint.ComplaintStatusId;
-                complaint.ComplaintStatus = null;
-                complaint.ComplaintTypeId = updatedComplaint.ComplaintTypeId;
-                complaint.ComplaintType = null;
-                complaint.UserId = updatedComplaint.UserId;
-                complaint.User = null;
-                complaint.AdministratorId = updatedComplaint.AdministratorId;
-                complaint.Administrator = null;
+                complaint.Title = updatedComplaintVM.Title;
+                complaint.Text = updatedComplaintVM.Text;
+                complaint.CommentId = updatedComplaintVM.CommentId;
+                complaint.NewsId= updatedComplaintVM.NewsId;
+                complaint.ComplaintStatusId = updatedComplaintVM.ComplaintStatusId;
+                complaint.ComplaintTypeId = updatedComplaintVM.ComplaintTypeId;
+                complaint.UserId = updatedComplaintVM.UserId;
+                complaint.AdministratorId = updatedComplaintVM.AdministratorId;
 
                 await _appDBContext.SaveChangesAsync();
             }
-            else return;
         }
     }
 }

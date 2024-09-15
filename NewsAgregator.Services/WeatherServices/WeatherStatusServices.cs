@@ -38,9 +38,9 @@ namespace NewsAgregator.Services.WeatherServices
 
         public async Task<WeatherStatusVM> TakeWeatherStatusByIdAsync(Guid id)
         {
-            var weatherStatus = WeatherStatusMapper.WeatherStatusToWeatherStatusVM(await _appDBContext.WeatherStatuses.AsNoTracking().FirstOrDefaultAsync(ws => ws.Id == id));
+            var weatherStatusVM = WeatherStatusMapper.WeatherStatusToWeatherStatusVM(await _appDBContext.WeatherStatuses.AsNoTracking().FirstOrDefaultAsync(ws => ws.Id == id));
 
-            return weatherStatus;
+            return weatherStatusVM;
         }
 
         public async Task<List<WeatherStatusVM>> TakeWeatherStatusesAsync()

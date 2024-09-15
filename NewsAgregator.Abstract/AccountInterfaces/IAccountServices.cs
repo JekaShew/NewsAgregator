@@ -21,8 +21,8 @@ namespace NewsAgregator.Abstract.AccountInterfaces
         public Task UpdateAccountAsync(AccountVM updatedAccount);
         public Task<AccountParameters> GetAccountParametersAsync();
         public Task<bool> CheckIsLoginRegisteredAsync(string login);
-        public Task<bool> CheckPassword(string login, string password);
-        public Task<bool> ChangePassword(string login, string secretWord);
+        public Task<bool> CheckPasswordAsync(string login, string password);
+        public Task<bool> ChangePasswordAsync(string login, string secretWord);
 
     }
 }

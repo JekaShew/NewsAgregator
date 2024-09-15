@@ -37,9 +37,9 @@ namespace NewsAgregator.Services.ComplaintServices
 
         public async Task<ComplaintStatusVM> TakeComplaintStatusByIdAsync(Guid id)
         {
-            var complaintStatus = ComplaintStatusMapper.ComplaintStatusToComplaintStatusVM(await _appDBContext.ComplaintStatuses.AsNoTracking().FirstOrDefaultAsync(cs => cs.Id == id));
+            var complaintStatusVM = ComplaintStatusMapper.ComplaintStatusToComplaintStatusVM(await _appDBContext.ComplaintStatuses.AsNoTracking().FirstOrDefaultAsync(cs => cs.Id == id));
 
-            return complaintStatus;
+            return complaintStatusVM;
         }
 
         public async Task<List<ComplaintStatusVM>> TakeComplaintStatusesAsync()

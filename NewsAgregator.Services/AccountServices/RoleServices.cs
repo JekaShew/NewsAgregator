@@ -1,8 +1,12 @@
 ﻿using AutoMapper;
+using Mapper.Mappers.PropertiesMappers;
 using Microsoft.EntityFrameworkCore;
 using NewsAgregator.Abstract.AccountInterfaces;
 using NewsAgregator.Data;
+using NewsAgregator.Data.Mappers;
 using NewsAgregator.Data.Models;
+using NewsAgregator.Mapper.DataMappers;
+using NewsAgregator.ViewModels.Additional;
 using NewsAgregator.ViewModels.Data;
 using System;
 using System.Collections.Generic;
@@ -15,75 +19,67 @@ namespace NewsAgregator.Services.AccountServices
     public class RoleServices : IRoleServices
     {
         private readonly AppDBContext _appDBContext;
-        private readonly IMapper _mapper;
 
-        public RoleServices(AppDBContext appDBContext, IMapper mapper)
+        public RoleServices(AppDBContext appDBContext)
         {
             _appDBContext = appDBContext;
-            _mapper = mapper;
         }
 
-        public async Task AddRole(RoleVM role)
+        public async Task AddRoleAsync(RoleVM role)
         {
-            var newRole = _mapper.Map<Data.Models.Role>(role);
+            var newRole = RoleMapper.RoleVMToRole(role);
             newRole.Id = Guid.NewGuid();
 
-            _appDBContext.RolePolicies.AddRange(role.RolePolicies.Select(rp => new Data.Models.RolePolicy
-            {
-                Id = rp.Id,
-                RoleId = newRole.Id,
-                PolicyId = rp.Policy.Id,
-                Description = rp.Description
-            }));
+            _appDBContext.RolePolicies.AddRange(role.RolePolicies.Select(rp => RolePolicyMapper.RolePolicyVMToRolePolicy(rp)));
 
             await _appDBContext.AddAsync(newRole);
             await _appDBContext.SaveChangesAsync();
         }
 
-        public async Task DeleteRole(Guid id)
+        public async Task DeleteRoleAsync(Guid id)
         {
             _appDBContext.Roles.Remove(await _appDBContext.Roles.FirstOrDefaultAsync(r => r.Id == id));
+            _appDBContext.RolePolicies.RemoveRange(await _appDBContext.RolePolicies.Where(rp => rp.RoleId == id).ToListAsync());
             await _appDBContext.SaveChangesAsync();
         }
 
-        public async Task<RoleVM> TakeRoleById(Guid id)
+        public async Task<RoleVM> TakeRoleByIdAsync(Guid id)
         {
-            var role = _mapper.Map<RoleVM>(await _appDBContext.Roles
+            var roleVM = RoleMapper.RoleToRoleVM(await _appDBContext.Roles
                 .AsNoTracking()
                 .Include(rp => rp.RolePolicies)
                     .ThenInclude(p => p.Policy)
                 .FirstOrDefaultAsync(r => r.Id == id));
+            roleVM.RolePolicies = (await _appDBContext.RolePolicies.Where(rp=> rp.RoleId == id).ToListAsync()).Select(rp=> RolePolicyMapper.RolePolicyToRolePolicyVM(rp)).ToList();
 
-            return role;
+            return roleVM;
         }
 
-        public async Task<List<RoleVM>> TakeRoles()
+        public async Task<List<RoleVM>> TakeRolesAsync()
         {
-            var roleVMs = _mapper.Map<List<RoleVM>>(await _appDBContext.Roles
+            var roleVMs = (await _appDBContext.Roles
                 .AsNoTracking()
                 .Include(rp => rp.RolePolicies)
                     .ThenInclude(p => p.Policy)
-                .ToListAsync());
-
+                .ToListAsync()).Select(r => RoleMapper.RoleToRoleVM(r)).ToList();
+            foreach(var roleVM in roleVMs)
+            {
+                roleVM.RolePolicies = (await _appDBContext.RolePolicies.Where(rp => rp.RoleId == roleVM.Id).ToListAsync()).Select(rp => RolePolicyMapper.RolePolicyToRolePolicyVM(rp)).ToList();
+            }
             return roleVMs;
         }
 
-        public async Task UpdateRole(RoleVM updatedRole)
+        public async Task UpdateRoleAsync(RoleVM updatedRoleVM)
         {
-            var role = await _appDBContext.Roles.Include(rp => rp.RolePolicies).FirstOrDefaultAsync(r => r.Id == updatedRole.Id);
+            var role = await _appDBContext.Roles.Include(rp => rp.RolePolicies).FirstOrDefaultAsync(r => r.Id == updatedRoleVM.Id);
 
             if (role != null)
             {
-                role.Title = updatedRole.Title;
-                role.Description = updatedRole.Description;
+                role.Title = updatedRoleVM.Title;
+                role.Description = updatedRoleVM.Description;
 
                 _appDBContext.RolePolicies.RemoveRange(role.RolePolicies);
-                var rolePolicies = new List<Data.Models.RolePolicy>();
-                foreach (var rolePolicy in updatedRole.RolePolicies)
-                {
-
-                    role.RolePolicies.Add(_mapper.Map<Data.Models.RolePolicy>(rolePolicy));
-                }
+                await _appDBContext.RolePolicies.AddRangeAsync(updatedRoleVM.RolePolicies.Select(urp => RolePolicyMapper.RolePolicyVMToRolePolicy(urp)).ToList());
 
                 await _appDBContext.SaveChangesAsync();
             }

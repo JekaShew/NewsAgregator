@@ -2,7 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using NewsAgregator.Abstract.CommentInterfaces;
 using NewsAgregator.Data;
-using NewsAgregator.Data.Models;
+using NewsAgregator.Mapper.DataMappers;
+using NewsAgregator.Mapper.PropertiesMappers;
 using NewsAgregator.ViewModels.Additional;
 using NewsAgregator.ViewModels.Data;
 using System;
@@ -48,17 +49,17 @@ namespace NewsAgregator.Services.CommentServices
 
         public async Task<CommentVM> TakeCommentByIdAsync(Guid id)
         {
-            var comment = CommentMapper.CommentToCommentVM(await _appDBContext.Comments
+            var commentVM = CommentMapper.CommentToCommentVM(await _appDBContext.Comments
                 .AsNoTracking()
                 .Include(a => a.Account)
                 .Include(n => n.News)
                 .FirstOrDefaultAsync(c => c.Id == id));
 
             var commentParameters = await GetCommentParametersAsync();
-            comment.Accounts = commentParameters.Accounts;
-            comment.Newses = commentParameters.Newses;
+            commentVM.Accounts = commentParameters.Accounts;
+            commentVM.Newses = commentParameters.Newses;
 
-            return comment;
+            return commentVM;
         }
 
         public async Task<List<CommentVM>> TakeCommentsAsync()

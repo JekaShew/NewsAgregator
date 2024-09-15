@@ -22,7 +22,7 @@ namespace NewsAgregator.Services.AccountServices
             _appDBContext = appDBContext;
         }
 
-        public async Task AddPolicy(PolicyVM policyVM)
+        public async Task AddPolicyAsync(PolicyVM policyVM)
         {
             var newPolicy = PolicyMapper.PolicyVMToPolicy(policyVM);
             newPolicy.Id = Guid.NewGuid();
@@ -31,13 +31,13 @@ namespace NewsAgregator.Services.AccountServices
             await _appDBContext.SaveChangesAsync();
         }
 
-        public async Task DeletePolicy(Guid id)
+        public async Task DeletePolicyAsync(Guid id)
         {
             _appDBContext.Policies.Remove(await _appDBContext.Policies.FirstOrDefaultAsync(p => p.Id == id));
             await _appDBContext.SaveChangesAsync();
         }
 
-        public async Task<List<PolicyVM>> TakePolicies()
+        public async Task<List<PolicyVM>> TakePoliciesAsync()
         {
             var policyVMs = (await _appDBContext.Policies.AsNoTracking().ToListAsync()).Select(p => PolicyMapper.PolicyToPolicyVM(p)).ToList();
 
@@ -45,14 +45,14 @@ namespace NewsAgregator.Services.AccountServices
             
         }
 
-        public async Task<PolicyVM> TakePolicyById(Guid id)
+        public async Task<PolicyVM> TakePolicyByIdAsync(Guid id)
         {
-            var policy = PolicyMapper.PolicyToPolicyVM(await _appDBContext.Policies.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id));
+            var policyVM = PolicyMapper.PolicyToPolicyVM(await _appDBContext.Policies.AsNoTracking().FirstOrDefaultAsync(p => p.Id == id));
 
-            return policy;
+            return policyVM;
         }
 
-        public async Task UpdatePolicy(PolicyVM updatedPolicyVM)
+        public async Task UpdatePolicyAsync(PolicyVM updatedPolicyVM)
         {
             var policy = await _appDBContext.Policies.FirstOrDefaultAsync(p => p.Id == updatedPolicyVM.Id);
 

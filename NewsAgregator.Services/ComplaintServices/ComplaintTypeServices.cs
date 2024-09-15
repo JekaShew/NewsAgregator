@@ -37,9 +37,9 @@ namespace NewsAgregator.Services.ComplaintServices
 
         public async Task<ComplaintTypeVM> TakeComplaintTypeByIdAsync(Guid id)
         {
-            var complaintType = ComplaintTypeMapper.ComplaintTypeToComplaintTypeVM(await _appDBContext.ComplaintTypes.AsNoTracking().FirstOrDefaultAsync(ct => ct.Id == id));
+            var complaintTypeVM = ComplaintTypeMapper.ComplaintTypeToComplaintTypeVM(await _appDBContext.ComplaintTypes.AsNoTracking().FirstOrDefaultAsync(ct => ct.Id == id));
 
-            return complaintType;
+            return complaintTypeVM;
         }
 
         public async Task<List<ComplaintTypeVM>> TakeComplaintTypesAsync()
