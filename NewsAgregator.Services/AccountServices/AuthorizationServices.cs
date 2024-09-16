@@ -11,7 +11,7 @@ namespace NewsAgregator.Services.AccountServices
 {
     internal class AuthorizationServices : IAuthorizationServices
     {
-        public Task<IActionResult> SignInAsync(AccountVM accountVM)
+        public Task<IActionResult> SignInAsync(CreateAccountVM accountVM)
         {
             throw new NotImplementedException();
         }
@@ -21,7 +21,7 @@ namespace NewsAgregator.Services.AccountServices
             throw new NotImplementedException();
         }
 
-        public Task<IActionResult> SignUpAsync(AccountVM accountVM)
+        public Task<IActionResult> SignUpAsync(CreateAccountVM accountVM)
         {
             throw new NotImplementedException();
         }

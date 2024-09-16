@@ -34,16 +34,16 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         }
 
         [HttpPost("add")]
-        public async Task<IActionResult> Add(AccountVM accountVM)
+        public async Task<IActionResult> Add(CreateAccountVM createAccountVM)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    await _accountServices.AddAccountAsync(accountVM);
-                    return Ok();
+                    await _accountServices.AddAccountAsync(createAccountVM);
+                    return Ok("Success!");
                 }
-                else return BadRequest(ModelState);
+                else return BadRequest("Invalid Data.");
 
             }
             catch (Exception ex)
@@ -98,7 +98,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
             try
             {
                 await _accountServices.DeleteAccountAsync(id);
-                return Ok();
+                return Ok("Success!");
             }
             catch (Exception ex)
             {
@@ -116,9 +116,90 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
                 if (ModelState.IsValid)
                 {
                     await _accountServices.UpdateAccountAsync(accountVM);
-                    return Ok();
+                    return Ok("Success!");
                 }
-                else return BadRequest(ModelState);
+                else return BadRequest("Invalid Data.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("checkisloginregistered")]
+        public async Task<IActionResult> CheckIsLoginRegistered(string login)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if(await _accountServices.CheckIsLoginRegisteredAsync(login))
+                    return BadRequest("The Login already exists.");
+                    else return Ok("Success!");
+                }
+                else return BadRequest("Invalid Data.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("canchangepassword")]
+        public async Task<IActionResult> CanChangePassword(string login, string password)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (await _accountServices.CanChangePasswordAsync(login, password))
+                        return Ok("Success!");
+                    else
+                        return BadRequest("Incorrect Login or Password!");
+                }
+                else return BadRequest("Invalid Data.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("canchangeforgottenpassword")]
+        public async Task<IActionResult> CanChangeForgottenPassword(string login, string secretWord)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    if (await _accountServices.CanChangeForgottenPasswordAsync(login, secretWord))
+                        return Ok("Success!");
+                    else
+                        return BadRequest("Incorrect Login or Secret Word.");
+                }
+                else return BadRequest("Invalid Data.");
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("changepassword")]
+        public async Task<IActionResult> ChangePassword(string password)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    await _accountServices.ChangePasswordAsync(password);
+                    return Ok("Success!");
+                }
+                else return BadRequest("Invalid Data.");
             }
             catch (Exception ex)
             {

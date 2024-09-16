@@ -20,7 +20,7 @@ namespace NewsAgregator.Services
             CreateMap<Data.Models.WeatherStatus, ViewModels.Data.WeatherStatusVM>().ReverseMap();
             //CreateMap<Data.Models.Account, ViewModels.Data.AccountVM>().ReverseMap();
 
-            CreateMap<Data.Models.Account, ViewModels.Data.AccountVM>()
+            CreateMap<Data.Models.Account, ViewModels.Data.CreateAccountVM>()
                 .ForMember(d => d.AccountStatus, (options) => options.Ignore())
                 .ForMember(d => d.Role, (options) => options.Ignore())
                 .ForMember(d => d.UserComplaints, (options) => options.Ignore())
@@ -28,7 +28,7 @@ namespace NewsAgregator.Services
                 .ForMember(d => d.RecipientUsers, (options) => options.Ignore())
                 .ForMember(d => d.Comments, (options) => options.Ignore())
                 .ForMember(d => d.SenderAdministrators, (options) => options.Ignore());
-            CreateMap<ViewModels.Data.AccountVM, Data.Models.Account>()
+            CreateMap<ViewModels.Data.CreateAccountVM, Data.Models.Account>()
                 .ForMember(d => d.AccountStatus, (options) => options.Ignore())
                 .ForMember(d => d.Role, (options) => options.Ignore())
                 .ForMember(d => d.UserComplaints, (options) => options.Ignore())

@@ -18,7 +18,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
     }
 
         [HttpPost("signin")]
-        public async Task<IActionResult> SignIn(AccountVM accountVM)
+        public async Task<IActionResult> SignIn(CreateAccountVM accountVM)
         {
             try
             {
@@ -39,7 +39,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         }
 
         [HttpPost("signup")]
-        public async Task<IActionResult> SignUp(AccountVM accountVM)
+        public async Task<IActionResult> SignUp(CreateAccountVM accountVM)
         {
             try
             {
@@ -60,7 +60,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         }
 
         [HttpPost("signout")]
-        public async Task<IActionResult> SignOut(AccountVM accountVM)
+        public async Task<IActionResult> SignOut(CreateAccountVM accountVM)
         {
             try
             {

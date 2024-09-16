@@ -10,8 +10,8 @@ namespace NewsAgregator.Abstract.AccountInterfaces
 {
     public interface IAuthorizationServices
     {
-        public Task<IActionResult> SignInAsync(AccountVM accountVM);
-        public Task<IActionResult> SignUpAsync(AccountVM accountVM);
+        public Task<IActionResult> SignInAsync(CreateAccountVM accountVM);
+        public Task<IActionResult> SignUpAsync(CreateAccountVM accountVM);
 
         public Task<IActionResult> SignOutAsync(Guid id);
 

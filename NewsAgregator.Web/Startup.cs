@@ -60,7 +60,7 @@ namespace NewsAgregator.Web
                 .Enrich.FromLogContext()
                 .WriteTo.Console(Serilog.Events.LogEventLevel.Error)
                 .WriteTo.File("logs.log"));
-            services.AddDbContext<AppDBContext>(options => options.UseSqlServer(connectionString: Configuration.GetConnectionString("Work")));
+            services.AddDbContext<AppDBContext>(options => options.UseSqlServer(connectionString: Configuration.GetConnectionString("Home")));
             
             services.AddMvc();
             services.AddCors();

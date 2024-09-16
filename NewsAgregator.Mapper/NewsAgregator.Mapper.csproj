@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Security.Cryptography.Algorithms" Version="4.3.1" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\NewsAgregator.Data\NewsAgregator.Data.csproj" />
     <ProjectReference Include="..\NewsAgregator.ViewModels\NewsAgregator.ViewModels.csproj" />
   </ItemGroup>

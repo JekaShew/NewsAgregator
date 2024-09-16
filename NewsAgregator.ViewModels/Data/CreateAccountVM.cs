@@ -1,4 +1,5 @@
-﻿using NewsAgregator.ViewModels.Additional;
+﻿using NewsAgregator.Data.Models;
+using NewsAgregator.ViewModels.Additional;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,13 +9,18 @@ using System.Threading.Tasks;
 
 namespace NewsAgregator.ViewModels.Data
 {
-    public class AccountVM
+    public class CreateAccountVM
     {
+
         public Guid Id { get; set; }
         [Required]
         public string? UserName { get; set; }
         [Required, MinLength(3)]
         public string? Login { get; set; }
+        [Required, MinLength(5)]
+        public string? Password { get; set; }
+        [Required, MinLength(6)]
+        public string? SecretWord { get; set; }
         [Required]
         public string? FIO { get; set; }
         [Required, EmailAddress]
@@ -41,5 +47,22 @@ namespace NewsAgregator.ViewModels.Data
         public List<NotificationMessageVM>? SenderAdministrators { get; set; }
 
         public List<CommentVM>? Comments { get; set; }
+
+        //public void FromDataModel(NewsAgregator.Data.Models.AccountStatus accountStatus, NewsAgregator.Data.Models.Role role)
+        //{
+        //    AccountStatus = new Parameter
+        //    {
+        //        Id = accountStatus != null ? accountStatus.Id : null,
+        //        Text = accountStatus != null ? accountStatus.Title : "",
+
+        //    };
+
+        //    Role = new Parameter
+        //    {
+        //        Id = role != null ? role.Id : null,
+        //        Text = role != null ? role.Title : "",
+        //    };
+
+        //}
     }
 }

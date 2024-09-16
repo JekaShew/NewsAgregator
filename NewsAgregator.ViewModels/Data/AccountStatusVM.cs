@@ -15,6 +15,6 @@ namespace NewsAgregator.ViewModels.Data
         public string? Title { get; set; }
         public string? Description { get; set; }
 
-        public List<AccountVM>? Accounts { get; set; }
+        public List<CreateAccountVM>? Accounts { get; set; }
     }
 }

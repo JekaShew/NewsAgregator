@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Mapper.Mappers.PropertiesMappers;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Client;
 using NewsAgregator.Abstract.AccountInterfaces;
@@ -12,7 +13,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
+using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,6 +24,8 @@ namespace NewsAgregator.Services.AccountServices
     public class AccountServices : IAccountServices
     {
         private readonly AppDBContext _appDBContext;
+        private readonly byte[] Key = Encoding.UTF8.GetBytes("NewsAggregator_AES_Secret_KEY");
+        private readonly byte[] IV = Encoding.UTF8.GetBytes("NewsAggregator_SECRET_Vector_IV");
         public AccountServices(AppDBContext appDBContext)
         {
             _appDBContext = appDBContext;
@@ -36,13 +41,14 @@ namespace NewsAgregator.Services.AccountServices
             return accountParameters;
         }
 
-        public async Task AddAccountAsync(AccountVM accountVM)
+        public async Task AddAccountAsync(CreateAccountVM createAccountVM)
         {
-            var newAccount = AccountMapper.AccountVMToAccount(accountVM);
+            var newAccount = AccountMapper.CreateAccountVMToAccount(createAccountVM);
 
             newAccount.Id = Guid.NewGuid();
-            newAccount.SecurityStamp = await GetHashAsync(accountVM.SecretWord);
-            newAccount.PasswordHash = await GetPasswordHashAsync(accountVM.Password, await GetHashAsync(accountVM.SecretWord));
+            newAccount.SecretWord = AESEncrypt(await GetHashAsync(createAccountVM.SecretWord), Key, IV);
+            newAccount.SecurityStamp = await GetHashAsync(createAccountVM.SecretWord);
+            newAccount.PasswordHash = await GetPasswordHashAsync(createAccountVM.Password, newAccount.SecurityStamp);
 
             await _appDBContext.Accounts.AddAsync(newAccount);
             await _appDBContext.SaveChangesAsync();
@@ -93,7 +99,6 @@ namespace NewsAgregator.Services.AccountServices
             {
                 account.UserName = updatedAccountVM.UserName;
                 account.Login = updatedAccountVM.Login;
-                //account.PasswordHash = updatedAccountVM.Password;
                 account.FIO = updatedAccountVM.FIO;
                 account.Email = updatedAccountVM.Email;
                 account.Phone = updatedAccountVM.Phone;
@@ -135,15 +140,135 @@ namespace NewsAgregator.Services.AccountServices
 
         public async Task<bool> CheckPasswordAsync(string login, string password)
         {
-            var account = await _appDBContext.Accounts.Where(a => a.Login == login).FirstOrDefaultAsync();
-            var enteredPasswordHash = await GetPasswordHashAsync(password, account.SecurityStamp);
+            if (await CheckIsLoginRegisteredAsync(login))
+            {
+                var account = await _appDBContext.Accounts.Where(a => a.Login.Equals(login)).FirstOrDefaultAsync();
+                var enteredPasswordHash = await GetPasswordHashAsync(password, account.SecurityStamp);
 
-            return await _appDBContext.Accounts.AnyAsync(a => a.Login.Equals(account.Login) && a.PasswordHash.Equals(enteredPasswordHash));
+                return await _appDBContext.Accounts.AnyAsync(a => a.Login.Equals(account.Login) && a.PasswordHash.Equals(enteredPasswordHash));
+            }
+            else
+                return false;
+            
         }
 
-        public async Task<bool> ChangePasswordAsync(string login, string secretWord)
+        public async Task<bool> CanChangePasswordAsync(string login, string password)
         {
-            throw new NotImplementedException();
+            if(await CheckIsLoginRegisteredAsync(login))
+            {
+                return await CheckPasswordAsync(login, password);
+            }
+            else 
+                return false;
         }
+
+        public async Task<bool> CanChangeForgottenPasswordAsync(string login, string secretWord)
+        {
+            if (await CheckIsLoginRegisteredAsync(login))
+            {
+                var account = await _appDBContext.Accounts.FirstOrDefaultAsync(a => a.Login.Equals(login));
+
+                if (GetHashAsync(secretWord).Equals(AESDecrypt(Encoding.UTF8.GetBytes(account.SecretWord), Key, IV)))
+                    return true;
+                else
+                    return false;
+            }
+            else
+                return false;
+        }
+
+        public async Task ChangePasswordAsync(string password)
+        {
+            var accoutId = GetCurrentUserId();
+            var account = await _appDBContext.Accounts.FirstOrDefaultAsync(a => a.Id == accoutId);
+            account.PasswordHash = await GetPasswordHashAsync(password, account.SecurityStamp);
+
+            await _appDBContext.SaveChangesAsync();
+        }
+
+        
+        public Guid? GetCurrentUserId()
+        {
+            if (!httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+                return null;
+
+            var claim = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+
+            if (claim == null)
+                return null;
+
+            return Guid.Parse(claim.Value);
+        }
+
+
+        private string AESEncrypt(string plainText, byte[] Key, byte[] IV)
+        {
+            if (plainText == null || plainText.Length <= 0)
+                throw new ArgumentNullException(nameof(plainText));
+            if (Key == null || Key.Length <= 0)
+                throw new ArgumentNullException(nameof(Key));
+            if (IV == null || IV.Length <= 0)
+                throw new ArgumentNullException(nameof(IV));
+
+            byte[] encrypted;
+
+            using (Aes aesAlg = Aes.Create())
+            {
+                aesAlg.Key = Key;
+                aesAlg.IV = IV;
+
+                ICryptoTransform encryptor = aesAlg.CreateEncryptor(aesAlg.Key, aesAlg.IV);
+
+                using (MemoryStream msEncrypt = new MemoryStream())
+                {
+                    using (CryptoStream csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write))
+                    {
+                        using (StreamWriter swEncrypt = new StreamWriter(csEncrypt))
+                        {
+                            swEncrypt.Write(plainText);
+                        }
+                        encrypted = msEncrypt.ToArray();
+                    }
+                }
+            }
+
+            return Encoding.UTF8.GetString(encrypted);
+        }
+
+        private string AESDecrypt(byte[] cipherText, byte[] Key, byte[] IV)
+        {
+            if (cipherText == null || cipherText.Length <= 0)
+                throw new ArgumentNullException(nameof(cipherText));
+            if (Key == null || Key.Length <= 0)
+                throw new ArgumentNullException(nameof(Key));
+            if (IV == null || IV.Length <= 0)
+                throw new ArgumentNullException(nameof(IV));
+
+            string plaintext = null;
+
+            using (Aes aesAlg = Aes.Create())
+            {
+                aesAlg.Key = Key;
+                aesAlg.IV = IV;
+
+                ICryptoTransform decryptor = aesAlg.CreateDecryptor(aesAlg.Key, aesAlg.IV);
+
+                using (MemoryStream msDecrypt = new MemoryStream(cipherText))
+                {
+                    using (CryptoStream csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read))
+                    {
+                        using (StreamReader srDecrypt = new StreamReader(csDecrypt))
+                        {
+                            plaintext = srDecrypt.ReadToEnd();
+                        }
+                    }
+                }
+            }
+
+            return plaintext;
+        }
+
     }
 }
+
+
