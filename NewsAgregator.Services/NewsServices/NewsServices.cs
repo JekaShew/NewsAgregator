@@ -120,79 +120,33 @@ namespace NewsAgregator.Services.NewsServices
 
                 try
                 {
-                    tasksForRSSData.Add(GetRssData(source, existedNewsUrls));
+                    tasksForRSSData.Add(GetRssDataAsync(source, existedNewsUrls));
                 }
                 catch (Exception ex)
                 {
                     _logger.LogError($"Error processing RSS feed from {source.RssUrl}: {ex.Message?.ToString()}; {ex.InnerException?.Message}");
                     Console.WriteLine(ex.Message);
                 }
-
             }
-        //var testSource = await _appDBContext.Sources.FirstOrDefaultAsync(s => s.RssUrl.Contains("belkagomel"));
-        //    try
-        //    {
-        //        var testResult = await GetRssData(testSource, existedNewsUrls);
-        //    }
-        //    catch(Exception ex)
-        //    {
-        //        _logger.LogError($"Error processing RSS feed from {ex.InnerException}: {ex.Message}");
-        //    }
-            
+        
 
-            //if (newsVMsRssData.Count != 0 && newsVMsRssData != null)
-            //{
-            //    var newsesRSSData = _mapper.Map<List<News>>(newsVMsRssData.Where(vm => vm != null).Select(vm => vm));
-
-            //    await _appDBContext.Newses.AddRangeAsync(newsesRSSData);
-            //    await _appDBContext.SaveChangesAsync();
-            //}
-            //     var task = GetRssData(source, existedNewsUrls);
-            //     if(task.Status == TaskStatus.Faulted)
-            //      task.ContinueWith(t =>
-            //           {
-            //               if (t.Status == TaskStatus.Faulted)
-            //               {
-            //                   _logger.LogError($"Error processing RSS feed from {source.RssUrl}: {t.Exception?.InnerException?.Message} Inner Exceptiomn: {t.Exception?.InnerException?.InnerException?.Message}");
-            //                   Console.WriteLine(t.Exception?.InnerException?.Message);
-
-            //               }
-            //           }, TaskContinuationOptions.OnlyOnFaulted);
-            //     tasksForRSSData.Add(task);
-
-            // }
-
-            var validRSSDataTasks = tasksForRSSData.Where(task => task.Status != TaskStatus.Canceled && task.Status != TaskStatus.Faulted).ToList();
-
+            var validRSSDataTasks = tasksForRSSData
+                                        .Where(task => task.Status != TaskStatus.Canceled && task.Status != TaskStatus.Faulted).ToList();
 
             if (validRSSDataTasks.Count != 0 && validRSSDataTasks != null)
                await Task.WhenAll(validRSSDataTasks);
-
-            //foreach (var task in validRSSDataTasks)
-            //{
-            //    try 
-            //    {
-            //        var result = await Task.WhenAll(task);
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        _logger.LogError($"Error Task TaskStatus: {task.Status} TaskException: {task.Exception} Exception: {ex.InnerException?.Message}");
-            //    }
-                
-            //}
-
+           
             var newsVMWithOutText = await GetNewsWithoutText();
 
-            var newsesTestScrap =  newsVMWithOutText.Where(n => n.SourceUrl.Contains("belkagomel")).ToList();
+            var newsesToScrap =  newsVMWithOutText.Where(n => n.SourceUrl.Contains("belkagomel")).ToList();
 
             var tasksScrappingData = new List<Task>();
-            foreach (var newsTestScrap in newsesTestScrap)
+            foreach (var newsTestScrap in newsesToScrap)
             {
                 //var result = await UpdateNewsText(newsTestScrap);
                 try
                 {
                     tasksScrappingData.Add(UpdateNewsText(newsTestScrap));
-                    //await UpdateNewsText(newsTestScrap);
                 }
                 catch (Exception ex)
                 {
@@ -214,91 +168,55 @@ namespace NewsAgregator.Services.NewsServices
             //var resultText3 = await UpdateNewsText(newsVMWithOutText.FirstOrDefault(n => n.SourceUrl.Contains("belkagomel.by")));
 
             //var resultText4 = await UpdateNewsText(newsVMWithOutText.FirstOrDefault(n => n.SourceUrl.Contains("sputnik.by")));
-
-            //var resultText5 = await UpdateNewsText(newsVMWithOutText.FirstOrDefault(n => n.SourceUrl.Contains("ctv.by")));
-
-            await _appDBContext.Newses.FirstOrDefaultAsync();
           
         }
 
 
 
-        private async Task GetRssData(Source source, List<string> existedNewsUrls)
+        private async Task GetRssDataAsync(Source source, List<string> existedNewsUrls)
         {
             if (source?.RssUrl != null)
             {
-                XmlReaderSettings settings = new XmlReaderSettings();
-                settings.Async = true;
-                using (var xmlreader = XmlReader.Create(source.RssUrl, settings))
+                try
                 {
-                    var syndicationFeed = SyndicationFeed.Load(xmlreader);
-                    Console.WriteLine(source.BaseUrl);
-                    var newses = syndicationFeed.Items
-                        .Where(x => !existedNewsUrls.Contains(x.Links.FirstOrDefault().Uri.OriginalString))
-                        .Select(x => new NewsVM
-                        {
-                            Id = Guid.NewGuid(),
-                            Title = x.Title.Text,
-                            Description = x.Summary.Text,
-                            Date = x.PublishDate.DateTime,
-                            SourceUrl = x.Links.FirstOrDefault().Uri.OriginalString,
-                            SourceId = source.Id,
-                        }).ToList();
-                   
-                    //var uniqueNewses = newses.Where(n => !existedNewsUrls.Contains(n.SourceUrl)).ToList();
-
-                    if (newses.Count != 0 && newses != null)
+                    XmlReaderSettings settings = new XmlReaderSettings();
+                    settings.Async = true;
+                    using (var xmlreader = XmlReader.Create(source.RssUrl, settings))
                     {
-                        var newsesRSSData = _mapper.Map<List<News>>(newses.Where(vm => vm != null).Select(vm => vm));
+                        var syndicationFeed = SyndicationFeed.Load(xmlreader);
+                        Console.WriteLine(source.BaseUrl);
+                        var newsVMs = syndicationFeed.Items
+                            .Where(x => !existedNewsUrls.Contains(x.Links.FirstOrDefault().Uri.OriginalString))
+                            .Select(x => new NewsVM
+                            {
+                                Id = Guid.NewGuid(),
+                                Title = x.Title.Text,
+                                Description = x.Summary.Text,
+                                Date = x.PublishDate.DateTime,
+                                SourceUrl = x.Links.FirstOrDefault().Uri.OriginalString,
+                                SourceId = source.Id,
+                            }).ToList();
 
-                        await _appDBContext.Newses.AddRangeAsync(newsesRSSData);
-                        await _appDBContext.SaveChangesAsync();
+                        if (newsVMs.Count != 0 && newsVMs != null)
+                        {
+                            var newsesRSSData = newsVMs.Where(vm => vm != null).Select(vm => NewsMapper.NewsVMToNews(vm));
+
+                            await _appDBContext.Newses.AddRangeAsync(newsesRSSData);
+                            await _appDBContext.SaveChangesAsync();
+                        }
                     }
                 }
-            }
-            
-            
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Error processing Gettin Rss data from {source.RssUrl}: {ex.Message} Inner Exceptiomn: {ex.InnerException?.Message}");
+                }  
+            }    
         }
 
-        //private async Task GetRssData(Source source, List<string> existedNewsUrls)
-        //{
-        //    if (source?.RssUrl != null)
-        //    {
-        //        using (var xmlreader = XmlReader.Create(source.RssUrl))
-        //        {
-        //            var syndicationFeed = SyndicationFeed.Load(xmlreader);
-        //            Console.WriteLine(source.BaseUrl);
-        //            var newses = syndicationFeed.Items
-        //                .Where(x => !existedNewsUrls.Contains(x.Links.FirstOrDefault().Uri.OriginalString))
-        //                .Select(x => new NewsVM
-        //                {
-        //                    Id = Guid.NewGuid(),
-        //                    Title = x.Title.Text,
-        //                    Description = x.Summary.Text,
-        //                    Date = x.PublishDate.DateTime,
-        //                    SourceUrl = x.Links.FirstOrDefault().Uri.OriginalString,
-        //                    SourceId = source.Id,
-        //                }).ToList();
-        //            //var uniqueNewses = newses.Where(n => !existedNewsUrls.Contains(n.SourceUrl)).ToList();
-
-        //            if (newses.Count != 0 && newses != null)
-        //            {
-        //                var newsesRSSData = _mapper.Map<List<News>>(newses.Where(vm => vm != null).Select(vm => vm));
-
-        //                await _appDBContext.Newses.AddRangeAsync(newsesRSSData);
-        //                await _appDBContext.SaveChangesAsync();
-        //            }
-        //        }
-        //    }
-        //}
-
-
-
-
-
+     
         private async Task<List<NewsVM>> GetNewsWithoutText()
         {
-            var newsVMWithOutText = _mapper.Map<List<NewsVM>>(await _appDBContext.Newses.Where(n => string.IsNullOrEmpty(n.Text)).Select(n => n).ToListAsync());
+            var newsVMWithOutText = (await _appDBContext.Newses.Where(n => string.IsNullOrEmpty(n.Text)).ToListAsync()).Select(n=> NewsMapper.NewsToNewsVM(n)).ToList();
 
             return newsVMWithOutText;
         }
@@ -413,88 +331,37 @@ namespace NewsAgregator.Services.NewsServices
             // not ready need last fixes
             if (newsVM.SourceUrl.Contains("belta.by"))
             {
-                var newsNode = doc.DocumentNode.SelectSingleNode("//div[@class='news_img_slide']").InnerHtml;
-
-                if (newsNode != null)
-                {
-                    var newsAllNode = doc.DocumentNode.SelectSingleNode("//div[@class='js-mediator-article']");
-                    RemoveExcludeElementsBelta(newsAllNode);
-                    newsNode += "\n";
-                    newsNode += newsAllNode.InnerHtml;
-                    
-                        //newsNode = newsAllNode.DescendantsAndSelf()
-                        //        .Where(node => !node.ChildNodes.Any(chn => chn.Name == "a")
-                        //        && node.Name != "script"
-                        //        && !node.Attributes["class"]?.Value?.Contains("yandex_share_print") 
-                        //        && !node.Attributes["class"]?.Value?.Contains("advertising_block") 
-                        //        && !node.Attributes["class"]?.Value?.Contains("news_tags_block") )
-                        //    .Aggregate(string.Empty, (current, node) => current + node.OuterHtml);
-
-
-                        //newsNode = newsAllNode.DescendantsAndSelf()
-                        //        .Where(node => node.NodeType != HtmlNodeType.Element 
-                        //        &&  !(node.Name == "div" 
-                        //                && (node.Attributes["class"].Value.Contains("yandex_share_print")
-                        //                || node.Attributes["class"].Value.Contains("advertising_block")
-                        //                || node.Attributes["class"].Value.Contains("news_tags_block")) )
-                        //        &&
-                        //        !(node.Name == "div" && node.ChildNodes.Any(chn => chn.Name == "a")) 
-                        //        && node.Name != "script")
-                        //    .Aggregate(string.Empty, (current, node) => current + node.OuterHtml);
-                    }
-                else
-                {
-                    var newsAllNode = doc.DocumentNode.SelectSingleNode("//div[@class='js-mediator-article']");
-                    RemoveExcludeElementsBelta(newsAllNode);
-                    newsNode = newsAllNode.InnerHtml;
-                   
-                }
-                news.Text = newsNode;
-
+                string newsTextNode;
+                string newsHtmlNode = doc.DocumentNode.SelectSingleNode("//div[@class='news_img_slide']").InnerHtml;
+                
+                var newsAllNode = doc.DocumentNode.SelectSingleNode("//div[@class='js-mediator-article']");
+                RemoveExcludeElementsBelta(newsAllNode);
+                newsHtmlNode += "\n";
+                newsHtmlNode += newsAllNode.InnerHtml;
+                newsTextNode = newsAllNode.InnerText;                
+            
+                news.TextHTML = RemoveATags(newsHtmlNode);
+                news.Text = newsTextNode;
             }
 
             //not ready need last fixes
             if (newsVM.SourceUrl.Contains("sputnik.by"))
             {
                 // непонятно почему не находит фотку, возможно следует искать по блокам выше( тпиа родительский div с определенным классом???)
-                var newsNode = doc.DocumentNode.SelectSingleNode("//img[@media-type='ar16x9']").InnerHtml;
-                if (newsNode != null)
-                {
-                    newsNode += "\n";
-                    newsNode += doc.DocumentNode.SelectSingleNode("//div[@class='article__announce-text']").InnerHtml;
-                }
-                else
-                {
-                    newsNode += doc.DocumentNode.SelectSingleNode("//div[@class='article__announce-text']").InnerHtml;
-                }
+                string newsTextNode;
+                string newsHtmlNode = doc.DocumentNode.SelectSingleNode("//img[@media-type='ar16x9']").InnerHtml;
+                newsHtmlNode += "\n";
+                newsHtmlNode += doc.DocumentNode.SelectSingleNode("//div[@class='article__announce-text']").InnerHtml;
+                newsHtmlNode += "\n";
 
-                if (newsNode != null)
-                {
-                    var newsAllNode = doc.DocumentNode.SelectSingleNode("//div[@class='article__body']");
-                    //var textBlocks = newsAllNode.ChildNodes
-                    //                    .Where(ch => ch.Name == "div" && ch.Attributes["class"]?.Value == "article__block" && (ch.Attributes["data-type"]?.Value == "text" || ch.Attributes["data-type"]?.Value == "quote")).ToList();
-                    RemoveExcludeElementsSputnik(newsAllNode);
-                    newsNode += "\n";
-                    newsNode += newsAllNode.InnerHtml;
-                    //var newsNodeWithoutATags = RemoveATags(newsNode);
-                }
-                else
-                {
-                    var newsAllNode = doc.DocumentNode.SelectSingleNode("//div[@class='article__body']");
-                    //var textBlocks = newsAllNode.ChildNodes
-                    //                    .Where(ch => ch.Name == "div" 
-                    //                                && ch.Attributes["class"]?.Value == "article__block" 
-                    //                                && (ch.Attributes["data-type"]?.Value == "text" 
-                    //                                    || ch.Attributes["data-type"]?.Value == "quote"))
-                    //                    .ToList();
-                    RemoveExcludeElementsSputnik(newsAllNode);
-                    newsNode = newsAllNode.InnerHtml;
-                    //var newsNodeWithoutATags = RemoveATags(newsNode);
-                }
+                var newsAllNode = doc.DocumentNode.SelectSingleNode("//div[@class='article__body']");
+               
+                RemoveExcludeElementsSputnik(newsAllNode);
+                newsHtmlNode += newsAllNode.InnerHtml;
+                newsTextNode = newsAllNode.InnerText;
 
-
-                news.Text = RemoveATags(newsNode);
-
+                news.TextHTML = RemoveATags(newsHtmlNode);
+                news.Text = newsTextNode;
             }
 
             //not ready need last fixes
@@ -504,10 +371,11 @@ namespace NewsAgregator.Services.NewsServices
                 
                 RemoveExcludeElementsBelkagomel(newsAllNodes);
 
-                //newsNode += "\n";
-                //newsNode += doc.DocumentNode.SelectSingleNode("//div[@class='js-mediator-article']").InnerText;
-                var newsNode = newsAllNodes.InnerHtml;
-                news.Text = RemoveATags(newsNode);
+                string newsHTMLNode = newsAllNodes.InnerHtml;
+                string newsTextNode = newsAllNodes.InnerText;
+                
+                news.TextHTML = RemoveATags(newsHTMLNode);
+                news.Text = newsTextNode;
             }
 
 
@@ -515,17 +383,11 @@ namespace NewsAgregator.Services.NewsServices
             if (newsVM.SourceUrl.Contains("gp.by"))
             {
                 var newsNode = doc.DocumentNode.SelectSingleNode("//article[@itemprop='description']").InnerHtml;
-                //newsNode += "\n";
-                //newsNode += doc.DocumentNode.SelectSingleNode("//div[@class='js-mediator-article']").InnerText;
-                news.Text = newsNode;
+
+                news.TextHTML = newsNode;
 
             }
 
-
-            // добавить обработку Html  всех оставшихся источников
-            
-            //news.Text = newsVM.Text;
-        
             await _appDBContext.SaveChangesAsync();
         }
     }

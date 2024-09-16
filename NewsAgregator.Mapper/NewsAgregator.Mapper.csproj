@@ -8,7 +8,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\NewsAgregator.Data\NewsAgregator.Data.csproj" />
-    <ProjectReference Include="..\NewsAgregator.Services\NewsAgregator.Services.csproj" />
     <ProjectReference Include="..\NewsAgregator.ViewModels\NewsAgregator.ViewModels.csproj" />
   </ItemGroup>
 

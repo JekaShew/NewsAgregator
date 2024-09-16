@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace NewsAgregator.Services.NewsServices
 {
-     public class SourceServices : ISourceServices
+    public class SourceServices : ISourceServices
     {
         private readonly AppDBContext _appDBContext;
         public SourceServices(AppDBContext appDBContext)
@@ -57,3 +57,4 @@ namespace NewsAgregator.Services.NewsServices
             }
         }
     }
+}

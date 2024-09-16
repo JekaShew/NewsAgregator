@@ -23,7 +23,7 @@ namespace NewsAgregator.Services.WeatherServices
             _appDBContext = appDBContext;
         }
 
-        public async Task<WeatherParameters> GetWeatherParameters()
+        public async Task<WeatherParameters> GetWeatherParametersAsync()
         {
             var weatherParameters = new WeatherParameters()
             {
@@ -59,7 +59,7 @@ namespace NewsAgregator.Services.WeatherServices
                 .Include(wsc => wsc.WeatherStatusCommon)
                 .FirstOrDefaultAsync(w => w.Id == id));
 
-            var weatherParameters = await GetWeatherParameters();
+            var weatherParameters = await GetWeatherParametersAsync();
             weather.WeatherStatuses = weatherParameters.WeatherStatuses;
 
             return weather;
