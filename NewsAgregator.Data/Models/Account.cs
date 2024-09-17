@@ -43,6 +43,7 @@ namespace NewsAgregator.Data.Models
         public List<NotificationMessage>? SenderAdministrators { get; set; }
 
         public List<Comment>? Comments { get; set; }
+        public List<RefreshToken> RefreshTokens { get; set; }
 
 
     }

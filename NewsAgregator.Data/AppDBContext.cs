@@ -27,6 +27,7 @@ namespace NewsAgregator.Data
         public DbSet<Weather> Weathers { get; set; }
         public DbSet<WeatherStatus> WeatherStatuses { get; set; }
         public DbSet<Source> Sources { get; set; }
+        public DbSet<RefreshToken> RefreshTokens { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

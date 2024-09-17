@@ -13,6 +13,7 @@ namespace NewsAgregator.Abstract.AccountInterfaces
         public Task<List<AccountVM>> TakeAccountsAsync();
 
         public Task<AccountVM> TakeAccountByIdAsync(Guid id);
+        public Task<Guid?> TakeAccountIdByLoginAsync(string login);
 
         public Task AddAccountAsync(CreateAccountVM account);
 
@@ -21,7 +22,7 @@ namespace NewsAgregator.Abstract.AccountInterfaces
         public Task UpdateAccountAsync(AccountVM updatedAccount);
         public Task<AccountParameters> GetAccountParametersAsync();
         public Task<bool> CheckIsLoginRegisteredAsync(string login);
-        public Task<bool> CheckPasswordAsync(string login, string password);
+        public Task<bool> CheckLoginPasswordAsync(string login, string password);
         public Task<bool> CanChangePasswordAsync(string login, string password);
         public Task<bool> CanChangeForgottenPasswordAsync(string login, string secretWord);
 

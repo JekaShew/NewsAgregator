@@ -61,7 +61,29 @@ namespace NewsAgregator.Web
                 .WriteTo.Console(Serilog.Events.LogEventLevel.Error)
                 .WriteTo.File("logs.log"));
             services.AddDbContext<AppDBContext>(options => options.UseSqlServer(connectionString: Configuration.GetConnectionString("Home")));
-            
+
+            var jwtIss = Configuration.GetSection("JWT:Iss").Get<string>();
+            var jwtAud = Configuration.GetSection("JWT:Aud").Get<string>();
+            var jwtKey = Configuration.GetSection("JWT:SecretKey").Get<string>();
+
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+               .AddJwtBearer(options =>
+               {
+                   options.RequireHttpsMetadata = false;
+                   options.TokenValidationParameters = new TokenValidationParameters
+                   {
+                       ValidateIssuer = true,
+                       ValidIssuer = jwtIss,
+
+                       ValidateAudience = true,
+                       ValidAudience = jwtAud,
+                       ValidateLifetime = true,
+
+                       IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(jwtKey)),
+                       ValidateIssuerSigningKey = true,
+                   };
+               });
+
             services.AddMvc();
             services.AddCors();
             services.AddSwaggerGen(x =>
@@ -81,24 +103,7 @@ namespace NewsAgregator.Web
                 x.DocInclusionPredicate((name, api) => true);
             });
 
-            //services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            //       .AddJwtBearer(options =>
-            //       {
-            //           options.RequireHttpsMetadata = false;
-            //           options.TokenValidationParameters = new TokenValidationParameters
-            //           {
-            //               ValidateIssuer = true,
-            //               ValidIssuer = Constants.Identity.ISSUER,
-
-            //               ValidateAudience = true,
-            //               ValidAudience = Constants.Identity.AUDIENCE,
-            //               ValidateLifetime = true,
-
-            //               IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(Constants.Identity.KEY)),
-            //               ValidateIssuerSigningKey = true,
-            //           };
-            //       });
-
+ 
             services.AddDbContext<AppDBContext>();
             //services.AddTransient<DbContext>(isp => isp.GetService<AppDBContext>());
 
@@ -108,6 +113,7 @@ namespace NewsAgregator.Web
             services.AddScoped<IRoleServices, RoleServices>();
 
             services.AddScoped<ICommentServices, CommentServices>();
+            services.AddScoped<IAccountAuthorizationServices, AccountAuthorizationServices>();
 
             services.AddScoped<IComplaintServices, ComplaintServices>();
             services.AddScoped<IComplaintStatusServices, ComplaintStatusServices>();
@@ -144,8 +150,8 @@ namespace NewsAgregator.Web
             app.UseSwagger();
             app.UseSwaggerUI(options => options.SwaggerEndpoint("/swagger/v1/swagger.json", "NewsAgragator Web API"));
 
-            //app.UseAuthentication();
-            //app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {

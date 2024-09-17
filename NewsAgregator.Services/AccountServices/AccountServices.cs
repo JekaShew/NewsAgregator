@@ -66,6 +66,8 @@ namespace NewsAgregator.Services.AccountServices
                 .AsNoTracking()
                 .Include(acc => acc.AccountStatus)
                 .Include(acc => acc.Role)
+                    .ThenInclude(rp => rp.RolePolicies)
+                        .ThenInclude(p => p.Policy)
                 .FirstOrDefaultAsync(acc => acc.Id == id));
 
             var accountParameters = await GetAccountParametersAsync();
@@ -138,7 +140,7 @@ namespace NewsAgregator.Services.AccountServices
             return await _appDBContext.Accounts.AnyAsync(a => a.Login.Equals(login));
         }
 
-        public async Task<bool> CheckPasswordAsync(string login, string password)
+        public async Task<bool> CheckLoginPasswordAsync(string login, string password)
         {
             if (await CheckIsLoginRegisteredAsync(login))
             {
@@ -156,7 +158,7 @@ namespace NewsAgregator.Services.AccountServices
         {
             if(await CheckIsLoginRegisteredAsync(login))
             {
-                return await CheckPasswordAsync(login, password);
+                return await CheckLoginPasswordAsync(login, password);
             }
             else 
                 return false;
@@ -268,6 +270,10 @@ namespace NewsAgregator.Services.AccountServices
             return plaintext;
         }
 
+        public async Task<Guid?> TakeAccountIdByLoginAsync(string login)
+        {
+           return await _appDBContext.Accounts.Where(a => a.Login.Equals(login)).Select(a => a.Id).FirstOrDefaultAsync();
+        }
     }
 }
 
