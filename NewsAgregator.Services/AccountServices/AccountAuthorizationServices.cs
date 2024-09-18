@@ -12,6 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace NewsAgregator.Services.AccountServices
@@ -30,10 +31,6 @@ namespace NewsAgregator.Services.AccountServices
             _roleServices = roleServices;
             _appDBContext = appDBContext;
         }
-        //public Task<IActionResult> SignInAsync(CreateAccountVM accountVM)
-        //{
-        //    throw new NotImplementedException();
-        //}
 
         public Task<IActionResult> SignOutAsync(Guid id)
         {
@@ -91,18 +88,32 @@ namespace NewsAgregator.Services.AccountServices
             await _appDBContext.SaveChangesAsync();
             return refreshToken.Id.ToString("D");
         }
-        public async Task RemoveRefreshToken(Guid tokenId)
-        {
 
+        public async Task<RefreshToken> TakeRefreshTokenByIdAsync(Guid refreshTokenId)
+        {
+            return await _appDBContext.RefreshTokens.FirstOrDefaultAsync(rt => rt.Id == refreshTokenId);
+        }   
+
+        public async Task RevokeTokenByIdAsync(Guid refreshTokenId)
+        {
+            var rToken = await TakeRefreshTokenByIdAsync(refreshTokenId);
+            rToken.IsRevoked = true;
+            await _appDBContext.SaveChangesAsync();
         }
 
-        public async Task RevokeToken(Guid refreshTokenId)
+        public async Task RemoveRTokenByIdAsync(Guid refreshTokenId)
         {
-
+            var rToken = await _appDBContext.RefreshTokens.FirstOrDefaultAsync(rt => rt.Id == refreshTokenId);
+            _appDBContext.RefreshTokens.Remove(rToken);
+            await _appDBContext.SaveChangesAsync();
         }
 
-        public async Task RemoveToken(Guid id)
+        public async Task<bool> RefreshTokenCorrect(Guid refreshTokenId)
         {
+            var rToken = await TakeRefreshTokenByIdAsync(refreshTokenId); 
+            return rToken
+                is { IsRevoked: false }
+                   && (rToken.ExpireDateTime <= DateTime.UtcNow || rToken.ExpireDateTime == null);
         }
     }
 }

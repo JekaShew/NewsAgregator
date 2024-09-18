@@ -9,7 +9,7 @@ using NewsAgregator.Data.Models;
 using NewsAgregator.Mapper.DataMappers;
 using NewsAgregator.ViewModels.Additional;
 using NewsAgregator.ViewModels.Data;
-using System;
+using System; 
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
@@ -24,10 +24,12 @@ namespace NewsAgregator.Services.AccountServices
     public class AccountServices : IAccountServices
     {
         private readonly AppDBContext _appDBContext;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly byte[] Key = Encoding.UTF8.GetBytes("NewsAggregator_AES_Secret_KEY");
         private readonly byte[] IV = Encoding.UTF8.GetBytes("NewsAggregator_SECRET_Vector_IV");
-        public AccountServices(AppDBContext appDBContext)
+        public AccountServices(AppDBContext appDBContext, IHttpContextAccessor httpContextAccessor)
         {
+            _httpContextAccessor = httpContextAccessor;
             _appDBContext = appDBContext;
         }
 
@@ -191,10 +193,10 @@ namespace NewsAgregator.Services.AccountServices
         
         public Guid? GetCurrentUserId()
         {
-            if (!httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
+            if (!_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
                 return null;
 
-            var claim = httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
+            var claim = _httpContextAccessor.HttpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimTypes.NameIdentifier);
 
             if (claim == null)
                 return null;
@@ -273,6 +275,12 @@ namespace NewsAgregator.Services.AccountServices
         public async Task<Guid?> TakeAccountIdByLoginAsync(string login)
         {
            return await _appDBContext.Accounts.Where(a => a.Login.Equals(login)).Select(a => a.Id).FirstOrDefaultAsync();
+        }
+
+        public async Task<AccountVM> TakeAccountByRTokenIdAsync(Guid refreshTokenId)
+        {
+            var userId = await _appDBContext.RefreshTokens.Where(rt => rt.Id == refreshTokenId).Select(rt => rt.AccountId).FirstOrDefaultAsync();            
+            return await TakeAccountByIdAsync(userId);
         }
     }
 }

@@ -29,6 +29,7 @@ using NewsAgregator.Services.NewsServices;
 using NewsAgregator.Abstract.WeatherInterfaces;
 using NewsAgregator.Services.WeatherServices;
 using Serilog;
+using Hangfire;
 
 
 namespace NewsAgregator.Web
@@ -59,7 +60,7 @@ namespace NewsAgregator.Web
                 .ReadFrom.Services(services)
                 .Enrich.FromLogContext()
                 .WriteTo.Console(Serilog.Events.LogEventLevel.Error)
-                .WriteTo.File("logs.log"));
+                .WriteTo.File("NewsAggregatorLogs.log"));
             services.AddDbContext<AppDBContext>(options => options.UseSqlServer(connectionString: Configuration.GetConnectionString("Home")));
 
             var jwtIss = Configuration.GetSection("JWT:Iss").Get<string>();
@@ -83,6 +84,14 @@ namespace NewsAgregator.Web
                        ValidateIssuerSigningKey = true,
                    };
                });
+            services.AddAuthorization();
+            
+            services.AddHangfire(configuration => configuration
+                    .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
+                    .UseSimpleAssemblyNameTypeSerializer()
+                    .UseRecommendedSerializerSettings()
+                    .UseSqlServerStorage(Configuration.GetConnectionString("Home")));
+            services.AddHangfireServer();
 
             services.AddMvc();
             services.AddCors();
@@ -111,10 +120,10 @@ namespace NewsAgregator.Web
             services.AddScoped<IAccountStatusServices, AccountStatusServices>();
             services.AddScoped<IPolicyServices, PolicyServices>();
             services.AddScoped<IRoleServices, RoleServices>();
-
-            services.AddScoped<ICommentServices, CommentServices>();
             services.AddScoped<IAccountAuthorizationServices, AccountAuthorizationServices>();
 
+            services.AddScoped<ICommentServices, CommentServices>();
+           
             services.AddScoped<IComplaintServices, ComplaintServices>();
             services.AddScoped<IComplaintStatusServices, ComplaintStatusServices>();
             services.AddScoped<IComplaintTypeServices, ComplaintTypeServices>();
@@ -152,6 +161,8 @@ namespace NewsAgregator.Web
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseHangfireDashboard();
 
             app.UseEndpoints(endpoints =>
             {

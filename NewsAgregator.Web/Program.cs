@@ -12,7 +12,7 @@ namespace NewsAgregator.Web
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Information)
                 .Enrich.FromLogContext()
-                .WriteTo.File("logs.log")
+                .WriteTo.File("NewsAggregatorLogs.log")
                 .CreateBootstrapLogger();
 
             CreateHostBuilder(args).Build().Run();

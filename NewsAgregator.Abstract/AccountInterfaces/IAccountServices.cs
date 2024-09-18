@@ -14,7 +14,7 @@ namespace NewsAgregator.Abstract.AccountInterfaces
 
         public Task<AccountVM> TakeAccountByIdAsync(Guid id);
         public Task<Guid?> TakeAccountIdByLoginAsync(string login);
-
+        public Task<AccountVM> TakeAccountByRTokenIdAsync(Guid refreshTokenId);
         public Task AddAccountAsync(CreateAccountVM account);
 
         public Task DeleteAccountAsync(Guid id);

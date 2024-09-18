@@ -10,11 +10,11 @@ namespace NewsAgregator.Abstract.AccountInterfaces
 {
     public interface IAccountAuthorizationServices
     {
-        public Task<string> GenerateJwtTokenString(Guid userId);
-        public Task<string> GenerateRefreshToken(Guid userId);
-        public Task RevokeToken(Guid refreshTokenId);
-        Task<bool> RefreshTokenCorrect(Guid tokenId);
-        Task RemoveToken(Guid id);
+        public Task<string> GenerateJwtTokenString(Guid accountId);
+        public Task<string> GenerateRefreshToken(Guid accountId);
+        public Task RevokeTokenByIdAsync(Guid refreshTokenId);
+        Task<bool> RefreshTokenCorrect(Guid refreshTokenId);
+        Task RemoveRTokenByIdAsync(Guid refreshTokenId);
 
     }
 }

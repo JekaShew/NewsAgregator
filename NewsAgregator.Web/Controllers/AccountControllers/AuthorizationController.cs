@@ -68,13 +68,13 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         }
 
         [HttpPost("signout")]
-        public async Task<IActionResult> SignOut(CreateAccountVM accountVM)
+        public async Task<IActionResult> SignOut(Guid tokenId)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    await _accountServices.AddAccountAsync(accountVM);
+                    await _authorizationServices.RemoveRTokenByIdAsync(tokenId);
                     return Ok();
                 }
                 else return BadRequest(ModelState);
@@ -89,29 +89,33 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         }
 
         [HttpPost("/refresh/")]
-        public async Task<IActionResult> Refresh([FromBody] Guid refreshToken)
+        public async Task<IActionResult> Refresh([FromBody] Guid refreshTokenId)
         {
-            if (await _tokenService.RefreshTokenCorrect(refreshToken))
+            if (await _authorizationServices.RefreshTokenCorrect(refreshTokenId))
             {
-                var user = await _userService.GetUserDataByRefreshToken(refreshToken);
-                if (user != null)
+                var accountVM = await _accountServices.TakeAccountByRTokenIdAsync(refreshTokenId);
+                if (accountVM != null)
                 {
-                    var data = await GenerateTokenPair(user.Id, user.RoleName);
+                    var tokens = await GenerateTokenPair(accountVM.Id);
 
-                    await _tokenService.RemoveToken(refreshToken); //todo need to be implemented
+                    await _authorizationServices.RemoveRTokenByIdAsync(refreshTokenId);
 
-                    return Ok(new { AccessToken = data.Item1, refreshToken = data.Item2 });
-
+                    return Ok(new { AccessToken = tokens.Item1, refreshToken = tokens.Item2 });
                 }
             }
             return NotFound();
         }
 
         [HttpPatch("/revoke/{id}")]
-        public async Task<IActionResult> Revoke(Guid id)
+        public async Task<IActionResult> RevokeTokenById([FromRoute] Guid refreshTokenId)
         {
-            //set IsRevoked true for refreshToken 
-            return NotFound();
+            if (await _authorizationServices.RefreshTokenCorrect(refreshTokenId))
+            {
+                await _authorizationServices.RevokeTokenByIdAsync(refreshTokenId);
+                return Ok("Success!");
+            }
+            else
+                return BadRequest("Incorrect RToken!");
         }
 
         private async Task<(string, string)> GenerateTokenPair(Guid userId)
