@@ -16,7 +16,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
-using System.Text;
+using System.Text; 
 using System.Threading.Tasks;
 
 namespace NewsAgregator.Services.AccountServices
@@ -183,7 +183,7 @@ namespace NewsAgregator.Services.AccountServices
 
         public async Task ChangePasswordAsync(string password)
         {
-            var accoutId = GetCurrentUserId();
+            var accoutId = GetCurrentAccountId();
             var account = await _appDBContext.Accounts.FirstOrDefaultAsync(a => a.Id == accoutId);
             account.PasswordHash = await GetPasswordHashAsync(password, account.SecurityStamp);
 
@@ -191,7 +191,7 @@ namespace NewsAgregator.Services.AccountServices
         }
 
         
-        public Guid? GetCurrentUserId()
+        public Guid? GetCurrentAccountId()
         {
             if (!_httpContextAccessor.HttpContext.User.Identity.IsAuthenticated)
                 return null;

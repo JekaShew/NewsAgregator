@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Razor.TagHelpers;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
+using NewsAgregator.Abstract.AccountInterfaces;
 using NewsAgregator.Abstract.NewsInterfaces;
 using NewsAgregator.Data;
 using NewsAgregator.Data.Models;
@@ -29,10 +30,13 @@ namespace NewsAgregator.Services.NewsServices
     {
         private readonly AppDBContext _appDBContext;
         private readonly ILogger<NewsServices> _logger;
-        public NewsServices(AppDBContext appDBContext, ILogger<NewsServices> logger)
+        private readonly IAccountServices _accountServices;
+
+        public NewsServices(AppDBContext appDBContext, ILogger<NewsServices> logger, IAccountServices accountServices)
         {
             _appDBContext = appDBContext;
             _logger = logger;
+            _accountServices = accountServices;
         }
 
         public async Task<NewsParameters> GetNewsParametersAsync()
@@ -146,7 +150,7 @@ namespace NewsAgregator.Services.NewsServices
                 //var result = await UpdateNewsText(newsTestScrap);
                 try
                 {
-                    tasksScrappingData.Add(UpdateNewsText(newsTestScrap));
+                    tasksScrappingData.Add(UpdateNewsTextByScrappedData(newsTestScrap));
                 }
                 catch (Exception ex)
                 {
@@ -171,7 +175,64 @@ namespace NewsAgregator.Services.NewsServices
           
         }
 
+        private async Task<List<NewsVM>> GetNewsWithoutText()
+        {
+            var newsVMWithOutText = (await _appDBContext.Newses.Where(n => string.IsNullOrEmpty(n.Text)).ToListAsync()).Select(n => NewsMapper.NewsToNewsVM(n)).ToList();
 
+            return newsVMWithOutText;
+        }
+
+        public async Task GetRssDataAsync()
+        {
+            var sources = await _appDBContext.Sources.ToListAsync();
+            var existedNewsUrls = await _appDBContext.Newses.Select(n => n.SourceUrl).ToListAsync();
+            var tasksForRSSData = new List<Task>();
+
+            foreach (var source in sources)
+            {
+
+                try
+                {
+                    tasksForRSSData.Add(GetRssDataAsync(source, existedNewsUrls));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Error processing RSS feed from {source.RssUrl}: {ex.Message?.ToString()}; {ex.InnerException?.Message}");
+                    Console.WriteLine(ex.Message);
+                }
+            }
+
+
+            var validRSSDataTasks = tasksForRSSData
+                                        .Where(task => task.Status != TaskStatus.Canceled && task.Status != TaskStatus.Faulted).ToList();
+
+            if (validRSSDataTasks.Count != 0 && validRSSDataTasks != null)
+                await Task.WhenAll(validRSSDataTasks);
+        }
+
+        public async Task UpdateNewsTextByScrappedData()
+        {
+            var newsVMs = await GetNewsWithoutText();
+            var tasksScrappingData = new List<Task>();
+            foreach (var newsVM in newsVMs)
+            {
+                try
+                {
+                    tasksScrappingData.Add(UpdateNewsTextByScrappedData(newsVM));
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Error processing Scrapping data from {newsVM.SourceUrl}: {ex.Message} Inner Exceptiomn: {ex.InnerException?.Message}");
+                }
+            }
+
+            var validTasksScrappingData = tasksScrappingData.Where(task => task.Status != TaskStatus.Canceled && task.Status != TaskStatus.Faulted).ToList();
+
+
+            if (validTasksScrappingData.Count != 0 && validTasksScrappingData != null)
+                await Task.WhenAll(validTasksScrappingData);
+
+        }
 
         private async Task GetRssDataAsync(Source source, List<string> existedNewsUrls)
         {
@@ -213,15 +274,7 @@ namespace NewsAgregator.Services.NewsServices
             }    
         }
 
-     
-        private async Task<List<NewsVM>> GetNewsWithoutText()
-        {
-            var newsVMWithOutText = (await _appDBContext.Newses.Where(n => string.IsNullOrEmpty(n.Text)).ToListAsync()).Select(n=> NewsMapper.NewsToNewsVM(n)).ToList();
-
-            return newsVMWithOutText;
-        }
-
-        private async Task UpdateNewsText(NewsVM newsVM)
+        private async Task UpdateNewsTextByScrappedData(NewsVM newsVM)
         {
             var web = new HtmlWeb();
             var doc = web.Load(newsVM.SourceUrl);
@@ -252,10 +305,6 @@ namespace NewsAgregator.Services.NewsServices
 
             void RemoveExcludeElementsSputnik(HtmlNode htmlNode)
             {
-
-                //var textBlocks = new List<HtmlNode>();
-                //textBlocks = allChilNodes.Where(ch => ch.Name == "div").ToList();
-
                 var allChilNodes = htmlNode.ChildNodes.ToList();
                 foreach (var child in allChilNodes)
                 {
@@ -294,7 +343,6 @@ namespace NewsAgregator.Services.NewsServices
                     }
                 }
             }
-
 
             string RemoveATags(string newsNode)
             {
@@ -379,7 +427,7 @@ namespace NewsAgregator.Services.NewsServices
             }
 
 
-            //not ready maybe not gp.by отключен если чо, пока что временно смотри выше в фильтре source
+            //not ready 
             if (newsVM.SourceUrl.Contains("gp.by"))
             {
                 var newsNode = doc.DocumentNode.SelectSingleNode("//article[@itemprop='description']").InnerHtml;
@@ -390,5 +438,50 @@ namespace NewsAgregator.Services.NewsServices
 
             await _appDBContext.SaveChangesAsync();
         }
+        
+        public async Task UpdateNewsRateAsync()
+        {
+
+        }
+
+        public async Task DeleteNewsWithBadRateAsync()
+        {
+            var allNewses = await TakeNewsesAsync();
+            var toDeleteNewses = allNewses.Where(n => n.PositiveRating <=5).ToList();
+            foreach(var news in toDeleteNewses)
+            {
+                await DeleteNewsAsync(news.Id);
+
+            }
+
+            await _appDBContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteOldNewsesAsync()
+        {
+            var allNewses = await TakeNewsesAsync();
+            TimeSpan twoWeeks = TimeSpan.FromDays(14);
+            var oldNewses = allNewses.Where(n => n.Date.Value >= DateTime.Now.AddDays(-14)).ToList();
+            foreach (var news in oldNewses)
+            {
+                await DeleteNewsAsync(news.Id);
+
+            }
+
+            await _appDBContext.SaveChangesAsync();
+        }
+
+        public async Task<List<NewsVM>> TakeSuitableNewesAsync()
+        {
+            var allNewses = await TakeNewsesAsync();
+            Guid? accountId = _accountServices.GetCurrentAccountId();
+            var accountVM = await _accountServices.TakeAccountByIdAsync(accountId.Value);
+
+            var suitableNewses = allNewses
+                                .Where(n => n.PositiveRating >=
+                                        (accountVM.DesiredNewsRating != null ? accountVM.DesiredNewsRating : 5)).ToList();
+            return suitableNewses;
+        }
+
     }
 }

@@ -27,5 +27,7 @@ namespace NewsAgregator.Abstract.AccountInterfaces
         public Task<bool> CanChangeForgottenPasswordAsync(string login, string secretWord);
 
         public Task ChangePasswordAsync(string password);
+
+        public Guid? GetCurrentAccountId();
     }
 }

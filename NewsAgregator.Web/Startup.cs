@@ -115,7 +115,7 @@ namespace NewsAgregator.Web
  
             services.AddDbContext<AppDBContext>();
             //services.AddTransient<DbContext>(isp => isp.GetService<AppDBContext>());
-
+           
             services.AddScoped<IAccountServices, AccountServices>();
             services.AddScoped<IAccountStatusServices, AccountStatusServices>();
             services.AddScoped<IPolicyServices, PolicyServices>();
