@@ -14,6 +14,7 @@ using NewsAgregator.Mapper.DataMappers;
 using NewsAgregator.ViewModels.Additional;
 using NewsAgregator.ViewModels.Data;
 using System;
+using Python.Runtime;
 using System.Collections.Generic;
 using System.Diagnostics.Eventing.Reader;
 using System.Linq;
@@ -140,7 +141,7 @@ namespace NewsAgregator.Services.NewsServices
             if (validRSSDataTasks.Count != 0 && validRSSDataTasks != null)
                await Task.WhenAll(validRSSDataTasks);
            
-            var newsVMWithOutText = await GetNewsWithoutText();
+            var newsVMWithOutText = await GetNewsWithoutTextAsync();
 
             var newsesToScrap =  newsVMWithOutText.Where(n => n.SourceUrl.Contains("belkagomel")).ToList();
 
@@ -175,11 +176,18 @@ namespace NewsAgregator.Services.NewsServices
           
         }
 
-        private async Task<List<NewsVM>> GetNewsWithoutText()
+        private async Task<List<NewsVM>> GetNewsWithoutTextAsync()
         {
             var newsVMWithOutText = (await _appDBContext.Newses.Where(n => string.IsNullOrEmpty(n.Text)).ToListAsync()).Select(n => NewsMapper.NewsToNewsVM(n)).ToList();
 
             return newsVMWithOutText;
+        }
+
+        private async Task<List<NewsVM>> GetNewsWithoutRateAsync()
+        {
+            var newsVMWithOutRate = (await _appDBContext.Newses.Where(n => n.PositiveRating.HasValue == false).ToListAsync()).Select(n => NewsMapper.NewsToNewsVM(n)).ToList();
+
+            return newsVMWithOutRate;
         }
 
         public async Task GetRssDataAsync()
@@ -212,7 +220,7 @@ namespace NewsAgregator.Services.NewsServices
 
         public async Task UpdateNewsTextByScrappedData()
         {
-            var newsVMs = await GetNewsWithoutText();
+            var newsVMs = await GetNewsWithoutTextAsync();
             var tasksScrappingData = new List<Task>();
             foreach (var newsVM in newsVMs)
             {
@@ -441,7 +449,87 @@ namespace NewsAgregator.Services.NewsServices
         
         public async Task UpdateNewsRateAsync()
         {
+            var newsVMWithoutRate = await GetNewsWithoutRateAsync();
 
+            foreach(var newsVM in newsVMWithoutRate)
+            {
+                var message = newsVM.Text + " оцени позитивность текста и ответь только числом от 0 до 10 насколько позитивный этот текст";
+                var responseString = CallAIRaterV1(message);
+
+                int rateAI = -1;
+                int.TryParse(responseString, out rateAI);
+                if(rateAI != -1)
+                {  
+                    var news = await _appDBContext.Newses.FirstOrDefaultAsync(n => n.Id == newsVM.Id);
+                    news.PositiveRating = rateAI;
+                    await _appDBContext.SaveChangesAsync();
+                }
+                else
+                    
+
+            }
+
+            
+
+        }
+
+        public string CallAIRaterV1(string message)
+        {
+            string responseString;
+            using (Py.GIL())
+            {
+                dynamic sys = Py.Import("sys");
+                sys.path.append(@"путь_к_папке_с_вашим_скриптом"); // Укажите путь к папке, где находится python_script.py
+
+                dynamic pythonScript = Py.Import("python_script");
+                responseString = pythonScript.chat_with_model(message);
+                Console.WriteLine(responseString);
+            }
+
+            return responseString;
+        }
+
+        public string CallAIRaterV2(string message)
+        {
+            string responseString;
+
+            PythonEngine.Initialize();
+
+            using (Py.GIL())
+            {
+                dynamic g4f = Py.Import("g4f.client");
+                dynamic Client = g4f.Client();
+                dynamic response = Client.chat.completions.create(
+                    model: "gpt-3.5-turbo",
+                    messages: new[] { new { role = "user", content = message } }
+                );
+
+                responseString = response.choices[0].message.content;
+            }
+
+            PythonEngine.Shutdown();
+
+            return responseString;
+        }
+
+        public string CallAIRaterV3(string message)
+        {
+            string responseString;
+
+            Runtime.PythonDLL = @"C:\Python312\python312.dll";
+            PythonEngine.Initialize();
+
+            using (Py.GIL())
+            {
+                var pythonScript = Py.Import("g4fLocalAPI");
+                var messagePY = new PyString("message");
+                var responseAI = pythonScript.InvokeMethod("chat_with_model", new PyObject[] { messagePY });
+                responseString = responseAI.ToString();
+            }
+
+            PythonEngine.Shutdown();
+
+            return responseString;
         }
 
         public async Task DeleteNewsWithBadRateAsync()
@@ -451,7 +539,6 @@ namespace NewsAgregator.Services.NewsServices
             foreach(var news in toDeleteNewses)
             {
                 await DeleteNewsAsync(news.Id);
-
             }
 
             await _appDBContext.SaveChangesAsync();
