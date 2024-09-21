@@ -112,9 +112,7 @@ const renderValidationMessages = (inputName) =>{
     }
 }
 
-const EditAccount = (props) => {
-
-    
+const EditAccount = (props) => {    
 
     const navigate = useNavigate();
     const params = useParams();

@@ -24,6 +24,11 @@ using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using static System.Net.WebRequestMethods;
+using Azure;
+using Newtonsoft.Json;
+using System.Text.Json.Nodes;
+using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace NewsAgregator.Services.NewsServices
 {
@@ -44,7 +49,7 @@ namespace NewsAgregator.Services.NewsServices
         {
             var newsParameters = new NewsParameters()
             {
-                NewsStatuses = (await _appDBContext.NewsStatuses.ToListAsync()).Select(ns=> NewsParametersMapper.NewsStatusToParameter(ns)).ToList(),               
+                NewsStatuses = (await _appDBContext.NewsStatuses.ToListAsync()).Select(ns => NewsParametersMapper.NewsStatusToParameter(ns)).ToList(),
             };
             return newsParameters;
 
@@ -83,7 +88,7 @@ namespace NewsAgregator.Services.NewsServices
             var newsVMs = (await _appDBContext.Newses
                 .AsNoTracking()
                 .Include(ns => ns.NewsStatus)
-                .ToListAsync()).Select(n=> NewsMapper.NewsToNewsVM(n)).ToList();
+                .ToListAsync()).Select(n => NewsMapper.NewsToNewsVM(n)).ToList();
 
             return newsVMs;
         }
@@ -114,15 +119,10 @@ namespace NewsAgregator.Services.NewsServices
             var sources = await _appDBContext.Sources.Where(x => !string.IsNullOrEmpty(x.RssUrl)).ToListAsync();
             var existedNewsUrls = await _appDBContext.Newses.Select(n => n.SourceUrl).ToListAsync();
 
-            //var source = await _appDBContext.Sources.FirstOrDefaultAsync(s => s.BaseUrl.Contains("belta.by"));
-
-            //newsVMRSSData.AddRange(await GetRssData(source, existedNewsUrls));
-
             var tasksForRSSData = new List<Task>();
 
             foreach (var source in sources)
             {
-
                 try
                 {
                     tasksForRSSData.Add(GetRssDataAsync(source, existedNewsUrls));
@@ -133,47 +133,35 @@ namespace NewsAgregator.Services.NewsServices
                     Console.WriteLine(ex.Message);
                 }
             }
-        
 
             var validRSSDataTasks = tasksForRSSData
                                         .Where(task => task.Status != TaskStatus.Canceled && task.Status != TaskStatus.Faulted).ToList();
 
             if (validRSSDataTasks.Count != 0 && validRSSDataTasks != null)
-               await Task.WhenAll(validRSSDataTasks);
-           
-            var newsVMWithOutText = await GetNewsWithoutTextAsync();
+                await Task.WhenAll(validRSSDataTasks);
 
-            var newsesToScrap =  newsVMWithOutText.Where(n => n.SourceUrl.Contains("belkagomel")).ToList();
+            var newsVMWithOutText = await GetNewsWithoutTextAsync();
+            // testing specific sourceUrl scrapping
+            //var newsesToScrap = newsVMWithOutText.Where(n => n.SourceUrl.Contains("belkagomel")).ToList();
+            var newsesToScrap = newsVMWithOutText.ToList();
 
             var tasksScrappingData = new List<Task>();
-            foreach (var newsTestScrap in newsesToScrap)
+            foreach (var newsToScrap in newsesToScrap)
             {
-                //var result = await UpdateNewsText(newsTestScrap);
                 try
                 {
-                    tasksScrappingData.Add(UpdateNewsTextByScrappedData(newsTestScrap));
+                    tasksScrappingData.Add(UpdateNewsTextByScrappedData(newsToScrap));
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError($"Error processing Scrapping data from {newsTestScrap.SourceUrl}: {ex.Message} Inner Exceptiomn: {ex.InnerException?.Message}");
+                    _logger.LogError($"Error processing Scrapping data from {newsToScrap.SourceUrl}: {ex.Message} Inner Exceptiomn: {ex.InnerException?.Message}");
                 }
             }
 
             var validTasksScrappingData = tasksScrappingData.Where(task => task.Status != TaskStatus.Canceled && task.Status != TaskStatus.Faulted).ToList();
 
-
             if (validTasksScrappingData.Count != 0 && validTasksScrappingData != null)
                 await Task.WhenAll(validTasksScrappingData);
-
-
-            //var resultText1 = await UpdateNewsText(newsVMWithOutText.FirstOrDefault(n=> n.SourceUrl.Contains("belta.by")));
-
-            //var resultText2 = await UpdateNewsText(newsVMWithOutText.FirstOrDefault(n => n.SourceUrl.Contains("gp.by")));
-
-            //var resultText3 = await UpdateNewsText(newsVMWithOutText.FirstOrDefault(n => n.SourceUrl.Contains("belkagomel.by")));
-
-            //var resultText4 = await UpdateNewsText(newsVMWithOutText.FirstOrDefault(n => n.SourceUrl.Contains("sputnik.by")));
-          
         }
 
         private async Task<List<NewsVM>> GetNewsWithoutTextAsync()
@@ -185,7 +173,7 @@ namespace NewsAgregator.Services.NewsServices
 
         private async Task<List<NewsVM>> GetNewsWithoutRateAsync()
         {
-            var newsVMWithOutRate = (await _appDBContext.Newses.Where(n => n.PositiveRating.HasValue == false).ToListAsync()).Select(n => NewsMapper.NewsToNewsVM(n)).ToList();
+            var newsVMWithOutRate = (await _appDBContext.Newses.Where(n => n.PositiveRating.HasValue == false && !string.IsNullOrEmpty(n.Text)).ToListAsync()).Select(n => NewsMapper.NewsToNewsVM(n)).ToList();
 
             return newsVMWithOutRate;
         }
@@ -236,10 +224,8 @@ namespace NewsAgregator.Services.NewsServices
 
             var validTasksScrappingData = tasksScrappingData.Where(task => task.Status != TaskStatus.Canceled && task.Status != TaskStatus.Faulted).ToList();
 
-
             if (validTasksScrappingData.Count != 0 && validTasksScrappingData != null)
                 await Task.WhenAll(validTasksScrappingData);
-
         }
 
         private async Task GetRssDataAsync(Source source, List<string> existedNewsUrls)
@@ -278,15 +264,15 @@ namespace NewsAgregator.Services.NewsServices
                 catch (Exception ex)
                 {
                     _logger.LogError($"Error processing Gettin Rss data from {source.RssUrl}: {ex.Message} Inner Exceptiomn: {ex.InnerException?.Message}");
-                }  
-            }    
+                }
+            }
         }
 
         private async Task UpdateNewsTextByScrappedData(NewsVM newsVM)
         {
             var web = new HtmlWeb();
             var doc = web.Load(newsVM.SourceUrl);
-            
+
             var news = await _appDBContext.Newses.FirstOrDefaultAsync(n => n.Id == newsVM.Id);
 
             void RemoveExcludeElementsBelta(HtmlNode htmlNode)
@@ -306,7 +292,7 @@ namespace NewsAgregator.Services.NewsServices
                     }
                     else
                     {
-                        RemoveExcludeElementsBelta(child); 
+                        RemoveExcludeElementsBelta(child);
                     }
                 }
             }
@@ -352,6 +338,15 @@ namespace NewsAgregator.Services.NewsServices
                 }
             }
 
+            string ClearTextFromUnnecessarySymbols(string nodeText)
+            {
+                nodeText = Regex.Replace(nodeText, @"[\t\r\n]+", "");
+                nodeText = Regex.Replace(nodeText, @"\s+", " ");
+                nodeText = nodeText.Trim();
+               
+                return nodeText;
+            }
+
             string RemoveATags(string newsNode)
             {
                 // пересмотреть варианты работы со строкой, оптимальный ли вариант постоянной конвертации ToString()
@@ -389,14 +384,15 @@ namespace NewsAgregator.Services.NewsServices
             {
                 string newsTextNode;
                 string newsHtmlNode = doc.DocumentNode.SelectSingleNode("//div[@class='news_img_slide']").InnerHtml;
-                
+
                 var newsAllNode = doc.DocumentNode.SelectSingleNode("//div[@class='js-mediator-article']");
                 RemoveExcludeElementsBelta(newsAllNode);
                 newsHtmlNode += "\n";
                 newsHtmlNode += newsAllNode.InnerHtml;
-                newsTextNode = newsAllNode.InnerText;                
-            
+                newsTextNode = newsAllNode.InnerText;
+
                 news.TextHTML = RemoveATags(newsHtmlNode);
+                ClearTextFromUnnecessarySymbols(newsTextNode);
                 news.Text = newsTextNode;
             }
 
@@ -411,12 +407,13 @@ namespace NewsAgregator.Services.NewsServices
                 newsHtmlNode += "\n";
 
                 var newsAllNode = doc.DocumentNode.SelectSingleNode("//div[@class='article__body']");
-               
+
                 RemoveExcludeElementsSputnik(newsAllNode);
                 newsHtmlNode += newsAllNode.InnerHtml;
                 newsTextNode = newsAllNode.InnerText;
 
                 news.TextHTML = RemoveATags(newsHtmlNode);
+                ClearTextFromUnnecessarySymbols(newsTextNode);
                 news.Text = newsTextNode;
             }
 
@@ -424,18 +421,18 @@ namespace NewsAgregator.Services.NewsServices
             if (newsVM.SourceUrl.Contains("belkagomel.by"))
             {
                 var newsAllNodes = doc.DocumentNode.SelectSingleNode("//div[@class='entry']");
-                
+
                 RemoveExcludeElementsBelkagomel(newsAllNodes);
 
                 string newsHTMLNode = newsAllNodes.InnerHtml;
                 string newsTextNode = newsAllNodes.InnerText;
-                
+
                 news.TextHTML = RemoveATags(newsHTMLNode);
+                ClearTextFromUnnecessarySymbols(newsTextNode);
                 news.Text = newsTextNode;
             }
 
-
-            //not ready 
+            //not ready need to update scrapping method
             if (newsVM.SourceUrl.Contains("gp.by"))
             {
                 var newsNode = doc.DocumentNode.SelectSingleNode("//article[@itemprop='description']").InnerHtml;
@@ -446,31 +443,81 @@ namespace NewsAgregator.Services.NewsServices
 
             await _appDBContext.SaveChangesAsync();
         }
-        
+
         public async Task UpdateNewsRateAsync()
         {
             var newsVMWithoutRate = await GetNewsWithoutRateAsync();
 
-            foreach(var newsVM in newsVMWithoutRate)
+            foreach (var newsVM in newsVMWithoutRate)
             {
-                var message = newsVM.Text + " оцени позитивность текста и ответь только числом от 0 до 10 насколько позитивный этот текст";
-                var responseString = CallAIRaterV1(message);
-
+                //var responseStrings = new List<string>();
+                string responseString;
                 int rateAI = -1;
-                int.TryParse(responseString, out rateAI);
-                if(rateAI != -1)
-                {  
+                string retryProvidersScript = "g4flocalapi.py";
+                string bixinProviderScript = "g4fbixinprovider.py";
+                string blackboxProviderScript = "g4fblackboxprovider.py";
+                string bingProviderScript = "g4fbingprovider.py";
+
+                var message = "Оцени позитивность текста и в Ответ выдай мне ТОЛЬКО Одно число от 0 до 10 насколько позитивный этот текст без объяснений: " + newsVM.Text;
+
+                responseString = CallAIRaterV5(message,bixinProviderScript);
+                Match matchBixin = Regex.Match(responseString, @"\d+");
+                if (matchBixin.Success)
+                {
+                    Console.WriteLine(newsVM.Title);
+                    Console.WriteLine(matchBixin.Value);
                     var news = await _appDBContext.Newses.FirstOrDefaultAsync(n => n.Id == newsVM.Id);
+                    rateAI = int.Parse(matchBixin.Value);
                     news.PositiveRating = rateAI;
+                    
                     await _appDBContext.SaveChangesAsync();
                 }
                 else
-                    
+                {
+                    responseString = CallAIRaterV5(message, blackboxProviderScript);
+                    Match matchBlackBox = Regex.Match(responseString, @"\d+");
+                    if (matchBlackBox.Success)
+                    {
+                        Console.WriteLine(newsVM.Title);
+                        Console.WriteLine(matchBlackBox.Value);
+                        var news = await _appDBContext.Newses.FirstOrDefaultAsync(n => n.Id == newsVM.Id);
+                        rateAI = int.Parse(matchBlackBox.Value);
+                        news.PositiveRating = rateAI;
 
+                        await _appDBContext.SaveChangesAsync();
+                    }
+                    else
+                    {
+                        responseString = CallAIRaterV5(message, bingProviderScript);
+                        Match matchBing = Regex.Match(responseString, @"\d+");
+                        if (matchBing.Success)
+                        {
+                            Console.WriteLine(newsVM.Title);
+                            Console.WriteLine(matchBing.Value);
+                            var news = await _appDBContext.Newses.FirstOrDefaultAsync(n => n.Id == newsVM.Id);
+                            rateAI = int.Parse(matchBing.Value);
+                            news.PositiveRating = rateAI;
+                            await _appDBContext.SaveChangesAsync();
+                        }
+                        else
+                        {
+                            responseString = CallAIRaterV5(message, retryProvidersScript);
+                            Match matchRetryProviders = Regex.Match(responseString, @"\d+");
+                            if (matchRetryProviders.Success)
+                            {
+                                Console.WriteLine(newsVM.Title);
+                                Console.WriteLine(matchRetryProviders.Value);
+                                var news = await _appDBContext.Newses.FirstOrDefaultAsync(n => n.Id == newsVM.Id);
+                                rateAI = int.Parse(matchRetryProviders.Value);
+                                news.PositiveRating = rateAI;
+
+                                await _appDBContext.SaveChangesAsync();
+                            }
+                        }
+                    }
+                }
+                // log errors if they exists or unsupported gpt messages
             }
-
-            
-
         }
 
         public string CallAIRaterV1(string message)
@@ -479,9 +526,9 @@ namespace NewsAgregator.Services.NewsServices
             using (Py.GIL())
             {
                 dynamic sys = Py.Import("sys");
-                sys.path.append(@"путь_к_папке_с_вашим_скриптом"); // Укажите путь к папке, где находится python_script.py
+                sys.path.append(@"G:\С#_new\ITAcademy\NewsAgregator2\NewsAgregator\NewsAgregator.Services\NewsServices"); // Укажите путь к папке, где находится script.py
 
-                dynamic pythonScript = Py.Import("python_script");
+                dynamic pythonScript = Py.Import("g4flocalapi");
                 responseString = pythonScript.chat_with_model(message);
                 Console.WriteLine(responseString);
             }
@@ -516,13 +563,13 @@ namespace NewsAgregator.Services.NewsServices
         {
             string responseString;
 
-            Runtime.PythonDLL = @"C:\Python312\python312.dll";
+            Runtime.PythonDLL = @"C:\Users\1\AppData\Local\Programs\Python\Python312\python312.dll";
             PythonEngine.Initialize();
 
             using (Py.GIL())
             {
-                var pythonScript = Py.Import("g4fLocalAPI");
-                var messagePY = new PyString("message");
+                var pythonScript = Py.Import("g4flocalapi");
+                var messagePY = new PyString(message);
                 var responseAI = pythonScript.InvokeMethod("chat_with_model", new PyObject[] { messagePY });
                 responseString = responseAI.ToString();
             }
@@ -530,6 +577,73 @@ namespace NewsAgregator.Services.NewsServices
             PythonEngine.Shutdown();
 
             return responseString;
+        }
+
+
+        public async Task<string> CallAIRaterV4(string message)
+        {
+            string responseString;
+
+
+            var url = "http://localhost:1337/v1/chat/completions";
+
+            var body = new
+            {
+                model = "gpt-3.5-turbo",
+                stream = true,
+                messages = new[]
+                {
+                    new { role = "assistant", content = message }
+                }
+            };
+
+            using (var client = new HttpClient())
+            {
+                client.Timeout = TimeSpan.FromSeconds(50);
+                var jsonBody = JsonConvert.SerializeObject(body);
+                var content = new StringContent(jsonBody, Encoding.UTF8, "application/json");
+
+                var response = await client.PostAsync(url, content);
+                var jsonResponse = await response.Content.ReadAsStringAsync();
+
+                dynamic json = JsonConvert.DeserializeObject(jsonResponse);
+
+
+
+                //    foreach (var choice in choices)
+                //    {
+                //        Console.WriteLine(choice.message.content);
+                //    }
+            }
+
+
+            return responseString = "-2";
+        }
+
+        public string CallAIRaterV5(string message, string scriptName)
+        {
+            string responseString;
+
+            ProcessStartInfo ProcessInfo = new ProcessStartInfo();
+
+            ProcessInfo.FileName = "python";
+            ProcessInfo.UseShellExecute = false;
+            ProcessInfo.RedirectStandardOutput = true;
+
+            ProcessInfo.Arguments = $"{scriptName} \"{message}\"";
+            Process myProcess = new Process();
+
+            myProcess.StartInfo = ProcessInfo;
+
+            myProcess.Start();
+
+            StreamReader myStreamReader = myProcess.StandardOutput;
+            string myString = myStreamReader.ReadToEnd();
+            myProcess.WaitForExit();
+            myProcess.Close();
+            Console.WriteLine(myString);
+
+            return myString;
         }
 
         public async Task DeleteNewsWithBadRateAsync()
@@ -552,7 +666,6 @@ namespace NewsAgregator.Services.NewsServices
             foreach (var news in oldNewses)
             {
                 await DeleteNewsAsync(news.Id);
-
             }
 
             await _appDBContext.SaveChangesAsync();

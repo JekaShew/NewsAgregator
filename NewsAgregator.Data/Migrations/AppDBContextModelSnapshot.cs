@@ -35,15 +35,19 @@ namespace NewsAgregator.Data.Migrations
                         .HasColumnType("real");
 
                     b.Property<string>("Email")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("FIO")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Login")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("Password")
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Phone")
@@ -52,12 +56,24 @@ namespace NewsAgregator.Data.Migrations
                     b.Property<Guid?>("RoleId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("SecretWord")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("SecurityStamp")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("UserName")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("AccountStatusId");
+
+                    b.HasIndex("Login")
+                        .IsUnique();
 
                     b.HasIndex("RoleId");
 
@@ -74,6 +90,7 @@ namespace NewsAgregator.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -97,6 +114,7 @@ namespace NewsAgregator.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Text")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -133,6 +151,7 @@ namespace NewsAgregator.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("UserId")
@@ -165,6 +184,7 @@ namespace NewsAgregator.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -182,6 +202,7 @@ namespace NewsAgregator.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -199,6 +220,7 @@ namespace NewsAgregator.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Description")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("NewsStatusId")
@@ -217,7 +239,11 @@ namespace NewsAgregator.Data.Migrations
                     b.Property<string>("Text")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("TextHTML")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -239,6 +265,7 @@ namespace NewsAgregator.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -259,6 +286,7 @@ namespace NewsAgregator.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("UserId")
@@ -283,11 +311,34 @@ namespace NewsAgregator.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("Policies");
+                });
+
+            modelBuilder.Entity("NewsAgregator.Data.Models.RefreshToken", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("AccountId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime?>("ExpireDateTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("IsRevoked")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountId");
+
+                    b.ToTable("RefreshTokens");
                 });
 
             modelBuilder.Entity("NewsAgregator.Data.Models.Role", b =>
@@ -300,6 +351,7 @@ namespace NewsAgregator.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -338,15 +390,13 @@ namespace NewsAgregator.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("BaseUrl")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RssUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Url")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -361,6 +411,7 @@ namespace NewsAgregator.Data.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("City")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("Date")
@@ -436,6 +487,7 @@ namespace NewsAgregator.Data.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -546,6 +598,17 @@ namespace NewsAgregator.Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("NewsAgregator.Data.Models.RefreshToken", b =>
+                {
+                    b.HasOne("NewsAgregator.Data.Models.Account", "Account")
+                        .WithMany("RefreshTokens")
+                        .HasForeignKey("AccountId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+                });
+
             modelBuilder.Entity("NewsAgregator.Data.Models.RolePolicy", b =>
                 {
                     b.HasOne("NewsAgregator.Data.Models.Policy", "Policy")
@@ -606,6 +669,8 @@ namespace NewsAgregator.Data.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("RecipientUsers");
+
+                    b.Navigation("RefreshTokens");
 
                     b.Navigation("SenderAdministrators");
 

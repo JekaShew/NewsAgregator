@@ -14,6 +14,5 @@ namespace NewsAgregator.Data.Models
         public DateTime? ExpireDateTime { get; set; }
         public Guid AccountId { get; set; }
         public Account Account { get; set; }
-        public List<Account>? Accounts { get; set; }
     }
 }

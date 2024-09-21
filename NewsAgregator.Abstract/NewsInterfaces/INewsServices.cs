@@ -21,5 +21,7 @@ namespace NewsAgregator.Abstract.NewsInterfaces
 
         public Task UpdateNewsAsync(NewsVM updatedNews);
         public Task<NewsParameters> GetNewsParametersAsync();
+
+        public Task UpdateNewsRateAsync();
     }
 }

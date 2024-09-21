@@ -38,7 +38,19 @@
 
 
 # need to rewrite route to Libs
-from g4f.client import Client
+# import sys
+# import os
+
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', 'G4FLocalwithDocker', 'gpt4free', 'g4f')))
+# from client import Client
+from gpt4free.g4f.client import Client
+
+client = Client()
+response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": "wirite SERVICESS Python"}],
+    )
+print(response.choices[0].message.content)
 
 def chat_with_model(message):
     client = Client()
@@ -48,7 +60,7 @@ def chat_with_model(message):
     )
     return response.choices[0].message.content
 
-
+print(chat_with_model("wirite SERVICESS Python"))
 
 
 # from g4f.client import Client

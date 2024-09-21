@@ -1,8 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using NewsAgregator.Abstract.ComplaintInterfaces;
 using NewsAgregator.Abstract.NewsInterfaces;
 using NewsAgregator.ViewModels.Data;
 using NewsAgregator.Web.Controllers.AccountControllers;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NewsAgregator.Web.Controllers.NewsControllers
 {
@@ -16,6 +18,59 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
         {
             _newsServices = newsServices;
             _logger = logger;
+        }
+
+        [HttpPost("updatenewsrate")]
+        public async Task<IActionResult> UpdateNewsRate()
+        {
+            //var url = "http://localhost:1337/v1/chat/completions";
+
+            //var body = new
+            //{
+            //    model = "gpt-3.5-turbo",
+            //    stream = false,
+            //    messages = new[]
+            //    {
+            //        new { role = "assistant", content = "Test passed" }
+            //    }
+            //};
+
+            //using (var client = new HttpClient())
+            //{
+            //    var request = new HttpRequestMessage(HttpMethod.Post,
+            //        url);
+
+            //    request.Headers.Add("Accept", "application/json");
+            //    request.Content = JsonContent.Create(new[]
+            //    {
+            //        new { Body = body }
+            //    });
+
+            //    var response = await client.SendAsync(request);
+
+            //    if (response.IsSuccessStatusCode)
+            //    {
+            //        var responseString = await response.Content.ReadAsStringAsync();
+
+
+            //        //var lemmas = //JsonConvert.DeserializeObject<>
+
+            //        //lemmasDictionary
+
+            //        //based on dict calculate rate of your article
+
+            //        return Ok(responseString);
+            //    }
+            //    else
+            //    {
+            //        await _newsServices.UpdateNewsRateAsync();
+            //        return StatusCode(500);
+            //    }
+            //}
+
+
+            await _newsServices.UpdateNewsRateAsync();
+            return Ok();
         }
 
         [HttpGet("getparameters")]
