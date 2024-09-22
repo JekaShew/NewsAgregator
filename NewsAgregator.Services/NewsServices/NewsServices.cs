@@ -401,9 +401,10 @@ namespace NewsAgregator.Services.NewsServices
             {
                 // непонятно почему не находит фотку, возможно следует искать по блокам выше( тпиа родительский div с определенным классом???)
                 string newsTextNode;
-                string newsHtmlNode = doc.DocumentNode.SelectSingleNode("//img[@media-type='ar16x9']").InnerHtml;
-                newsHtmlNode += "\n";
-                newsHtmlNode += doc.DocumentNode.SelectSingleNode("//div[@class='article__announce-text']").InnerHtml;
+                string newsHtmlNode;
+                //string newsHtmlNode = doc.DocumentNode.SelectSingleNode("//img[@media-type='ar16x9']").InnerHtml;
+                //newsHtmlNode += "\n";
+                newsHtmlNode = doc.DocumentNode.SelectSingleNode("//div[@class='article__announce-text']").InnerHtml;
                 newsHtmlNode += "\n";
 
                 var newsAllNode = doc.DocumentNode.SelectSingleNode("//div[@class='article__body']");
