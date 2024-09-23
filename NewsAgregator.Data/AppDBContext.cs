@@ -38,6 +38,21 @@ namespace NewsAgregator.Data
             modelBuilder.Entity<Account>()
                     .HasIndex(a => a.Login)
                     .IsUnique();
+            modelBuilder.Entity<AccountStatus>()
+                   .HasIndex(a => a.Title)
+                   .IsUnique();
+            modelBuilder.Entity<NewsStatus>()
+                   .HasIndex(a => a.Title)
+                   .IsUnique();
+            modelBuilder.Entity<ComplaintStatus>()
+                   .HasIndex(a => a.Title)
+                   .IsUnique();
+            modelBuilder.Entity<Role>()
+                .HasIndex(a => a.Title)
+                .IsUnique();
+            modelBuilder.Entity<Policy>()
+                .HasIndex(a => a.Title)
+                .IsUnique();
 
             modelBuilder.Entity<NotificationMessage>()
                       .HasOne(nm => nm.User)

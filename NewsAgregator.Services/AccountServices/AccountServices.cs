@@ -40,8 +40,8 @@ namespace NewsAgregator.Services.AccountServices
         {
             var accountParameters = new AccountParameters()
             {
-                AccountStatuses = (await _appDBContext.AccountStatuses.ToListAsync()).Select(ac => AccountParametersMapper.AccountStatusToParameter(ac)).ToList(),
-                Roles = (await _appDBContext.Roles.ToListAsync()).Select(r => AccountParametersMapper.RoleToParameter(r)).ToList(),
+                AccountStatuses = (await _appDBContext.AccountStatuses.AsNoTracking().ToListAsync()).Select(ac => AccountParametersMapper.AccountStatusToParameter(ac)).ToList(),
+                Roles = (await _appDBContext.Roles.AsNoTracking().ToListAsync()).Select(r => AccountParametersMapper.RoleToParameter(r)).ToList(),
             };
             return accountParameters;
         }
@@ -54,6 +54,8 @@ namespace NewsAgregator.Services.AccountServices
             newAccount.SecretWord = AESEncrypt(await GetHashAsync(createAccountVM.SecretWord), bytesKey, bytesIV);
             newAccount.SecurityStamp = await GetHashAsync(createAccountVM.SecretWord);
             newAccount.PasswordHash = await GetPasswordHashAsync(createAccountVM.Password, newAccount.SecurityStamp);
+            newAccount.AccountStatusId = await _appDBContext.AccountStatuses.AsNoTracking().Where(accs => accs.Title.Equals("Disabled")).Select(accs => accs.Id).FirstOrDefaultAsync();
+            newAccount.RoleId = await _appDBContext.Roles.AsNoTracking().Where(r => r.Title.Equals("User")).Select(r => r.Id).FirstOrDefaultAsync();
 
             await _appDBContext.Accounts.AddAsync(newAccount);
             await _appDBContext.SaveChangesAsync();
@@ -108,8 +110,24 @@ namespace NewsAgregator.Services.AccountServices
                 account.Email = updatedAccountVM.Email;
                 account.Phone = updatedAccountVM.Phone;
                 account.DesiredNewsRating = updatedAccountVM.DesiredNewsRating;
-                account.AccountStatusId = updatedAccountVM.AccountStatusId;
-                account.RoleId = updatedAccountVM.RoleId;
+                if(updatedAccountVM.AccountStatusId == null)
+                {
+                    if(account.AccountStatusId == null)
+                    {
+                        account.AccountStatusId = await _appDBContext.AccountStatuses.AsNoTracking().Where(accs => accs.Title.Equals("Disabled")).Select(accs => accs.Id).FirstOrDefaultAsync();
+                    }
+                }
+                else
+                    account.AccountStatusId = updatedAccountVM.AccountStatusId;
+                if (updatedAccountVM.RoleId == null)
+                {
+                    if (account.RoleId == null)
+                    {
+                        account.RoleId = await _appDBContext.Roles.AsNoTracking().Where(r => r.Title.Equals("User")).Select(r => r.Id).FirstOrDefaultAsync();
+                    }
+                }
+                else
+                    account.RoleId = updatedAccountVM.RoleId;
 
                 await _appDBContext.SaveChangesAsync();
             }

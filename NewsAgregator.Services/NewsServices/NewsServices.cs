@@ -60,6 +60,10 @@ namespace NewsAgregator.Services.NewsServices
         {
             var newNews = NewsMapper.NewsVMToNews(newsVM);
             newNews.Id = Guid.NewGuid();
+            if(newsVM.NewsStatusId == null)
+            {
+                newNews.NewsStatusId = await _appDBContext.NewsStatuses.AsNoTracking().Where(ns => ns.Title.Equals("Disabled")).Select(ns => ns.Id).FirstOrDefaultAsync();
+            }
 
             await _appDBContext.AddAsync(newNews);
             await _appDBContext.SaveChangesAsync();
@@ -108,6 +112,10 @@ namespace NewsAgregator.Services.NewsServices
                 news.Date = updatedNewsVM.Date;
                 news.PositiveRating = updatedNewsVM.PositiveRating;
                 news.NewsStatusId = updatedNewsVM.NewsStatusId;
+                if (updatedNewsVM.NewsStatusId == null)
+                {
+                    news.NewsStatusId = await _appDBContext.NewsStatuses.AsNoTracking().Where(ns => ns.Title.Equals("Disabled")).Select(ns => ns.Id).FirstOrDefaultAsync();
+                }
 
                 await _appDBContext.SaveChangesAsync();
             }
@@ -256,6 +264,9 @@ namespace NewsAgregator.Services.NewsServices
                         if (newsVMs.Count != 0 && newsVMs != null)
                         {
                             newsVMs.Select(nvm => nvm.Description = Regex.Replace(nvm.Description, @"<[^>]*>", ""));
+                            var disabledNewsStatusId = await _appDBContext.NewsStatuses.AsNoTracking().Where(ns => ns.Title.Equals("Disabled")).Select(ns => ns.Id).FirstOrDefaultAsync();
+                            newsVMs.Select(nvm => nvm.NewsStatusId = disabledNewsStatusId);
+                            
                             var newsesRSSData = newsVMs.Where(vm => vm != null).Select(vm => NewsMapper.NewsVMToNews(vm));
 
                             await _appDBContext.Newses.AddRangeAsync(newsesRSSData);
@@ -343,8 +354,8 @@ namespace NewsAgregator.Services.NewsServices
             string ClearTextFromUnnecessarySymbols(string nodeText)
             {
                 nodeText = Regex.Replace(nodeText, @"[\t\r\n]+", "");
-                nodeText = Regex.Replace(nodeText, @"\s+", " ");
-                nodeText = nodeText.Trim();
+                //nodeText = Regex.Replace(nodeText, @"\s+", " ");
+                //nodeText = nodeText.Trim();
                
                 return nodeText;
             }
@@ -453,7 +464,6 @@ namespace NewsAgregator.Services.NewsServices
 
             foreach (var newsVM in newsVMWithoutRate)
             {
-                //var responseStrings = new List<string>();
                 string responseString;
                 int rateAI = -1;
                 string retryProvidersScript = "g4flocalapi.py";
@@ -529,7 +539,7 @@ namespace NewsAgregator.Services.NewsServices
             using (Py.GIL())
             {
                 dynamic sys = Py.Import("sys");
-                sys.path.append(@"G:\С#_new\ITAcademy\NewsAgregator2\NewsAgregator\NewsAgregator.Services\NewsServices"); // Укажите путь к папке, где находится script.py
+                sys.path.append(@"G:\С#_new\ITAcademy\NewsAgregator2\NewsAgregator\NewsAgregator.Services\NewsServices"); 
 
                 dynamic pythonScript = Py.Import("g4flocalapi");
                 responseString = pythonScript.chat_with_model(message);
@@ -610,8 +620,6 @@ namespace NewsAgregator.Services.NewsServices
                 var jsonResponse = await response.Content.ReadAsStringAsync();
 
                 dynamic json = JsonConvert.DeserializeObject(jsonResponse);
-
-
 
                 //    foreach (var choice in choices)
                 //    {

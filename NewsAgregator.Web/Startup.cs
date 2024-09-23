@@ -61,7 +61,7 @@ namespace NewsAgregator.Web
                 .Enrich.FromLogContext()
                 .WriteTo.Console(Serilog.Events.LogEventLevel.Error)
                 .WriteTo.File("NewsAggregatorLogs.log"));
-            services.AddDbContext<AppDBContext>(options => options.UseSqlServer(connectionString: Configuration.GetConnectionString("Home")));
+            services.AddDbContext<AppDBContext>(options => options.UseSqlServer(connectionString: Configuration.GetConnectionString("Work")));
 
             var jwtIss = Configuration.GetSection("JWT:Iss").Get<string>();
             var jwtAud = Configuration.GetSection("JWT:Aud").Get<string>();
@@ -90,7 +90,7 @@ namespace NewsAgregator.Web
                     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
                     .UseSimpleAssemblyNameTypeSerializer()
                     .UseRecommendedSerializerSettings()
-                    .UseSqlServerStorage(Configuration.GetConnectionString("Home")));
+                    .UseSqlServerStorage(Configuration.GetConnectionString("Work")));
             services.AddHangfireServer();
 
             services.AddMvc();

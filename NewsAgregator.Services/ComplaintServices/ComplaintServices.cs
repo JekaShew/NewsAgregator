@@ -38,10 +38,15 @@ namespace NewsAgregator.Services.ComplaintServices
 
         }
 
-        public async Task AddComplaintAsync(ComplaintVM complaint)
+        public async Task AddComplaintAsync(ComplaintVM complaintVM)
         {
-            var newComplaint = ComplaintMapper.ComplaintVMToComplaint(complaint);
+            var newComplaint = ComplaintMapper.ComplaintVMToComplaint(complaintVM);
             newComplaint.Id = Guid.NewGuid();
+            if (complaintVM.ComplaintStatusId == null)
+            {
+                newComplaint.ComplaintStatusId = await _appDBContext.ComplaintStatuses.AsNoTracking().Where(cs => cs.Title.Equals("Waiting")).Select(cs => cs.Id).FirstOrDefaultAsync();
+            }
+
 
             await _appDBContext.AddAsync(newComplaint);
             await _appDBContext.SaveChangesAsync();
@@ -103,6 +108,10 @@ namespace NewsAgregator.Services.ComplaintServices
                 complaint.CommentId = updatedComplaintVM.CommentId;
                 complaint.NewsId= updatedComplaintVM.NewsId;
                 complaint.ComplaintStatusId = updatedComplaintVM.ComplaintStatusId;
+                if (updatedComplaintVM.ComplaintStatusId == null)
+                {
+                    complaint.ComplaintStatusId = await _appDBContext.ComplaintStatuses.AsNoTracking().Where(cs => cs.Title.Equals("Waiting")).Select(cs => cs.Id).FirstOrDefaultAsync();
+                }
                 complaint.ComplaintTypeId = updatedComplaintVM.ComplaintTypeId;
                 complaint.UserId = updatedComplaintVM.UserId;
                 complaint.AdministratorId = updatedComplaintVM.AdministratorId;
