@@ -23,54 +23,21 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
         [HttpPost("updatenewsrate")]
         public async Task<IActionResult> UpdateNewsRate()
         {
-            //var url = "http://localhost:1337/v1/chat/completions";
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    await _newsServices.UpdateNewsRateAsync();
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
 
-            //var body = new
-            //{
-            //    model = "gpt-3.5-turbo",
-            //    stream = false,
-            //    messages = new[]
-            //    {
-            //        new { role = "assistant", content = "Test passed" }
-            //    }
-            //};
-
-            //using (var client = new HttpClient())
-            //{
-            //    var request = new HttpRequestMessage(HttpMethod.Post,
-            //        url);
-
-            //    request.Headers.Add("Accept", "application/json");
-            //    request.Content = JsonContent.Create(new[]
-            //    {
-            //        new { Body = body }
-            //    });
-
-            //    var response = await client.SendAsync(request);
-
-            //    if (response.IsSuccessStatusCode)
-            //    {
-            //        var responseString = await response.Content.ReadAsStringAsync();
-
-
-            //        //var lemmas = //JsonConvert.DeserializeObject<>
-
-            //        //lemmasDictionary
-
-            //        //based on dict calculate rate of your article
-
-            //        return Ok(responseString);
-            //    }
-            //    else
-            //    {
-            //        await _newsServices.UpdateNewsRateAsync();
-            //        return StatusCode(500);
-            //    }
-            //}
-
-
-            await _newsServices.UpdateNewsRateAsync();
-            return Ok();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
         }
 
         [HttpGet("getparameters")]
@@ -135,6 +102,42 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
             try
             {
                 var result = await _newsServices.TakeNewsesAsync();
+                if (result.Count != 0)
+                    return Ok(result);
+                else
+                    return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet("taketopnewses")]
+        public async Task<IActionResult> TakeTopNewses()
+        {
+            try
+            {
+                var result = await _newsServices.TakeTopNewsesAsync();
+                if (result.Count != 0)
+                    return Ok(result);
+                else
+                    return NotFound();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpGet("takesuitablenewses")]
+        public async Task<IActionResult> TakeSuitableNewses()
+        {
+            try
+            {
+                var result = await _newsServices.TakeSuitableNewsesAsync();
                 if (result.Count != 0)
                     return Ok(result);
                 else

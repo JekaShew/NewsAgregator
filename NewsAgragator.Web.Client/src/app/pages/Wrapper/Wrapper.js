@@ -12,11 +12,12 @@ class Wrapper extends Component {
             <div className="wrapper">
                 <div className="header">
                     <div className="title"><NavLink className="navLink" to="/Main">NewsAgregator</NavLink></div>
-                    <div className="navItem"><NavLink className="navLink" to="/Main">Weather</NavLink></div>
-                    <div className="navItem"><NavLink className="navLink" to="/Main">News</NavLink></div>
+                    <div className='navItems'>
+                        <div className="navItem"><NavLink className="navLink" to="/ClientWeather">Weather</NavLink></div>
+                        <div className="navItem"><NavLink className="navLink" to="/ClientNewses">News</NavLink></div>
 
-                    <div className="navItem"><NavLink className="navLink" to="/Main">Sign In</NavLink></div>
-
+                        <div className="navItem"><NavLink className="navLink" to="/SignIn">Sign In</NavLink></div>
+                    </div>
                 </div>
                 <div className="wrapper-content">
                     {this.props.children}

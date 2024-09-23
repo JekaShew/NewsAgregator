@@ -11,6 +11,8 @@ namespace NewsAgregator.Abstract.NewsInterfaces
     public interface INewsServices
     {
         public Task<List<NewsVM>> TakeNewsesAsync();
+        public Task<List<NewsVM>> TakeTopNewsesAsync();
+        public Task<List<NewsVM>> TakeSuitableNewsesAsync();
 
         public Task<NewsVM> TakeNewsByIdAsync(Guid id);
 

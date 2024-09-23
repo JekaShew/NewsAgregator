@@ -112,11 +112,11 @@ const renderValidationMessages = (inputName) =>{
     }
 }
 
-const EditAccount = (props) => {    
+const ClientEditAccountPage = (props) => {    
 
     const navigate = useNavigate();
     const params = useParams();
-    const [managingState, setValue] = useState({ AddOrChange: "", Loading: true, });
+    const [managingState, setValue] = useState({ Loading: true, });
     const userName = useInput({isEmpty:true, minLength:3});
     const login = useInput({isEmpty:true, minLength:3});
     const password = useInput({isEmpty:true, minLength:5});
@@ -132,22 +132,15 @@ const EditAccount = (props) => {
     const beforeRender = () => {
         console.log("BeforeRender");
         if (params.id != null) {
-            setValue({ AddOrChange: "Change", Loading: true });
+            setValue({ Loading: true });
             props.load(params.id);
-        }
-        else {
-            setValue({ AddOrChange: "Add", Loading: true });
-            props.clearState();
-            props.loadParameters();
-        }
+        } 
     }
 
     useEffect(() => {
         console.log("propsLoading changed");
         if (params.id != null
-            && managingState.AddOrChange == "Change"
-            && !props.value.loadingParameters
-            && !props.value.loadingData) 
+            && !props.value.loading) 
         {
             userName.onInitialize(props.value.userName.value);
             login.onInitialize(props.value.login.value);
@@ -155,44 +148,31 @@ const EditAccount = (props) => {
             confirmationPassword.onInitialize(props.value.password.value);
             fio.onInitialize(props.value.fio.value);
             email.onInitialize(props.value.email.value);
-            setValue({ AddOrChange: "Change", Loading: props.value.loadingData });
+            setValue({ Loading: props.value.loading });
         }
-        else if (params.id == null
-            && managingState.AddOrChange == "Add"
-            && !props.value.loadingParameters) 
-        {
-            userName.onInitialize("");
-            login.onInitialize("");
-            password.onInitialize("");
-            confirmationPassword.onInitialize("");
-            fio.onInitialize("");
-            email.onInitialize("");
-            setValue({ AddOrChange: "Add", Loading: props.value.loadingParameters });
-        }
-    }, [props.value.loadingParameters, props.value.loadingData]);
+    }, [props.value.loading]);
 
-    const addORchangeBtn = () => {     
+    const renderSignUPbtns = () => {     
         let disabled = false;
         if(!userName.inputValid || !login.inputValid || !password.inputValid || !fio.inputValid || !email.inputValid || !confirmationPassword.inputValid)
             disabled = true;
         else
         disabled = false;
-
-        if (managingState.AddOrChange == "Add")
-            return (<button disabled={disabled} className="btnAddChange" onClick={() => addAccount()}>Add</button>);
-        else if (managingState.AddOrChange == "Change")
-            return (<button disabled={disabled} className="btnAddChange" onClick={() => changeAccount()}>Change</button>);
+        return(
+            <div>
+                <button disabled={disabled} className="btnSign" onClick={() => changeAccount()}>Change Account</button>
+                <button  className="btnSign" onClick={() => changePassword()}>Change Password</button>
+            </div>
+        );
     }
 
-    const goToList = () => {
-        navigate("/Accounts");
+    const changePassword = () =>{
+        navigate("/ChangePassword")
     }
 
     const changeAccount = () => {
         let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
         data.desiredNewsRating = Number.parseInt(data.desiredNewsRating);
-        data.accountStatusId = data.accountStatus.id;
-        data.roleId = data.role.id;
         data.id = params.id;
 
         let formData = new FormData();
@@ -204,23 +184,6 @@ const EditAccount = (props) => {
 
         props.save(formData);
     }
-
-    const addAccount = () => {
-        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
-        data.desiredNewsRating = Number.parseInt(data.desiredNewsRating);
-        data.accountStatusId = data.accountStatus.id;
-        data.roleId = data.role.id;
-        data.id = null;
-
-        let formData = new FormData();
-        for (var key in data) {
-            if (data[key]) {
-                formData.append(key, data[key]);
-            }
-        }
-
-        props.add(formData);
-    };
 
     const renderInputs = () => {        
         if (managingState.Loading == false) {
@@ -302,69 +265,6 @@ const EditAccount = (props) => {
                     {
                         renderValidationMessages(login)
                     }
-                    <div className="divInput">
-                        <div className="inputTitle">Password</div>
-                        <input
-                            className="input"
-                            type="text"
-                            placeholder="Password"
-                            value={password.value}
-                            onChange={(e) => password.onChange(e,props.select,"password")}
-                            onBlur={(e) => password.onBlur(e)}
-                        />
-                    </div>
-                    {
-                        renderValidationMessages(password)
-                    }
-                    <div className="divInput">
-                        <div className="inputTitle">Confirmation Password</div>
-                        <input
-                            className="input"
-                            type="text"
-                            placeholder="Confirmation Password"
-                            value={confirmationPassword.value}
-                            onChange={(e) => confirmationPassword.onChange(e,props.select,"confirmationPassword")}
-                            onBlur={(e) => confirmationPassword.onBlur(e)}
-                        />
-                    </div>
-                    {
-                        renderValidationMessages(confirmationPassword)
-                    }
-
-                    <div className="divInput">
-                        <div className="inputTitle">Secret Word</div>
-                        <input
-                            className="input"
-                            type="text"
-                            placeholder="Secret Word"
-                            value={secretWord.value}
-                            onChange={(e) => secretWord.onChange(e,props.select,"secretWord")}
-                            onBlur={(e) => secretWord.onBlur(e)}
-                        />
-                    </div>
-                    {
-                        renderValidationMessages(secretWord)
-                    }
-                    <div className="divInput">
-                        <div className="inputTitle">Account Status</div>
-                        <InputObject
-                            id="accountStatuses"
-                            value={props.value.accountStatus.value.id}
-                            options={props.value.accountStatuses.value}
-                            placeholder="Account Status"
-                            onClick={(val, text) => props.selectParameter('accountStatus', val,text)}
-                        />
-                    </div>
-                    <div className="divInput">
-                        <div className="inputTitle">Role</div>
-                        <InputObject
-                            id="roles"
-                            value={props.value.role.value.id}
-                            options={props.value.roles.value}
-                            placeholder="Role"
-                            onClick={(val,text) => props.selectParameter('role', val, text)}
-                        />
-                    </div>
                 </div>
             );
         }
@@ -383,14 +283,11 @@ const EditAccount = (props) => {
     return (
 
         <Wrapper>
-            <div className="editPage">
-                <div className="pageTitle">Edit Account </div>
+            <div className="">
+                <div className=""> Client Edit Account </div>
                 {renderInputs()}
-                <div className="btns">
-                    <button className="btnAddChange" onClick={() => goToList()}>Back to List</button>
-                    <div>
-                        {addORchangeBtn()}
-                    </div>
+                <div className="">
+                    {addORchangeBtn()}
                 </div>
             </div>
         </Wrapper>
@@ -400,18 +297,15 @@ const EditAccount = (props) => {
 const mapDispatchToProps = dispatch => {
     return {
         select: (name, value) => dispatch(select(name, value)),
-        selectParameter: (name, value, text) => dispatch(selectParameter(name, value, text)),
-        add: (newAccount) => dispatch(add(newAccount)),
         save: (updatedAccount) => dispatch(save(updatedAccount)),
-        loadParameters: () => dispatch(loadParameters()),
         load: (id) => dispatch(load(id)),
-        clearState: (data) => dispatch(clearState(data)),
+        clearState: () => dispatch(clearState()),
     }
 }
 
 const mapStateToProps = (state) => (console.log("mapStateToProps"), {
 
-    value: state.editAccount,
+    value: state.clientEditAccount,
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditAccount);
+export default connect(mapStateToProps, mapDispatchToProps)(ClientEditAccountPage);

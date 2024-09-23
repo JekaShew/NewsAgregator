@@ -3,7 +3,8 @@ import { connect } from 'react-redux';
 // import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import Wrapper from '../../../Wrapper/Wrapper';
-import { signIN, select, clearState } from './actions';
+import {  select } from './actions';
+import {signIn} from '../Authorization/actions';
 
 import '../../../ClientPages/ClientStyles.css';
 
@@ -115,32 +116,8 @@ const renderValidationMessages = (inputName) =>{
 const SignINPage = (props) => {    
 
     const navigate = useNavigate();
-    // const params = useParams();
-    const [managingState, setValue] = useState({ Loading: true, });
     const login = useInput({isEmpty:true, minLength:3});
     const password = useInput({isEmpty:true, minLength:5});
-
-    useLayoutEffect(() => {
-        beforeRender();
-    }, []);
-
-    const beforeRender = () => {
-        console.log("BeforeRender");    
-        setValue({ Loading: true });
-        props.clearState();
-    }
-
-    useEffect(() => {
-        console.log("propsLoading changed");
-        
-        if(!props.value.loading)
-        {
-            login.onInitialize(props.value.login.value);
-            password.onInitialize(props.value.password.value);
-
-            setValue({ Loading: props.value.loading });
-        }
-    }, [props.value.loading]);
 
     const renderSignINPageBtns = () => {     
         let disabled = false;
@@ -149,11 +126,10 @@ const SignINPage = (props) => {
         else
         disabled = false;
             return (
-            <div>
+            <div className='signInPageBtnsSign'>
                 <button disabled={disabled} className="btnSign" onClick={() => signIN()}>Sign IN</button>
-                <div>
-                New User?
-                <button className="btnMin" onClick={() => toSignUPPage()}>Sign UP!</button>
+                <div className='signInpageNewUserBlock'>
+                  <div className='signInpageNewUser'>New User?</div> <div className="btnMin" onClick={() => toSignUPPage()}>Sign UP!</div>
                 </div>
             </div>
             );
@@ -177,17 +153,16 @@ const SignINPage = (props) => {
             }
         }
 
-        props.signIN(formData);
+        props.signIn(formData);
     };
 
     const renderComponent = () => {        
-        if (managingState.Loading == false) {
             return (
-                <div className="">
-                    <div className="">
-                        <div className="">Login</div>
+                <div className="signPageComponent">
+                    <div className="inputBlock">
+                        <div className="inputTitle">Login</div>
                         <input
-                            className=""
+                            className="inputData"
                             type="text"
                             placeholder="Login"
                             value={login.value}
@@ -198,10 +173,10 @@ const SignINPage = (props) => {
                     {
                         renderValidationMessages(login)
                     }
-                    <div className="">
-                        <div className="">Password</div>
+                    <div className="inputBlock">
+                        <div className="inputTitle">Password</div>
                         <input
-                            className=""
+                            className="inputData"
                             type="text"
                             placeholder="Password"
                             value={password.value}
@@ -212,27 +187,17 @@ const SignINPage = (props) => {
                     {
                         renderValidationMessages(password)
                     }
-                    <button disabled={disabled} className="btnMin" onClick={() => toForgotPassword()}>Forgot your password?</button>
+                    <div className="btnMin" onClick={() => toForgotPassword()}>Forgot your password?</div>
                    
                 </div>
             );
-        }
-        else if (managingState.Loading == true) {
-            return
-            (
-                <div className="items loading">
-                    ROCK
-                    <FontAwesomeIcon icon={faSpinner} />
-                </div>
-            );
-        }
     }
 
 
     return (
         <Wrapper>
-            <div className="">
-                <div className="">Signing IN </div>
+            <div className="signINPage">
+                <div className="clientTitle">Signing IN </div>
                 {renderComponent()}
                 <div>
                     {renderSignINPageBtns()}
@@ -245,8 +210,7 @@ const SignINPage = (props) => {
 const mapDispatchToProps = dispatch => {
     return {
         select: (name, value) => dispatch(select(name, value)), 
-        signIN: (login, password) => dispatch(signIN(login, password)),
-        clearState: () => dispatch(clearState()),
+        signIn: (signINModel) => dispatch(signIn(signINModel)),
     }
 }
 

@@ -1,0 +1,224 @@
+.commonStyles{
+    color: #73b468 ;  /*  Like Wrapper  */
+    background-color: #ecec99;  /*  Background  */
+    color:#91C74F;   /*  AButton  */
+    color:#3ca539;  /*  TryButton  */
+    font-family: 'Montserrat', sans-serif;
+}
+
+/* .mainComponent{
+
+} */
+
+.clientMain{
+    background-color: #EEEEE1 ;
+    font-family: 'Montserrat', sans-serif;
+    width:70%;
+    margin:0 auto;
+    
+}
+
+.clientTitle{
+    font-family: 'Montserrat', sans-serif;
+    width:40%;
+    margin:1rem auto;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.mainComponentWeather{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width:100%;
+}
+
+.weatherShortBlock{
+    width: 22%;
+}
+
+.newsShortBlocks{
+    width: 100%;
+    margin: 1rem auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+}
+
+.newsBlockShortContainer{
+    width:40%;
+}
+.newsShort{
+    width:inherit;
+   background-color: white;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 10px;
+    border-color: #91C74F;
+    transition: background-color 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+    margin: 1rem auto;
+}
+
+.newsShortTitle{
+    font-weight: bold;
+    font-size: 1.2rem;
+    width:80%;
+    margin:0.5rem auto;
+}
+
+.newsShortDescription{
+    font-size: 1rem;
+    width:80%;
+    display:block;
+    margin:0.5rem auto;
+    /* display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3; */
+}
+
+.btnReadMore{
+    background-color: white;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 10px;
+    border-color: #91C74F;
+    transition: background-color 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+    font-size: 1rem;
+    width: 8rem;
+    text-align: center;
+    margin: 1rem auto;
+    cursor: pointer;
+}
+
+.btnLoadMore{
+    width: 30%;
+    height: 2rem;
+    font-size: 1rem; 
+    font-family: 'Montserrat', sans-serif;
+    margin: 1rem auto;
+    padding: 0.3rem 0.5rem;
+    background-color: #91C74F;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+    text-align: center;
+}
+
+.signUPPage{
+    width:50%;
+    /* align-content: center; */
+    margin: auto;
+
+}
+
+.signINPage{
+    width:50%;
+    /* align-content: center; */
+    height: 80vh;
+    margin: auto;
+
+}
+.signPageComponent{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content: space-evenly;
+}
+
+.inputBlock{
+    margin: 1rem auto 0 auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    width:100%;
+}
+
+.inputTitle{
+    padding-top: 0;
+    width:40%;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: bold;
+    font-size: 1rem;
+}
+
+.inputWithError{
+    display:flex;
+    flex-direction: column;
+    width: 40%;
+    height: 110%;
+}
+
+.inputData{
+    /* width:40%; */
+    background-color: white;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 10px;
+    border-color: #91C74F;
+    transition: background-color 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.signInPageBtnsSign{
+    display:flex;
+    flex-direction: column;
+    width:100%;
+    margin:0 auto;
+}
+
+.signInpageNewUserBlock{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+.signInpageNewUser{
+    margin-right: 1rem;
+}
+
+.btnSign{
+    width: 40%;
+    height: 2rem;
+    font-size: 1rem; 
+    font-weight: bold;
+    font-family: 'Montserrat', sans-serif;
+    margin: 1rem auto;
+    padding: 0.3rem 0.5rem;
+    background-color: #91C74F;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+    text-align: center;
+}
+
+.signPageComponent .btnMin{
+    display:flex;
+    justify-content: right;
+    width:90%;
+
+}
+
+.btnMin{
+    color:#91C74F;
+    text-decoration: underline; /* Подчеркивание текста */
+    transition: color 0.3s, font-weight 0.3s; 
+    cursor: pointer;
+
+}
+
+.btnMin a:hover{
+font-weight: bold;
+
+}
+

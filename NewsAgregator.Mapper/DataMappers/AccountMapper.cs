@@ -13,14 +13,14 @@ namespace NewsAgregator.Mapper.DataMappers
     public static partial class AccountMapper
     {
         [MapProperty([nameof(Account.AccountStatus), nameof(Account.AccountStatus.Id)],
-            [nameof(CreateAccountVM.AccountStatus), nameof(CreateAccountVM.AccountStatus.Id)])]
+            [nameof(AccountVM.AccountStatus), nameof(AccountVM.AccountStatus.Id)])]
         [MapProperty([nameof(Account.AccountStatus), nameof(Account.AccountStatus.Title)],
-            [nameof(CreateAccountVM.AccountStatus), nameof(CreateAccountVM.AccountStatus.Text)])]
+            [nameof(AccountVM.AccountStatus), nameof(AccountVM.AccountStatus.Text)])]
 
         [MapProperty([nameof(Account.Role), nameof(Account.Role.Id)],
-            [nameof(CreateAccountVM.Role), nameof(CreateAccountVM.Role.Id)])]
+            [nameof(AccountVM.Role), nameof(AccountVM.Role.Id)])]
         [MapProperty([nameof(Account.Role), nameof(Account.Role.Title)],
-            [nameof(CreateAccountVM.Role), nameof(CreateAccountVM.Role.Text)])]
+            [nameof(AccountVM.Role), nameof(AccountVM.Role.Text)])]
         public static partial AccountVM? AccountToAccountVM(Account? account);
 
         //public static partial CreateAccountVM? AccountToAccountVM(Account? account);

@@ -13,7 +13,6 @@ const useValidation = (value, validations) => {
     const [minLengthError, setMinLengthError] = useState({ value: false, errorMessage: "" });
     const [maxLengthError, setMaxLengthError] = useState({ value: false, errorMessage: "" });
     const [emailError, setEmailError] = useState({ value: false, errorMessage: "The value is not Email!" });
-    const [confirmationPasswordError, setConfirmationPasswordError] = useState({ value: false, errorMessage: "Password mismatch!" });
     const [inputValid, setInputValid] = useState(false);
 
     useEffect(() => {
@@ -38,30 +37,23 @@ const useValidation = (value, validations) => {
                     setEmailError({value: false}) : 
                     setEmailError({value: true, errorMessage: "The value is not Email!"});
                     break;
-                case 'confirmationPassword':
-                    const pass = props.value.password.value;
-                    value != pass ? 
-                    setConfirmationPasswordError({value: true, errorMessage: "Password missmatch!"}) : 
-                    setConfirmationPasswordError({value: false});
-                    break;
             }
         }
     }, [value]);
 
     useEffect(() => {
-        if (isEmpty.value || maxLengthError.value || minLengthError.value || emailError.value || confirmationPasswordError.value)
+        if (isEmpty.value || maxLengthError.value || minLengthError.value || emailError.value)
             setInputValid(false);
         else
             setInputValid(true);
             console.log(inputValid);
-    }, [isEmpty, minLengthError, maxLengthError, emailError, confirmationPasswordError]);
+    }, [isEmpty, minLengthError, maxLengthError, emailError]);
 
     return {
         isEmpty,
         minLengthError,
         maxLengthError,
         emailError,
-        confirmationPasswordError,
         inputValid
     }
 }
@@ -105,8 +97,6 @@ const renderValidationMessages = (inputName) =>{
             return  (<div style={{color:'red'}}>{inputName.maxLengthError.errorMessage}</div>)
         else if(inputName.emailError.value) 
             return  (<div style={{color:'red'}}>{inputName.emailError.errorMessage}</div>)
-        else if(inputName.confirmationPasswordError.value) 
-            return  (<div style={{color:'red'}}>{inputName.confirmationPasswordError.errorMessage}</div>)
         else 
             return(<div style={{display:'block'}}></div>)
     }
@@ -120,7 +110,7 @@ const EditAccount = (props) => {
     const userName = useInput({isEmpty:true, minLength:3});
     const login = useInput({isEmpty:true, minLength:3});
     const password = useInput({isEmpty:true, minLength:5});
-    const confirmationPassword = useInput({isEmpty:true, confirmationPassword:true});
+    const confirmationPassword = useInput({isEmpty:true});
     const secretWord = useInput({isEmpty:true, minLength:6});
     const fio = useInput({isEmpty:true});
     const email = useInput({isEmpty:true, isEmail:true});
@@ -128,6 +118,20 @@ const EditAccount = (props) => {
     useLayoutEffect(() => {
         beforeRender();
     }, []);
+
+    const confirmationPasswordMessage = () =>{
+        if(password.isDirty && confirmationPassword.isDirty)
+        {
+            if(password.value === confirmationPassword.value )
+                return(<div style={{display:'block'}}></div>)
+            else
+                return (<div style={{color:'red'}}>Passwords missmatch!</div>);
+        }   
+    }
+
+    useEffect(() => {
+        confirmationPasswordMessage();
+    }, [password.value, confirmationPassword.value]);
 
     const beforeRender = () => {
         console.log("BeforeRender");
@@ -144,6 +148,8 @@ const EditAccount = (props) => {
 
     useEffect(() => {
         console.log("propsLoading changed");
+        console.log(props.value.loadingParameters);
+        console.log(props.value.loadingData);
         if (params.id != null
             && managingState.AddOrChange == "Change"
             && !props.value.loadingParameters
@@ -173,7 +179,7 @@ const EditAccount = (props) => {
 
     const addORchangeBtn = () => {     
         let disabled = false;
-        if(!userName.inputValid || !login.inputValid || !password.inputValid || !fio.inputValid || !email.inputValid || !confirmationPassword.inputValid)
+        if(!userName.inputValid || !login.inputValid || !password.inputValid || !fio.inputValid || !email.inputValid)
             disabled = true;
         else
         disabled = false;
@@ -328,7 +334,7 @@ const EditAccount = (props) => {
                         />
                     </div>
                     {
-                        renderValidationMessages(confirmationPassword)
+                        confirmationPasswordMessage()
                     }
 
                     <div className="divInput">

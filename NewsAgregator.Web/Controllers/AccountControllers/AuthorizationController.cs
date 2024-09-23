@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using NewsAgregator.Abstract.AccountInterfaces;
 using NewsAgregator.Services.AccountServices;
+using NewsAgregator.ViewModels.Additional;
 using NewsAgregator.ViewModels.Data;
 
 namespace NewsAgregator.Web.Controllers.AccountControllers
 {
+    [Route("/api/authorization")]
     public class AuthorizationController : Controller
     { 
     private readonly IAccountServices _accountServices;
@@ -20,20 +22,21 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
     }
 
         [HttpPost("signin")]
-        public async Task<IActionResult> SignIn(string login, string password)
+        public async Task<IActionResult> SignIn([FromBody]SignInModel signINModel)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    if (!await _accountServices.CheckLoginPasswordAsync(login, password))
+                    if (!await _accountServices.CheckLoginPasswordAsync(signINModel.Login, signINModel.Password))
                         return Unauthorized("Wrong Login or Password!");
-                    var accountId = await _accountServices.TakeAccountIdByLoginAsync(login);
+                    var accountId = await _accountServices.TakeAccountIdByLoginAsync(signINModel.Login);
                     
                     if (!accountId.HasValue)
                         return BadRequest();
+                    var account = await _accountServices.TakeAccountByIdAsync(accountId.Value);
                     var tokens = await GenerateTokenPair(accountId.Value);
-                    return Ok(new { AccessToken = tokens.Item1, RefreshToken = tokens.Item2 });
+                    return Ok(new { atoken = tokens.Item1, rtoken = tokens.Item2, userName = account.UserName, role = account.Role?.Text });
                 }
                 else return BadRequest("Invalid Data.");
 
@@ -47,14 +50,19 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         }
 
         [HttpPost("signup")]
-        public async Task<IActionResult> SignUp(CreateAccountVM accountVM)
+        public async Task<IActionResult> SignUp([FromBody]CreateAccountVM accountVM)
         {
             try
             {
                 if (ModelState.IsValid)
                 {
-                    await _accountServices.AddAccountAsync(accountVM);
-                    return Ok();
+                    if (!await _accountServices.CheckIsLoginRegisteredAsync(accountVM.Login))
+                    {
+                        await _accountServices.AddAccountAsync(accountVM);
+                        return Ok();
+                    }
+                    else return BadRequest("This Login exists");
+                    
                 }
                 else return BadRequest("Invalid Data.");
 
@@ -88,7 +96,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
 
         }
 
-        [HttpPost("/refresh/")]
+        [HttpPost("/refresh")]
         public async Task<IActionResult> Refresh([FromBody] Guid refreshTokenId)
         {
             if (await _authorizationServices.RefreshTokenCorrect(refreshTokenId))

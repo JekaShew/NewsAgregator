@@ -29,6 +29,7 @@ using Newtonsoft.Json;
 using System.Text.Json.Nodes;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
 
 namespace NewsAgregator.Services.NewsServices
 {
@@ -254,6 +255,7 @@ namespace NewsAgregator.Services.NewsServices
 
                         if (newsVMs.Count != 0 && newsVMs != null)
                         {
+                            newsVMs.Select(nvm => nvm.Description = Regex.Replace(nvm.Description, @"<[^>]*>", ""));
                             var newsesRSSData = newsVMs.Where(vm => vm != null).Select(vm => NewsMapper.NewsVMToNews(vm));
 
                             await _appDBContext.Newses.AddRangeAsync(newsesRSSData);
@@ -650,7 +652,7 @@ namespace NewsAgregator.Services.NewsServices
         public async Task DeleteNewsWithBadRateAsync()
         {
             var allNewses = await TakeNewsesAsync();
-            var toDeleteNewses = allNewses.Where(n => n.PositiveRating <=5).ToList();
+            var toDeleteNewses = allNewses.Where(n => n.PositiveRating <=4).ToList();
             foreach(var news in toDeleteNewses)
             {
                 await DeleteNewsAsync(news.Id);
@@ -672,7 +674,16 @@ namespace NewsAgregator.Services.NewsServices
             await _appDBContext.SaveChangesAsync();
         }
 
-        public async Task<List<NewsVM>> TakeSuitableNewesAsync()
+        public async Task<List<NewsVM>> TakeTopNewsesAsync()
+        {
+            var allNewses = await TakeNewsesAsync();
+            var topNewses = allNewses
+                                .OrderByDescending(n=> n.PositiveRating).ThenBy(n => n.Date).Take(6)               
+                                .ToList();
+            return topNewses;
+        }
+
+        public async Task<List<NewsVM>> TakeSuitableNewsesAsync()
         {
             var allNewses = await TakeNewsesAsync();
             Guid? accountId = _accountServices.GetCurrentAccountId();
@@ -680,7 +691,7 @@ namespace NewsAgregator.Services.NewsServices
 
             var suitableNewses = allNewses
                                 .Where(n => n.PositiveRating >=
-                                        (accountVM.DesiredNewsRating != null ? accountVM.DesiredNewsRating : 5)).ToList();
+                                        (accountVM.DesiredNewsRating != null ? accountVM.DesiredNewsRating : 5)).OrderBy(n => n.Date).ToList();
             return suitableNewses;
         }
 

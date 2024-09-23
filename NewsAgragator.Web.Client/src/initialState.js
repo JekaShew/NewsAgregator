@@ -1,4 +1,5 @@
 import { text } from "@fortawesome/fontawesome-svg-core";
+import { clientMain } from "./reducers";
 
 export default {
 
@@ -727,5 +728,85 @@ export default {
 
     },
 
+    clientMain: {
+        loading: true,
+        topNewses:
+            [
+                {
+                    id: {
+                        value: '',
+                    },
+                    title: {
+                        value: '',
+                    },
+                    text: {
+                        value: '',
+                    },
+                    date: {
+                        value: '',
+                    },
+                    positiveRating: {
+                        value: '',
+                    },
+                    description: {
+                        value:'',
+                    },
+
+                    newsStatus: {
+                        value: '',
+                    },
+                },
+            ],
+    },
+
+    signUP: {
+        isSuccess: false,
+        loading: false,
+        error: "",
+
+        login: {
+            value: '',
+        },
+        password: {
+            value: '',
+        },
+        confirmationPassword: {
+            value: '',
+        },
+        userName: {
+            value: '',
+        },
+        fio: {
+            value: '',
+        },
+        email: {
+            value: '',
+        },
+        phone: {
+            value: '',
+        },
+        desiredNewsRating: {
+            value: '',
+        },
+        secretWord: {
+            value: '',
+        },
+    },
+
+    signIN: {
+        isSuccess: false,
+        loading: false,
+        error: "",
+        login: "",
+        password: "",
+        
+    },
+    authorization: {
+        atoken: null,
+        rtoken:null,
+        userName: null,
+        role:null,
+        ...JSON.parse(localStorage.getItem("AUTHORIZATION"))
+    },
 
 }

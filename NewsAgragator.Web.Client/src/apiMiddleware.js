@@ -26,8 +26,8 @@ const apiMiddleware = store => next => action => {
 
         let authorizationHeader = {};
         let authorization = store.getState().authorization;
-        //if (authorization.token)
-        //    authorizationHeader = { "Authorization": "Bearer " + authorization.token };
+        if (authorization.token)
+           authorizationHeader = { "Authorization": "Bearer " + authorization.atoken };
         let contentType;;
         if (action.remote.contentType) {
             if (action.remote.contentType == 'clear')
@@ -57,6 +57,10 @@ const apiMiddleware = store => next => action => {
                     store.dispatch({ type: action.remote.apiSuccess, data: result.data, nested: action });
             })
             .catch(error => {
+                // if(error.response.status === 401)
+                // {
+                    
+                // }
                 if (error.response && error.response.status != 500 && error.response.data) {
                     if (error.response.data.code == 1) {
                         if (Array.isArray(action.remote.apiFail))

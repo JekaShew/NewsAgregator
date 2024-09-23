@@ -2,9 +2,11 @@ import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { connect } from 'react-redux';
 // import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
-import Wrapper from '../../../Wrapper/Wrapper';
-import { load, loadParameters } from './actions';
-import '../../../ClientPages/ClientStyles.css';
+import Wrapper from '../../Wrapper/Wrapper';
+import { loadData } from './actions';
+import '../../ClientPages/ClientStyles.css';
+import NewsShort from '../NewsPages/ClientNewsesPage/Components/NewsShort';
+import { width } from '@fortawesome/free-solid-svg-icons/fa0';
 
 
 const MainPage = (props) => {
@@ -20,8 +22,7 @@ const MainPage = (props) => {
     const beforeRender = () => {
         console.log("BeforeRender");    
         setValue({ AddOrChange: "Add", Loading: true });
-        props.clearState();
-        props.load();
+        props.loadData();
     }
 
     useEffect(() => {
@@ -49,6 +50,11 @@ const MainPage = (props) => {
         navigate("/ClientNewses");
     }
 
+    const inlineStyle = {
+        width: '40%',
+        margin: '1rem auto',
+        height: '10rem',
+    }
     const renderComponent = () => {
         console.log("renderComponent");
         if (managingState.Loading == false) {
@@ -66,16 +72,17 @@ const MainPage = (props) => {
                         </div>
                     </div>
                     <div className='newsShortBlocks'>
-                    {props.value.topNews.value.map(x => (
+                    {props.value.topNewses.map(x => (
                         // Переделать в отдельный компонент!! !!NewsShort!!
-                        <div className='newsShort'>
-                            <div className='newsShortTitle'>{x.title.value}</div>
-                            <div className='newsShortDescription'>{x.description.value}</div>
-                            <div className='btnReadMore' onClick={() => btnReadMore(x.id.value)}> Read Full </div>
-                        </div>
+                        <div className='newsBlockShortContainer'>
+                             <NewsShort 
+                        
+                            data = {x}
+                            />
+                        </div>  
                     ))}
                     </div>
-                    <div className='btnLoadMore' onClick={() => loadMoreNewses(x.id.value)}> Load More Newses </div>
+                    <div className='btnLoadMore' onClick={() => loadMoreNewses()}> Load More Newses </div>
                 </div>
             );
         }
@@ -94,18 +101,9 @@ const MainPage = (props) => {
     return (
 
         <Wrapper>
-            <div className="editPage">
-                <div className="pageTitle">News Aggregator </div>
+            <div className="clientMain">
+                <div className="clientTitle">News Aggregator </div>
                 {renderComponent()}
-
-
-
-                <div className="btns">
-                    <button className="btnAddChange" onClick={() => goToList()}>Back to List</button>
-                    <div>
-                        {addORchangeBtn()}
-                    </div>
-                </div>
             </div>
         </Wrapper>
     );
@@ -113,8 +111,7 @@ const MainPage = (props) => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        load: () => dispatch(load()),
-        clearState: (data) => dispatch(clearState(data)),
+        loadData: () => dispatch(loadData()),
     }
 }
 

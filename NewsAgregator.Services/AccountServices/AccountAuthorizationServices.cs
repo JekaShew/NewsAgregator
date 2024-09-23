@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using NewsAgregator.Abstract.AccountInterfaces;
 using NewsAgregator.Data;
 using NewsAgregator.Data.Models;
+using NewsAgregator.Mapper.DataMappers;
 using NewsAgregator.ViewModels.Data;
 using System;
 using System.Collections.Generic;
@@ -22,13 +23,15 @@ namespace NewsAgregator.Services.AccountServices
         private readonly IConfiguration _configuration;
         private readonly IAccountServices _accountServices;
         private readonly IRoleServices _roleServices;
+        private readonly IPolicyServices _policyServices;
         private readonly AppDBContext _appDBContext;
 
-        public AccountAuthorizationServices(AppDBContext appDBContext, IConfiguration configuration, IAccountServices accountServices, IRoleServices roleServices)
+        public AccountAuthorizationServices(AppDBContext appDBContext, IConfiguration configuration, IAccountServices accountServices, IRoleServices roleServices, IPolicyServices policyServices)
         {
             _configuration = configuration;
             _accountServices = accountServices;
             _roleServices = roleServices;
+            _policyServices = policyServices;
             _appDBContext = appDBContext;
         }
 
@@ -41,9 +44,19 @@ namespace NewsAgregator.Services.AccountServices
         {
 
             var accountVM = await _accountServices.TakeAccountByIdAsync(accountId);
-            string?[] policies = (await _roleServices.TakeRoleByIdAsync(accountVM.RoleId.Value))
-                                    .RolePolicies.Select(rp => rp.Policy.Text)
-                                    .ToArray();
+            
+            var roleVM = await _roleServices.TakeRoleByIdAsync(accountVM.RoleId.Value);
+            var rolePolicyVMs = roleVM.RolePolicies.Select( rp => rp.PolicyId).ToList();
+            var policies1 = new List<string>();
+            foreach(var rpvmID in rolePolicyVMs)
+            {
+                var pId = rpvmID.Value;
+                policies1.Add((await _policyServices.TakePolicyByIdAsync(rpvmID.Value)).Title);
+            }
+
+            //string?[] policies = (await _roleServices.TakeRoleByIdAsync(accountVM.RoleId.Value))
+            //                        .RolePolicies.Select(rp => rp.Policy.Text)
+            //                        .ToArray();
 
             var claims = new List<Claim>()
             {
@@ -51,7 +64,7 @@ namespace NewsAgregator.Services.AccountServices
                 new Claim(ClaimTypes.Name, accountVM.FIO),
                 new Claim(ClaimTypes.NameIdentifier, accountVM.Id.ToString()),
                 new Claim(ClaimTypes.Role, accountVM.Role.Text),
-                new Claim("RolePolicies", string.Join(";",policies)),
+                new Claim("RolePolicies", string.Join(";",policies1)),
             };
 
           
