@@ -156,7 +156,7 @@ const EditNews = (props) => {
 
     const addORchangeBtn = () => {
         let disabled = false;
-        if(!title.inputValid || !description.inputValid || sourceUrl.inputValid || date.inputValid)
+        if(!title.inputValid || !description.inputValid || !sourceUrl.inputValid || !date.inputValid)
             disabled = true;
         else
         disabled = false;

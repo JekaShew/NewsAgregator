@@ -6,6 +6,7 @@ using NewsAgregator.Data;
 using NewsAgregator.Data.Mappers;
 using NewsAgregator.Data.Models;
 using NewsAgregator.Mapper.DataMappers;
+using NewsAgregator.Mapper.PropertiesMappers;
 using NewsAgregator.ViewModels.Additional;
 using NewsAgregator.ViewModels.Data;
 using System;
@@ -25,12 +26,29 @@ namespace NewsAgregator.Services.AccountServices
             _appDBContext = appDBContext;
         }
 
-        public async Task AddRoleAsync(RoleVM role)
+        public async Task<RoleParameters> GetRoleParametersAsync()
         {
-            var newRole = RoleMapper.RoleVMToRole(role);
+            //var test = await _appDBContext.RolePolicies.AsNoTracking().Include(p => p.Policy).ToListAsync();
+            var roleParameters = new RoleParameters()
+            {
+                Policies = (await _appDBContext.Policies.AsNoTracking().ToListAsync()).Select(p => RoleParametersMapper.PolicyToParameter(p)).ToList(),
+            };
+            return roleParameters;
+
+        }
+
+        public async Task AddRoleAsync(RoleVM roleVM)
+        {
+            var newRole = RoleMapper.RoleVMToRole(roleVM);
             newRole.Id = Guid.NewGuid();
 
-            _appDBContext.RolePolicies.AddRange(role.RolePolicies.Select(rp => RolePolicyMapper.RolePolicyVMToRolePolicy(rp)));
+            _appDBContext.RolePolicies.AddRange(roleVM.PoliciesIDs.Where(p => p != Guid.Empty).Select(p => 
+                                        new RolePolicy 
+                                        { 
+                                            Id = Guid.NewGuid(),
+                                            RoleId = newRole.Id,
+                                            PolicyId = p
+                                        }));
 
             await _appDBContext.AddAsync(newRole);
             await _appDBContext.SaveChangesAsync();
@@ -50,7 +68,8 @@ namespace NewsAgregator.Services.AccountServices
                 .Include(rp => rp.RolePolicies)
                     .ThenInclude(p => p.Policy)
                 .FirstOrDefaultAsync(r => r.Id == id));
-            roleVM.RolePolicies = (await _appDBContext.RolePolicies.Where(rp=> rp.RoleId == id).ToListAsync()).Select(rp=> RolePolicyMapper.RolePolicyToRolePolicyVM(rp)).ToList();
+            var roleParameters = await GetRoleParametersAsync();
+            roleVM.Policies = roleParameters.Policies;
 
             return roleVM;
         }
@@ -62,9 +81,11 @@ namespace NewsAgregator.Services.AccountServices
                 .Include(rp => rp.RolePolicies)
                     .ThenInclude(p => p.Policy)
                 .ToListAsync()).Select(r => RoleMapper.RoleToRoleVM(r)).ToList();
+            var policies = (await GetRoleParametersAsync()).Policies;
             foreach(var roleVM in roleVMs)
             {
-                roleVM.RolePolicies = (await _appDBContext.RolePolicies.Where(rp => rp.RoleId == roleVM.Id).ToListAsync()).Select(rp => RolePolicyMapper.RolePolicyToRolePolicyVM(rp)).ToList();
+               var policyIds = await _appDBContext.RolePolicies.Where(rp => rp.RoleId == roleVM.Id).Select(rp => rp.PolicyId).ToListAsync();
+                roleVM.Policies = policies.Where(p =>  policyIds.Contains(p.Id)).ToList();
             }
             return roleVMs;
         }
@@ -79,7 +100,14 @@ namespace NewsAgregator.Services.AccountServices
                 role.Description = updatedRoleVM.Description;
 
                 _appDBContext.RolePolicies.RemoveRange(role.RolePolicies);
-                await _appDBContext.RolePolicies.AddRangeAsync(updatedRoleVM.RolePolicies.Select(urp => RolePolicyMapper.RolePolicyVMToRolePolicy(urp)).ToList());
+                _appDBContext.RolePolicies.AddRange(updatedRoleVM.Policies.Select(p =>
+                                        new RolePolicy
+                                        {
+                                            Id = Guid.NewGuid(),
+                                            RoleId = updatedRoleVM.Id,
+                                            PolicyId = p.Id
+                                        }));
+                //await _appDBContext.RolePolicies.AddRangeAsync(updatedRoleVM.RolePolicies.Select(urp => RolePolicyMapper.RolePolicyVMToRolePolicy(urp)).ToList());
 
                 await _appDBContext.SaveChangesAsync();
             }

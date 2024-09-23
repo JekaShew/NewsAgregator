@@ -15,6 +15,8 @@ namespace NewsAgregator.ViewModels.Data
         [Required, MinLength(3)]
         public string? Title { get; set; }
         public string? Description { get; set; }
+        public List<Parameter>? Policies { get; set; }
+        public List<Guid>? PoliciesIDs { get; set; }
 
         public List<RolePolicyVM>? RolePolicies { get; set; }
         public List<CreateAccountVM>? Accounts { get; set; }

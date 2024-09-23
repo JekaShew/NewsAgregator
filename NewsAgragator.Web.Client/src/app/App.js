@@ -9,6 +9,8 @@ import EditAccountStatus from './pages/AdminPages/AccountPages/EditAccountStatus
 import EditNewsStatus from './pages/AdminPages/NewsPages/EditNewsStatus/EditNewsStatus';
 import EditWeatherStatus from './pages/AdminPages/WeatherPages/EditWeatherStatus/EditWeatherStatus';
 
+import EditRole from './pages/AdminPages/AccountPages/EditRole/EditRole';
+import Roles from './pages/AdminPages/AccountPages/Roles/Roles';
 import EditPolicy from './pages/AdminPages/AccountPages/EditPolicy/EditPolicy';
 import EditComplaintStatus from './pages/AdminPages/ComplaintPages/EditComplaintStatus/EditComplaintStatus';
 import EditComplaintType from './pages/AdminPages/ComplaintPages/EditComplaintType/EditComplaintType';
@@ -66,6 +68,10 @@ function App() {
 
 
                     <Route path="/ReferenceBooks" Component={ReferenceBooks} exact />
+
+                    <Route path="/Roles" Component={Roles} exact />
+                    <Route path="/EditRole/" Component={EditRole} exact />
+                    <Route path="/EditRole/:id" Component={EditRole} exact />
 
                     <Route path="/EditWeatherStatus/" Component={EditWeatherStatus} exact />
                     <Route path="/EditWeatherStatus/:id" Component={EditWeatherStatus} exact />

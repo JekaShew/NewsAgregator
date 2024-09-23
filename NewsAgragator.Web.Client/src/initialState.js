@@ -698,11 +698,41 @@ export default {
     },
 
     editRole: {
-
+        id: {
+            value: '',
+        },
+        title: {
+            value: '',
+        },
+        description: {
+            value: '',
+        },
+        policies:{
+            value:[],
+            options:[],
+        },
     },
 
     roles: {
-
+        loading: true,
+        value:
+        [
+            {
+                id: {
+                    value: '',
+                },
+                title: {
+                    value: '',
+                },
+                description: {
+                    value: '',
+                },
+                policies:[{
+                    id:'',
+                    text:'',
+                }]
+            },
+        ],
     },
 
     account: {

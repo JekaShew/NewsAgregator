@@ -1,9 +1,11 @@
 ﻿using NewsAgregator.Data.Models;
+using NewsAgregator.ViewModels.Additional;
 using NewsAgregator.ViewModels.Data;
 using Riok.Mapperly.Abstractions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+
 using System.Text;
 using System.Threading.Tasks;
 
@@ -24,6 +26,9 @@ namespace NewsAgregator.Mapper.DataMappers
         public static partial RolePolicyVM? RolePolicyToRolePolicyVM(RolePolicy? rolePolicy);
 
         public static partial RolePolicy? RolePolicyVMToRolePolicy(RolePolicyVM? rolePolicyVM);
+
+        [MapProperty(nameof(Parameter.Id), nameof(RolePolicy.PolicyId))]
+        public static partial RolePolicy? PolicyParameterToRolePolicy(Parameter? policyParameter);
 
     }
 }

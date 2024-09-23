@@ -1,4 +1,5 @@
-﻿using NewsAgregator.ViewModels.Data;
+﻿using NewsAgregator.ViewModels.Additional;
+using NewsAgregator.ViewModels.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace NewsAgregator.Abstract.AccountInterfaces
 {
     public interface IRoleServices
     {
+        public Task<RoleParameters> GetRoleParametersAsync();
         public Task<List<RoleVM>> TakeRolesAsync();
 
         public Task<RoleVM> TakeRoleByIdAsync(Guid id);

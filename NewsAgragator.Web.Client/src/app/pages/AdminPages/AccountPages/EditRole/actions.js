@@ -1,21 +1,21 @@
-export const add = (newPolicy) => ({
-    type: 'POLICY_ADD',
+export const add = (newRole) => ({
+    type: 'ROLE_ADD',
     remote: {
-        url: '/api/policy/add',
+        url: '/api/role/add',
         type: 'post',
-        body: newPolicy,
+        body: newRole,
         contentType: 'application/x-www-form-urlencoded',
 
     }
 
 })
 
-export const save = (changedPolicy) => ({
-    type: 'POLICY_SAVE',
+export const save = (changedRole) => ({
+    type: 'NEWSSTATUS_SAVE',
     remote: {
-        url: '/api/policy/update',
+        url: '/api/role/update',
         type: 'post',
-        body: changedPolicy,
+        body: changedRole,
         contentType: 'application/x-www-form-urlencoded',
 
     }
@@ -23,26 +23,67 @@ export const save = (changedPolicy) => ({
 })
 
 export const select = (name, value) => ({
-    type: 'POLICY_SELECT',
+    type: 'ROLE_SELECT',
     name: name,
     val: value,
 })
 
-
-export const loadData = (id) => ({
-    type: 'POLICY_LOAD',
+export const loadParameters = () => ({
+    type: 'ROLE_LOAD_PARAMETERS',
     remote: {
-        url: '/api/policy/takebyid/' + id,
+        url: '/api/role/getparameters',
+        type: 'get',
+
+    }
+
+})
+
+export const load = (id) => ({
+    type: 'ROLE_LOAD_PARAMETERS',
+    remote: {
+        url: '/api/role/getparameters',
+        type: 'get',
+        apiSuccess: ['ROLE_LOAD_PARAMETERS_DONE', loadData(id)],
+    }
+
+})
+
+const loadData = (id) => ({
+    type: 'ROLE_LOAD',
+    remote: {
+        url: '/api/role/takebyid/' + id,
         type: 'get',
     }
 });
 
+
+export const addList = (name, val) => ({
+    type: 'ROLE_ADDLIST',
+    name: name,
+    val: val,
+})
+
+export const removeList = (name, val) => ({
+    type: 'ROLE_REMOVELIST',
+    name: name,
+    val: val,
+})
+
+
 export const clearState = () => ({
-    type: 'POLICY_LOAD_SUCCESS',
+    type: 'ROLE_LOAD_SUCCESS',
 
     data:
     {
-        title: '',
-        description: '',
+        title: {
+            value: '',
+        },
+        description: {
+            value: '',
+        },
+        policies:{
+            value:[],
+            options:[],
+        }
     }
 })

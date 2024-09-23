@@ -2,6 +2,9 @@ import editAccountStatus from './app/pages/AdminPages/AccountPages/EditAccountSt
 import editNewsStatus from './app/pages/AdminPages/NewsPages/EditNewsStatus/reducer';
 import editWeatherStatus from './app/pages/AdminPages/WeatherPages/EditWeatherStatus/reducer';
 
+import editRole from './app/pages/AdminPages/AccountPages/EditRole/reducer';
+import roles from'./app/pages/AdminPages/AccountPages/Roles/reducer';
+
 import editPolicy from './app/pages/AdminPages/AccountPages/EditPolicy/reducer';
 import editComplaintStatus from './app/pages/AdminPages/ComplaintPages/EditComplaintStatus/reducer';
 import editComplaintType from './app/pages/AdminPages/ComplaintPages/EditComplaintType/reducer';
@@ -53,6 +56,9 @@ export {changePasswordWhenForgot}
 export { editWeatherStatus }
 export { editAccountStatus }
 export { editNewsStatus }
+
+export { roles }
+export { editRole }
 
 export { editPolicy }
 export { editComplaintStatus }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using NewsAgregator.Abstract.AccountInterfaces;
 using NewsAgregator.Abstract.ComplaintInterfaces;
+using NewsAgregator.Services.AccountServices;
 using NewsAgregator.ViewModels.Data;
 
 namespace NewsAgregator.Web.Controllers.AccountControllers
@@ -15,6 +16,23 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         {
             _roleServices = roleServices;
             _logger = logger;
+        }
+
+        [HttpGet("getparameters")]
+        public async Task<IActionResult> GetParameters()
+        {
+            try
+            {
+                var result = await _roleServices.GetRoleParametersAsync();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
         }
 
         [HttpPost("add")]
@@ -57,7 +75,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
 
         }
 
-        [HttpGet("takebyid")]
+        [HttpGet("takebyid/{id}")]
         public async Task<IActionResult> TakeById(Guid id)
         {
             try
@@ -76,7 +94,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
 
         }
 
-        [HttpDelete("delete")]
+        [HttpDelete("delete/{id}")]
         public async Task<IActionResult> Delete(Guid id)
         {
             try
