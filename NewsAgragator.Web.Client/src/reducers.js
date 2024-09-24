@@ -31,19 +31,22 @@ import editNews from './app/pages/AdminPages/NewsPages/EditNews/reducer';
 import editWeather from './app/pages/AdminPages/WeatherPages/EditWeather/reducer';
 import editNotificationMessage from './app/pages/AdminPages/ComplaintPages/EditNotificationMessage/reducer';
 
-import clientMain from './app/pages/ClientPages/MainPage/reducer'
-
-import signIN from './app/pages/ClientPages/AccountPages/SignINPage/reducer'
-import signUP from './app/pages/ClientPages/AccountPages/SignUPPage/reducer'
-import authorization from './app/pages/ClientPages/AccountPages/Authorization/reducer'
-import changePassword from './app/pages/ClientPages/AccountPages/ChangePasswordPage/reducer'
-import changePasswordWhenForgot from './app/pages/ClientPages/AccountPages/ForgotPasswordPage/reducer'
+import clientMain from './app/pages/ClientPages/MainPage/reducer';
+import clientNews from './app/pages/ClientPages/NewsPages/ClientNewsesPage/reducer';
+import signIN from './app/pages/ClientPages/AccountPages/SignINPage/reducer';
+import signUP from './app/pages/ClientPages/AccountPages/SignUPPage/reducer';
+import authorization from './app/pages/ClientPages/AccountPages/Authorization/reducer';
+import changePassword from './app/pages/ClientPages/AccountPages/ChangePasswordPage/reducer';
+import changePasswordWhenForgot from './app/pages/ClientPages/AccountPages/ForgotPasswordPage/reducer';
+import clientNewsFull from './app/pages/ClientPages/NewsPages/FullNewsPage/reducer';
 
 const lastAction = (state = null, action) => {
     return action;
 }
 
 export {clientMain}
+export {clientNews}
+export {clientNewsFull}
 
 export {signIN}
 export {signUP}

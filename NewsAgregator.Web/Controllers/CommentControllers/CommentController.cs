@@ -76,7 +76,7 @@ namespace NewsAgregator.Web.Controllers.CommentControllers
         }
 
         [HttpGet("takebyid/{id}")]
-        public async Task<IActionResult> TakeById(Guid id)
+        public async Task<IActionResult> TakeById([FromRoute]Guid id)
         {
             try
             {
@@ -95,7 +95,7 @@ namespace NewsAgregator.Web.Controllers.CommentControllers
         }
 
         [HttpDelete("delete/{id}")]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete([FromRoute]Guid id)
         {
             try
             {
@@ -110,7 +110,7 @@ namespace NewsAgregator.Web.Controllers.CommentControllers
         }
 
         [HttpPost("update")]
-        public async Task<IActionResult> Update(CommentVM commentVM)
+        public async Task<IActionResult> Update([FromBody]CommentVM commentVM)
         {
             try
             {

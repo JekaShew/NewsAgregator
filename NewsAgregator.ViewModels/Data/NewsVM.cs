@@ -32,7 +32,7 @@ namespace NewsAgregator.ViewModels.Data
 
         public List<ComplaintVM>? Complaints { get; set; }
 
-        public List<CommentVM>? Comments { get; set; }
+        public List<CommentParameter>? Comments { get; set; }
 
         //public void FromDataModel(NewsAgregator.Data.Models.NewsStatus newsStatus)
         //{

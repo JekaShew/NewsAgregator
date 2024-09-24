@@ -184,6 +184,7 @@ const EditComment = (props) => {
         let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
         data.newsId = data.news.id;
         data.accountId = data.account.id;
+        data.newses = null;
         data.id = null;
 
         let formData = new FormData();

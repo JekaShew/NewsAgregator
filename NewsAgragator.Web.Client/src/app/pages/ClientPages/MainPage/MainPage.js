@@ -6,7 +6,7 @@ import Wrapper from '../../Wrapper/Wrapper';
 import { loadData } from './actions';
 import '../../ClientPages/ClientStyles.css';
 import NewsShort from '../NewsPages/ClientNewsesPage/Components/NewsShort';
-import { width } from '@fortawesome/free-solid-svg-icons/fa0';
+
 
 
 const MainPage = (props) => {
@@ -62,13 +62,13 @@ const MainPage = (props) => {
                 <div className='mainComponent'>
                     <div className='mainComponentWeather'>
                         <div className='weatherShortBlock'>
-                            Картинка CommonWeather Today
+                            WeatherComponent
                         </div>
                         <div className='weatherShortBlock'>
-                            Картинка CommonWeather Tommorow
+                            WeatherComponent
                         </div>
                         <div className='weatherShortBlock'> 
-                        Картинка CommonWeather the day after Tommorow
+                            WeatherComponent
                         </div>
                     </div>
                     <div className='newsShortBlocks'>

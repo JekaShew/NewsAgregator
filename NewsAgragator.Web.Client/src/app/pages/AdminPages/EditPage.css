@@ -1,5 +1,5 @@
 .editPage {
-    background-color: rgba(194, 197, 38, 0.979);
+    background-color: #EEEEE1 ;
     border-radius: 10px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     display: flex;
@@ -106,6 +106,10 @@
 
 .btnAddChange:disabled {
     background-color: #0056b3;
+}
+
+.table{
+    background-color: #ecec99;
 }
 
 .tableRow {

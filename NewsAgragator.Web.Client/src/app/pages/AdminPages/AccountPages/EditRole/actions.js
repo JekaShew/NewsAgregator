@@ -43,7 +43,7 @@ export const load = (id) => ({
     remote: {
         url: '/api/role/getparameters',
         type: 'get',
-        apiSuccess: ['ROLE_LOAD_PARAMETERS_DONE', loadData(id)],
+        apiSuccess: ['ROLE_LOAD_PARAMETERS_SUCCESS', loadData(id)],
     }
 
 })

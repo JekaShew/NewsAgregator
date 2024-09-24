@@ -40,6 +40,7 @@ export default (state = initialState.editComplaint, action) => {
                 // editComplaint:
                 // {
                     loadingParameters: true,
+                    loadingData:false,
                     id: {
                         value: '',
                     },
@@ -125,6 +126,7 @@ export default (state = initialState.editComplaint, action) => {
                 // {
                 //     ...state.editComplaint,                   
                 loadingParameters: false,
+                loadingData:true,
                     ...Object.fromEntries(Object.entries(action.data).map(x => ([
                         x[0],
                         {
@@ -140,12 +142,8 @@ export default (state = initialState.editComplaint, action) => {
         case "COMPLAINT_LOAD_START":
             return {
                 ...state,
-                // ...state.editComplaint,
-                // editComplaint:
-                // {
                     loadingData: true,
-
-                // }
+                    loadingParameters: false,
             }
 
         case "COMPLAINT_LOAD_SUCCESS":
@@ -160,6 +158,7 @@ export default (state = initialState.editComplaint, action) => {
                     ...state.complaintTypes,
                     ...state.accounts,
                     loadingData: false,
+                    loadingParameters: false,
                     ...Object.fromEntries(Object.entries(action.data).map(x => ([
                         x[0],
                         {

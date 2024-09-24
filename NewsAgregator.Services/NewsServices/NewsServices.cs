@@ -30,6 +30,7 @@ using System.Text.Json.Nodes;
 using System.Diagnostics;
 using System.Text.RegularExpressions;
 using Microsoft.Extensions.FileSystemGlobbing.Internal;
+using Microsoft.AspNetCore.Authorization;
 
 namespace NewsAgregator.Services.NewsServices
 {
@@ -51,6 +52,7 @@ namespace NewsAgregator.Services.NewsServices
             var newsParameters = new NewsParameters()
             {
                 NewsStatuses = (await _appDBContext.NewsStatuses.ToListAsync()).Select(ns => NewsParametersMapper.NewsStatusToParameter(ns)).ToList(),
+                Comments = (await _appDBContext.Comments.ToListAsync()).Select(c => NewsParametersMapper.CommentToCommentParameter(c)).ToList(),
             };
             return newsParameters;
 
@@ -77,17 +79,18 @@ namespace NewsAgregator.Services.NewsServices
 
         public async Task<NewsVM> TakeNewsByIdAsync(Guid id)
         {
-            var news = NewsMapper.NewsToNewsVM(await _appDBContext.Newses
+            var newsVM = NewsMapper.NewsToNewsVM(await _appDBContext.Newses
                 .AsNoTracking()
                 .Include(ns => ns.NewsStatus)
                 .FirstOrDefaultAsync(n => n.Id == id));
 
             var newsParameters = await GetNewsParametersAsync();
-            news.NewsStatuses = newsParameters.NewsStatuses;
+            newsVM.NewsStatuses = newsParameters.NewsStatuses;
+            newsVM.Comments = newsParameters.Comments.Where(c => c.NewsId == newsVM.Id).ToList();
 
-            return news;
+            return newsVM;
         }
-
+        
         public async Task<List<NewsVM>> TakeNewsesAsync()
         {
             var newsVMs = (await _appDBContext.Newses
@@ -125,52 +128,56 @@ namespace NewsAgregator.Services.NewsServices
 
         public async Task AggregateNewsAsync()
         {
-            var sources = await _appDBContext.Sources.Where(x => !string.IsNullOrEmpty(x.RssUrl)).ToListAsync();
-            var existedNewsUrls = await _appDBContext.Newses.Select(n => n.SourceUrl).ToListAsync();
+            //var sources = await _appDBContext.Sources.Where(x => !string.IsNullOrEmpty(x.RssUrl)).ToListAsync();
+            //var existedNewsUrls = await _appDBContext.Newses.Select(n => n.SourceUrl).ToListAsync();
 
-            var tasksForRSSData = new List<Task>();
+            //var tasksForRSSData = new List<Task>();
 
-            foreach (var source in sources)
-            {
-                try
-                {
-                    tasksForRSSData.Add(GetRssDataAsync(source, existedNewsUrls));
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Error processing RSS feed from {source.RssUrl}: {ex.Message?.ToString()}; {ex.InnerException?.Message}");
-                    Console.WriteLine(ex.Message);
-                }
-            }
+            //foreach (var source in sources)
+            //{
+            //    try
+            //    {
+            //        tasksForRSSData.Add(GetRssDataAsync(source, existedNewsUrls));
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        _logger.LogError($"Error processing RSS feed from {source.RssUrl}: {ex.Message?.ToString()}; {ex.InnerException?.Message}");
+            //        Console.WriteLine(ex.Message);
+            //    }
+            //}
 
-            var validRSSDataTasks = tasksForRSSData
-                                        .Where(task => task.Status != TaskStatus.Canceled && task.Status != TaskStatus.Faulted).ToList();
+            //var validRSSDataTasks = tasksForRSSData
+            //                            .Where(task => task.Status != TaskStatus.Canceled && task.Status != TaskStatus.Faulted).ToList();
 
-            if (validRSSDataTasks.Count != 0 && validRSSDataTasks != null)
-                await Task.WhenAll(validRSSDataTasks);
+            //if (validRSSDataTasks.Count != 0 && validRSSDataTasks != null)
+            //    await Task.WhenAll(validRSSDataTasks);
 
-            var newsVMWithOutText = await GetNewsWithoutTextAsync();
-            // testing specific sourceUrl scrapping
-            //var newsesToScrap = newsVMWithOutText.Where(n => n.SourceUrl.Contains("belkagomel")).ToList();
-            var newsesToScrap = newsVMWithOutText.ToList();
+            //var newsVMWithOutText = await GetNewsWithoutTextAsync();
+            //// testing specific sourceUrl scrapping
+            ////var newsesToScrap = newsVMWithOutText.Where(n => n.SourceUrl.Contains("belkagomel")).ToList();
+            //var newsesToScrap = newsVMWithOutText.ToList();
 
-            var tasksScrappingData = new List<Task>();
-            foreach (var newsToScrap in newsesToScrap)
-            {
-                try
-                {
-                    tasksScrappingData.Add(UpdateNewsTextByScrappedData(newsToScrap));
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Error processing Scrapping data from {newsToScrap.SourceUrl}: {ex.Message} Inner Exceptiomn: {ex.InnerException?.Message}");
-                }
-            }
+            //var tasksScrappingData = new List<Task>();
+            //foreach (var newsToScrap in newsesToScrap)
+            //{
+            //    try
+            //    {
+            //        tasksScrappingData.Add(UpdateNewsTextByScrappedData(newsToScrap));
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        _logger.LogError($"Error processing Scrapping data from {newsToScrap.SourceUrl}: {ex.Message} Inner Exceptiomn: {ex.InnerException?.Message}");
+            //    }
+            //}
 
-            var validTasksScrappingData = tasksScrappingData.Where(task => task.Status != TaskStatus.Canceled && task.Status != TaskStatus.Faulted).ToList();
+            //var validTasksScrappingData = tasksScrappingData.Where(task => task.Status != TaskStatus.Canceled && task.Status != TaskStatus.Faulted).ToList();
 
-            if (validTasksScrappingData.Count != 0 && validTasksScrappingData != null)
-                await Task.WhenAll(validTasksScrappingData);
+            //if (validTasksScrappingData.Count != 0 && validTasksScrappingData != null)
+            //    await Task.WhenAll(validTasksScrappingData);
+
+            await GetRssDataAsync();
+            await UpdateNewsTextByScrappedData();
+            await UpdateNewsRateAsync();
         }
 
         private async Task<List<NewsVM>> GetNewsWithoutTextAsync()
@@ -218,23 +225,26 @@ namespace NewsAgregator.Services.NewsServices
         public async Task UpdateNewsTextByScrappedData()
         {
             var newsVMs = await GetNewsWithoutTextAsync();
-            var tasksScrappingData = new List<Task>();
+            //var tasksScrappingData = new List<Task>();
             foreach (var newsVM in newsVMs)
             {
-                try
-                {
-                    tasksScrappingData.Add(UpdateNewsTextByScrappedData(newsVM));
-                }
-                catch (Exception ex)
-                {
-                    _logger.LogError($"Error processing Scrapping data from {newsVM.SourceUrl}: {ex.Message} Inner Exceptiomn: {ex.InnerException?.Message}");
-                }
+                await UpdateNewsTextByScrappedData(newsVM);
+
+
+                //try
+                //{
+                //    tasksScrappingData.Add(UpdateNewsTextByScrappedData(newsVM));
+                //}
+                //catch (Exception ex)
+                //{
+                //    _logger.LogError($"Error processing Scrapping data from {newsVM.SourceUrl}: {ex.Message} Inner Exceptiomn: {ex.InnerException?.Message}");
+                //}
             }
 
-            var validTasksScrappingData = tasksScrappingData.Where(task => task.Status != TaskStatus.Canceled && task.Status != TaskStatus.Faulted).ToList();
+            //var validTasksScrappingData = tasksScrappingData.Where(task => task.Status != TaskStatus.Canceled && task.Status != TaskStatus.Faulted).ToList();
 
-            if (validTasksScrappingData.Count != 0 && validTasksScrappingData != null)
-                await Task.WhenAll(validTasksScrappingData);
+            //if (validTasksScrappingData.Count != 0 && validTasksScrappingData != null)
+            //    await Task.WhenAll(validTasksScrappingData);
         }
 
         private async Task GetRssDataAsync(Source source, List<string> existedNewsUrls)
@@ -283,10 +293,13 @@ namespace NewsAgregator.Services.NewsServices
 
         private async Task UpdateNewsTextByScrappedData(NewsVM newsVM)
         {
-            var web = new HtmlWeb();
-            var doc = web.Load(newsVM.SourceUrl);
-
             var news = await _appDBContext.Newses.FirstOrDefaultAsync(n => n.Id == newsVM.Id);
+            try
+            {
+                var web = new HtmlWeb();
+                var doc = web.Load(newsVM.SourceUrl);
+                
+            
 
             void RemoveExcludeElementsBelta(HtmlNode htmlNode)
             {
@@ -354,10 +367,10 @@ namespace NewsAgregator.Services.NewsServices
             string ClearTextFromUnnecessarySymbols(string nodeText)
             {
                 nodeText = Regex.Replace(nodeText, @"[\t\r\n]+", "");
-                //nodeText = Regex.Replace(nodeText, @"\s+", " ");
-                //nodeText = nodeText.Trim();
-               
-                return nodeText;
+                nodeText = Regex.Replace(nodeText, @"\s+", " ");
+                nodeText = nodeText.Trim();
+
+                    return nodeText;
             }
 
             string RemoveATags(string newsNode)
@@ -395,64 +408,99 @@ namespace NewsAgregator.Services.NewsServices
             // not ready need last fixes
             if (newsVM.SourceUrl.Contains("belta.by"))
             {
-                string newsTextNode;
-                string newsHtmlNode = doc.DocumentNode.SelectSingleNode("//div[@class='news_img_slide']").InnerHtml;
+                try
+                {
+                    string newsTextNode;
+                    string newsHtmlNode;
 
-                var newsAllNode = doc.DocumentNode.SelectSingleNode("//div[@class='js-mediator-article']");
-                RemoveExcludeElementsBelta(newsAllNode);
-                newsHtmlNode += "\n";
-                newsHtmlNode += newsAllNode.InnerHtml;
-                newsTextNode = newsAllNode.InnerText;
+                    //newsHtmlNode = doc.DocumentNode.SelectSingleNode("//div[@class='news_img_slide']").InnerHtml;
+                    //newsHtmlNode += "\n";
+                    var newsAllNode = doc.DocumentNode.SelectSingleNode("//div[@class='js-mediator-article']");
+                    RemoveExcludeElementsBelta(newsAllNode);
+                    
+                    newsHtmlNode = newsAllNode.InnerHtml;
+                    newsTextNode = newsAllNode.InnerText;
 
-                news.TextHTML = RemoveATags(newsHtmlNode);
-                ClearTextFromUnnecessarySymbols(newsTextNode);
-                news.Text = newsTextNode;
+                    news.TextHTML = RemoveATags(newsHtmlNode);
+                    ClearTextFromUnnecessarySymbols(newsTextNode);
+                    news.Text = newsTextNode;
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError($"Error processing Scrapping data from {newsVM.SourceUrl}: {ex.Message} Inner Exceptiomn: {ex.InnerException?.Message}"); 
+                }
             }
 
             //not ready need last fixes
             if (newsVM.SourceUrl.Contains("sputnik.by"))
             {
-                // непонятно почему не находит фотку, возможно следует искать по блокам выше( тпиа родительский div с определенным классом???)
-                string newsTextNode;
-                string newsHtmlNode;
-                //string newsHtmlNode = doc.DocumentNode.SelectSingleNode("//img[@media-type='ar16x9']").InnerHtml;
-                //newsHtmlNode += "\n";
-                newsHtmlNode = doc.DocumentNode.SelectSingleNode("//div[@class='article__announce-text']").InnerHtml;
-                newsHtmlNode += "\n";
+                try
+                {
+                    // непонятно почему не находит фотку, возможно следует искать по блокам выше( тпиа родительский div с определенным классом???)
+                    string newsTextNode;
+                    string newsHtmlNode;
+                    //string newsHtmlNode = doc.DocumentNode.SelectSingleNode("//img[@media-type='ar16x9']").InnerHtml;
+                    //newsHtmlNode += "\n";
+                    //newsHtmlNode = doc.DocumentNode.SelectSingleNode("//div[@class='article__announce-text']").InnerHtml;
+                    //newsHtmlNode += "\n";
+                    var newsAllNode = doc.DocumentNode.SelectSingleNode("//div[@class='article__body']");
 
-                var newsAllNode = doc.DocumentNode.SelectSingleNode("//div[@class='article__body']");
+                    RemoveExcludeElementsSputnik(newsAllNode);
+                    newsHtmlNode = newsAllNode.InnerHtml;
+                    newsTextNode = newsAllNode.InnerText;
 
-                RemoveExcludeElementsSputnik(newsAllNode);
-                newsHtmlNode += newsAllNode.InnerHtml;
-                newsTextNode = newsAllNode.InnerText;
-
-                news.TextHTML = RemoveATags(newsHtmlNode);
-                ClearTextFromUnnecessarySymbols(newsTextNode);
-                news.Text = newsTextNode;
+                    news.TextHTML = RemoveATags(newsHtmlNode);
+                    ClearTextFromUnnecessarySymbols(newsTextNode);
+                    news.Text = newsTextNode;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Error processing Scrapping data from {newsVM.SourceUrl}: {ex.Message} Inner Exceptiomn: {ex.InnerException?.Message}");
+                }
+               
             }
 
             //not ready need last fixes
             if (newsVM.SourceUrl.Contains("belkagomel.by"))
             {
-                var newsAllNodes = doc.DocumentNode.SelectSingleNode("//div[@class='entry']");
+                try
+                {
+                    var newsAllNodes = doc.DocumentNode.SelectSingleNode("//div[@class='entry']");
 
-                RemoveExcludeElementsBelkagomel(newsAllNodes);
+                    RemoveExcludeElementsBelkagomel(newsAllNodes);
 
-                string newsHTMLNode = newsAllNodes.InnerHtml;
-                string newsTextNode = newsAllNodes.InnerText;
+                    string newsHTMLNode = newsAllNodes.InnerHtml;
+                    string newsTextNode = newsAllNodes.InnerText;
 
-                news.TextHTML = RemoveATags(newsHTMLNode);
-                ClearTextFromUnnecessarySymbols(newsTextNode);
-                news.Text = newsTextNode;
+                    news.TextHTML = RemoveATags(newsHTMLNode);
+                    ClearTextFromUnnecessarySymbols(newsTextNode);
+                    news.Text = newsTextNode;
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Error processing Scrapping data from {newsVM.SourceUrl}: {ex.Message} Inner Exceptiomn: {ex.InnerException?.Message}");
+                }
             }
 
             //not ready need to update scrapping method
             if (newsVM.SourceUrl.Contains("gp.by"))
             {
-                var newsNode = doc.DocumentNode.SelectSingleNode("//article[@itemprop='description']").InnerHtml;
+                try
+                {
+                    var newsNode = doc.DocumentNode.SelectSingleNode("//article[@itemprop='description']").InnerHtml;
 
-                news.TextHTML = newsNode;
+                    news.TextHTML = newsNode;
+                }
 
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Error processing Scrapping data from {newsVM.SourceUrl}: {ex.Message} Inner Exceptiomn: {ex.InnerException?.Message}");
+                }
+            }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError($"Error processing Scrapping data from {newsVM.SourceUrl}: {ex.Message} Inner Exceptiomn: {ex.InnerException?.Message}");
             }
 
             await _appDBContext.SaveChangesAsync();
@@ -470,13 +518,17 @@ namespace NewsAgregator.Services.NewsServices
                 string bixinProviderScript = "g4fbixinprovider.py";
                 string blackboxProviderScript = "g4fblackboxprovider.py";
                 string bingProviderScript = "g4fbingprovider.py";
+                string text = newsVM.Text;
+                string shortText = text.Substring(0, Math.Min(1000, text.Length));
 
-                var message = "Оцени позитивность текста и в Ответ выдай мне ТОЛЬКО Одно число от 0 до 10 насколько позитивный этот текст без объяснений: " + newsVM.Text;
+                var message = "Оцени от 0 до 10 насколько позитивный этот текст выдай мне ТОЛЬКО Одно число: " + shortText;
 
-                responseString = CallAIRaterV5(message,bixinProviderScript);
+                responseString = CallAIRaterV5(message, blackboxProviderScript);
                 Match matchBixin = Regex.Match(responseString, @"\d+");
                 if (matchBixin.Success)
                 {
+                    Console.WriteLine(bixinProviderScript);
+                    Console.WriteLine(message);
                     Console.WriteLine(newsVM.Title);
                     Console.WriteLine(matchBixin.Value);
                     var news = await _appDBContext.Newses.FirstOrDefaultAsync(n => n.Id == newsVM.Id);
@@ -487,10 +539,12 @@ namespace NewsAgregator.Services.NewsServices
                 }
                 else
                 {
-                    responseString = CallAIRaterV5(message, blackboxProviderScript);
+                    responseString = CallAIRaterV5(message, bingProviderScript);
                     Match matchBlackBox = Regex.Match(responseString, @"\d+");
                     if (matchBlackBox.Success)
                     {
+                        Console.WriteLine(blackboxProviderScript);
+                        Console.WriteLine(message);
                         Console.WriteLine(newsVM.Title);
                         Console.WriteLine(matchBlackBox.Value);
                         var news = await _appDBContext.Newses.FirstOrDefaultAsync(n => n.Id == newsVM.Id);
@@ -501,10 +555,11 @@ namespace NewsAgregator.Services.NewsServices
                     }
                     else
                     {
-                        responseString = CallAIRaterV5(message, bingProviderScript);
+                        responseString = CallAIRaterV5(message, retryProvidersScript);
                         Match matchBing = Regex.Match(responseString, @"\d+");
                         if (matchBing.Success)
-                        {
+                        {Console.WriteLine(bingProviderScript);
+                            Console.WriteLine(message);
                             Console.WriteLine(newsVM.Title);
                             Console.WriteLine(matchBing.Value);
                             var news = await _appDBContext.Newses.FirstOrDefaultAsync(n => n.Id == newsVM.Id);
@@ -514,10 +569,11 @@ namespace NewsAgregator.Services.NewsServices
                         }
                         else
                         {
-                            responseString = CallAIRaterV5(message, retryProvidersScript);
+                            responseString = CallAIRaterV5(message, bixinProviderScript);
                             Match matchRetryProviders = Regex.Match(responseString, @"\d+");
                             if (matchRetryProviders.Success)
-                            {
+                            {Console.WriteLine(retryProvidersScript);
+                                Console.WriteLine(message);
                                 Console.WriteLine(newsVM.Title);
                                 Console.WriteLine(matchRetryProviders.Value);
                                 var news = await _appDBContext.Newses.FirstOrDefaultAsync(n => n.Id == newsVM.Id);

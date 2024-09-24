@@ -39,7 +39,7 @@ import EditNotificationMessage from './pages/AdminPages/ComplaintPages/EditNotif
 
 import MainPage from './pages/ClientPages/MainPage/MainPage';
 import ClientNewsesPage from './pages/ClientPages/NewsPages/ClientNewsesPage/ClientNewsesPage';
-import FullNewsPage from './pages/ClientPages/NewsPages/FullNewsPage/FullNewsPage';
+import ClientNewsFull from './pages/ClientPages/NewsPages/FullNewsPage/FullNewsPage';
 import CreateComplaintPage from './pages/ClientPages/ComplaintPages/CreateComplaintPage';
 import SignINPage from './pages/ClientPages/AccountPages/SignINPage/SignINPage';
 import SignUPPage from './pages/ClientPages/AccountPages/SignUPPage/SignUPPage';
@@ -58,7 +58,7 @@ function App() {
                 <Routes>
                     <Route path="/" Component={MainPage} exact />
                     <Route path="/Main" Component={MainPage} exact />
-                    <Route path="/ClientNewsFull/:id" Component={FullNewsPage} exact />
+                    <Route path="/ClientNewsFull/:id" Component={ClientNewsFull} exact />
                     <Route path="/ClientNewses" Component={ClientNewsesPage} exact />
                     <Route path="/SignIN" Component={SignINPage} exact />
                     <Route path="/SignUP" Component={SignUPPage} exact />

@@ -8,7 +8,7 @@ const ModalConfirmation = (props) => {
     console.log(props);
 
     return (
-        <div className=""  >
+        <div className="modalConfirmation"  >
             <div className="modal-dialog" >
                 <div className="modal-content">
                     <div className="modal-header">

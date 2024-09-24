@@ -71,6 +71,10 @@ export default (state = initialState.editRole, action) => {
                             value: x[1],
                         }
                     ]))),
+                    policies:{
+                        value: action.data.policiesIDs,
+                        options: state.policies.options,
+                    }
                 }
 
 

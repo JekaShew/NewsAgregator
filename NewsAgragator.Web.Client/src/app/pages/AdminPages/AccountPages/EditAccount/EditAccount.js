@@ -138,16 +138,20 @@ const EditAccount = (props) => {
         if (params.id != null) {
             setValue({ AddOrChange: "Change", Loading: true });
             props.load(params.id);
+            
         }
         else {
             setValue({ AddOrChange: "Add", Loading: true });
             props.clearState();
-            props.loadParameters();
+            props.loadParameters(); 
+            console.log("paramsNull");
+            console.log(managingState.AddOrChange);
         }
     }
 
     useEffect(() => {
         console.log("propsLoading changed");
+        console.log(managingState.AddOrChange);
         console.log(props.value.loadingParameters);
         console.log(props.value.loadingData);
         if (params.id != null

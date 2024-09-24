@@ -1,10 +1,11 @@
 import { text } from "@fortawesome/fontawesome-svg-core";
-import { clientMain } from "./reducers";
+import { clientMain, clientNews, comments } from "./reducers";
 
 export default {
 
     editAccount: {
-        loading: true,
+        loadingParameters: true,
+        loadingData:false,
         id: {
             value: '',
         },
@@ -781,12 +782,64 @@ export default {
                     description: {
                         value:'',
                     },
-
-                    newsStatus: {
-                        value: '',
-                    },
                 },
             ],
+    },
+
+    clientNews:{
+        loading: true,
+        value:[
+            {
+                id: {
+                    value: '',
+                },
+                title: {
+                    value: '',
+                },
+                text: {
+                    value: '',
+                },
+                date: {
+                    value: '',
+                },
+                positiveRating: {
+                    value: '',
+                },
+                description: {
+                    value:'',
+                }, 
+            },
+        ],
+    },
+
+    clientNewsFull: {
+        loadingParameters: true,
+        loadingData:true,
+        id: {
+            value: '',
+        },
+        title: {
+            value: '',
+        },
+        text: {
+            value: '',
+        },
+        textHTML: {
+            value: '',
+        },
+        description: {
+            value: '',
+        },
+        sourceUrl: {
+            value: '',
+        },
+        date: {
+            value: '',
+        },
+        positiveRating: {
+            value: '',
+        },
+        comments:[],
     },
 
     signUP: {

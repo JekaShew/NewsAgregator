@@ -45,7 +45,7 @@ const NotificationMessages = (props) => {
 
         if (loading == false) {
             return (
-                <table>
+                <table className='table'>
                     <thead>
                         <tr>
                             <th>Action</th>
@@ -58,7 +58,7 @@ const NotificationMessages = (props) => {
                     </thead>
                     <tbody>
                         {props.value.notificationMessages.value.map(x => (
-                            <tr className="tableRow" key={x.id.value}>
+                            <tr className=" tableRow" key={x.id.value}>
 
                                 <th scope="row" className=" tableRowActions ">
                                     <button className="btnAddChange" onClick={() => btnEditSelectedClick(x.id.value)}>Edit</button> <div style={{ fontSize: '2rem', alignContent: 'center' }}> | </div>

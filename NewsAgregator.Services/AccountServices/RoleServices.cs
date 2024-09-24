@@ -42,7 +42,8 @@ namespace NewsAgregator.Services.AccountServices
             var newRole = RoleMapper.RoleVMToRole(roleVM);
             newRole.Id = Guid.NewGuid();
 
-            _appDBContext.RolePolicies.AddRange(roleVM.PoliciesIDs.Where(p => p != Guid.Empty).Select(p => 
+            if(roleVM.PoliciesIDs != null)
+            await _appDBContext.RolePolicies.AddRangeAsync(roleVM.PoliciesIDs.Where(p => p != Guid.Empty).Select(p => 
                                         new RolePolicy 
                                         { 
                                             Id = Guid.NewGuid(),
@@ -69,7 +70,7 @@ namespace NewsAgregator.Services.AccountServices
                     .ThenInclude(p => p.Policy)
                 .FirstOrDefaultAsync(r => r.Id == id));
             var roleParameters = await GetRoleParametersAsync();
-            roleVM.Policies = roleParameters.Policies;
+            roleVM.PoliciesIDs = roleVM.RolePolicies.Select(rp => rp.PolicyId.Value).ToList();
 
             return roleVM;
         }

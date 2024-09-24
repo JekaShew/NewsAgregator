@@ -3,9 +3,44 @@ import { connect } from 'react-redux';
 // import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import Wrapper from '../../../Wrapper/Wrapper';
-import { load } from './actions';
+import { loadData } from './actions';
+import{ refresh } from '../../AccountPages/Authorization/actions'
 import NewsShort from '../ClientNewsesPage/Components/NewsShort';
 import '../../../ClientPages/ClientStyles.css';
+
+const useToken = () => {
+  const [aToken, setAccessToken] = useState(JSON.parse(localStorage.getItem("AUTHORIZATION")).aToken || '');
+  const [rToken, setRefreshToken] = useState(JSON.parse(localStorage.getItem("AUTHORIZATION")).rToken || '');
+
+  const updateTokens = async (newAccessToken, newRefreshToken) => {
+    setAccessToken(newAccessToken);
+    setRefreshToken(newRefreshToken);
+    localStorage.setItem("AUTHORIZATION", {aToken: newAccessToken, rToken :newRefreshToken});
+  };
+
+    const refreshAccessToken = async () => {
+        console.log("RefreshToken");
+        props.refresh();
+       
+      };
+    
+      useEffect(() => {
+        const interval = setInterval(() => {
+          if (aToken && rToken) {
+            const expiresIn = new Date(aToken.split('.')[1]).getTime();
+            const currentTime = new Date().getTime();
+            if (expiresIn - currentTime < 60000) {
+              refreshAccessToken();
+            }
+          }
+        }, 50000); 
+    
+        return () => clearInterval(interval);
+      }, [aToken, rToken]);
+    
+      // Возвращаем объект с текущими токенами и функциями для их обновления
+      return { aToken, rToken, updateTokens, refreshAccessToken };
+    };
 
 
 const ClientNewsesPage = (props) => {
@@ -13,7 +48,7 @@ const ClientNewsesPage = (props) => {
     const navigate = useNavigate();
     // const params = useParams();
     const [managingState, setValue] = useState({ Loading: true, });
-
+    const { accessToken, refreshAccessToken } = useToken();
     useLayoutEffect(() => {
         beforeRender();
     }, []);
@@ -21,21 +56,12 @@ const ClientNewsesPage = (props) => {
     const beforeRender = () => {
         console.log("BeforeRender");    
         setValue({ Loading: true });
-        props.clearState();
-        props.load();
+        props.loadData();
     }
 
     useEffect(() => {
         console.log("propsLoading changed");
-        // if (params.id != null
-        //     && managingState.AddOrChange == "Change"
-        //     && !props.value.loadingParameters
-        //     && !props.value.loadingData) {
-        //     title.onInitialize(props.value.title.value);
-        //     setValue({ AddOrChange: "Change", Loading: props.value.loadingData });
-        // }
-        // else if (params.id == null
-            
+        
             if(!props.value.Loading)
             {
                 setValue({ Loading: props.value.loading });
@@ -44,11 +70,14 @@ const ClientNewsesPage = (props) => {
 
     const renderComponent = () => {
         console.log("renderComponent");
+        console.log("localStorage");
+        console.log(JSON.parse(localStorage.getItem("AUTHORIZATION")));
         if (managingState.Loading == false) {
             return (
                 <div className='newsShortBlocks'>
-                {props.value.topNews.value.map(x => (
+                {props.value.newses.map(x => (
                     <NewsShort 
+                        key = {x.id}
                         data = {x}
                     />      
                 ))}
@@ -67,11 +96,12 @@ const ClientNewsesPage = (props) => {
     }
 
     console.log(props);
+    
     return (
 
         <Wrapper>
-            <div className="editPage">
-                <div className="pageTitle">Newses </div>
+            <div className="clientMain">
+                <div className="clientTitle">Newses </div>
                 {renderComponent()}
             </div>
         </Wrapper>
@@ -80,14 +110,14 @@ const ClientNewsesPage = (props) => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        load: () => dispatch(load()),
-        clearState: (data) => dispatch(clearState(data)),
+        loadData: () => dispatch(loadData()),
+        refresh: () => dispatch(refresh()),
     }
 }
 
 const mapStateToProps = (state) => (console.log("mapStateToProps"), {
 
-    value: state.clientNewses,
+    value: state.clientNews,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(ClientNewsesPage);

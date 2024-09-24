@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 // import HtmlParser from 'react-html-parser';
 import { connect } from 'react-redux';
+import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import Wrapper from '../../../Wrapper/Wrapper';
 import ModalConfirmation from '../../../../customComponents/ModalConfirmation/ModalConfirmation';
-import { loadData } from './actions';
+import { load,addComment,select } from './actions';
 import '../../../ClientPages/ClientStyles.css';
 
 const useValidation = (value, validations) => {
@@ -94,6 +95,38 @@ const useInput = (validations) => {
     }
 }
 
+const useToken = () => {
+    const [aToken, setAccessToken] = useState(JSON.parse(localStorage.getItem("AUTHORIZATION")).aToken || '');
+    const [rToken, setRefreshToken] = useState(JSON.parse(localStorage.getItem("AUTHORIZATION")).rToken || '');
+  
+    const updateTokens = async (newAccessToken, newRefreshToken) => {
+      setAccessToken(newAccessToken);
+      setRefreshToken(newRefreshToken);
+      localStorage.setItem("AUTHORIZATION", {aToken: newAccessToken, rToken :newRefreshToken});
+    };
+  
+      const refreshAccessToken = async () => {
+        console.log("RefreshToken")
+          props.refresh();
+        };
+      
+        useEffect(() => {
+          const interval = setInterval(() => {
+            if (aToken && rToken) {
+              const expiresIn = new Date(accessToken.split('.')[1]).getTime();
+              const currentTime = new Date().getTime();
+              if (expiresIn - currentTime < 60000) {
+                refreshAccessToken();
+              }
+            }
+          }, 50000); 
+      
+          return () => clearInterval(interval);
+        }, [aToken, rToken]);
+      
+        return { aToken, rToken, updateTokens, refreshAccessToken };
+      };
+
 const renderValidationMessages = (inputName) =>{
     if(inputName.isDirty){
         if(inputName.isEmpty.value)
@@ -115,8 +148,10 @@ const FullNewsPage = (props) => {
 
     const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
+    const [managingState, setValue] = useState({ Loading: true, });
+    const params = useParams();
     const comment = useInput({isEmpty:true});
-
+    const { accessToken, refreshAccessToken } = useToken();
     const backToNewses = () => {
         navigate('/ClientNewses');
     }
@@ -126,40 +161,88 @@ const FullNewsPage = (props) => {
         navigate('/ClientFullNews/' + id);
     }
 
-    const btnSubmitComment = () =>{
+    const btnSendComment = () =>{
+        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
 
+        console.log("DATA");
+        console.log(data);
+        let formData = new FormData();
+
+        formData.append("comment",data[comment]);
+        formData.append("comment",data[comment]);
+        // for (var key in data) {
+        //     if (data[key]) {
+        //         formData.append(key, data[key]);
+        //     }
+        // }
+
+        props.addComment(formData);
     }
 
-    const renderSubmitBtn = () => {
-        let disabled = false;
-        if(!comment.inputValid)
-            disabled = true;
-        else
-        disabled = false;
-       
-        return 
-        (
-            <button 
-            className="btn" 
-            onClick={() => btnSubmitComment()}
-        >
-            Send Comment
-        </button>
-        );
-        
+    const beforeRender = () => {
+        if (params.id != null) {
+            setValue({  Loading: true });
+            props.load(params.id);
+        }
+    }
+
+    useEffect(() => {
+        console.log("propsLoading changed");
+        if (params.id != null
+            && !props.value.loadingParameters
+            && !props.value.loadingData) 
+        {
+            
+            setValue({ Loading: props.value.loadingData });
+        }
+    }, [props.value.loadingParameters, props.value.loadingData]);
+
+    useEffect(() => {
+        beforeRender();
+    }, []);
+
+    const renderCommentInput = () =>{
+        // let disabled = false;
+        // if(!comment.inputValid)
+        //     disabled = true;
+        // else
+        // disabled = false;   
+
+            // <div className='fullNewsAddComment'>
+            //     <div>
+            //         <input
+            //             className="input"
+            //             type="text"
+            //             placeholder="Your Comment"
+            //             value={comment.value}
+            //             onChange={(e) => comment.onChange(e,props.select,"comment")}
+            //             onBlur={(e) => comment.onBlur(e)}
+            //         />
+            //         {
+            //             renderValidationMessages(comment)
+            //         }
+            //     </div>
+
+            //     <button 
+            //         className="btnReadMore" 
+            //         onClick={() => btnSubmitComment()}
+            //     >
+            //     Send Comment
+            //     </button>
+            // </div>
     }
 
     const renderComponent = () => {
-        if (loading == false) {
+        if (managingState.Loading == false) {
             return (
                 <div>
                     <div className='fullNewsHead'>
                         <div className='fullNewsHeadSide '>
                             <button 
-                                className="btnAddChange" 
+                                className="btnLoadMore" 
                                 onClick={() => backToNewses()}
                             >
-                                Back to list of Newses
+                                Back to Newses
                             </button>
                         </div>
                         <div className='fullNewsHeadCenter'>
@@ -168,35 +251,30 @@ const FullNewsPage = (props) => {
                             </div>
                             <div className='fullNewsHeadDateandRate'>
                                 <div className='newsDate'>
-                                    {props.value.date.value}
+                                    Date : {props.value.date.value}
                                 </div>
-                                <div className='newsRate'>
-                                    {props.value.positriveRating.value}
+                                <div className='newsRate'>Rate : 
+                                    {props.value.positiveRating.value}
                                 </div>
                             </div>
                         </div>
                         <div className='fullNewsHeadSide '>
                             <button 
-                                className="btnAddChange" 
+                                className="btnLoadMore" 
                                 onClick={() => bntNextNews()}
                             >
                                 Next News
                             </button>
                         </div>
                     </div>
-                    <div className='fullNewsTextHTML' dangerouslySetInnerHTML={{ __html: props.value.textHTML }}>
-                        {/* {HtmlParser(props.value.textHTML)} */}
+                    <div className='fullNewsTextHTML' dangerouslySetInnerHTML={{ __html: props.value.textHTML.value }}>
+                       
                     </div>
-                    <div className='complaintBtn'>
-                    <button 
-                        className="btnAddChange" 
-                        onClick={() => complaintToNews()}
-                    >
+                    <div className='complaintBtn' onClick={() => complaintToNews()}>
                         Complaint to News
-                    </button>
                     </div>
                     <div className='fullNewsComments'>
-                        {props.value.fullNews.comments.map(x => (
+                        {props.value.comments != null? props.value.comments.value.map(x => (
                             <div> 
                                 <Comment 
                                     data = {x} 
@@ -209,12 +287,15 @@ const FullNewsPage = (props) => {
                                     Complaint to News
                                 </button>
                             </div>
-                        ))}
+                        ))
+                        :
+                        <div> No Comments yet</div>
+                    }
                     </div>
                     <div className='fullNewsAddComment'>
-                        <div>
+                        <div className='inputWithError'>
                             <input
-                                className="input"
+                                className="inputData"
                                 type="text"
                                 placeholder="Your Comment"
                                 value={comment.value}
@@ -226,38 +307,25 @@ const FullNewsPage = (props) => {
                             }
                         </div>
 
-                        {renderSubmitBtn()}
-                    </div>
-                            
-                </div>
+                        <div 
+                            className="btnReadMore" 
+                            onClick={() => btnSendComment()}
+                        >
+                        Send Comment
+                        </div>
+                </div>    
+            </div>
             )
         }
-        else
-            return
-        (<div className="items loading">
-            <FontAwesomeIcon icon={faSpinner} />
-        </div>)
+       
     }
-
-    const beforeRender = () => {
-        console.log("BeforeRender");
-        setLoading(true);
-        props.loadData();
-    }
-
-    useEffect(() => {
-        setLoading(props.value.fullNews.loading);
-    }, [props.value.fullNews.loading]);
-
-    useEffect(() => {
-        beforeRender();
-    }, []);
 
 
     return (
         <Wrapper>
-            <div className="editPage">
+            <div className="clientFullNews">
                 {renderComponent()}
+                
             </div>
         </Wrapper>
     );
@@ -265,14 +333,16 @@ const FullNewsPage = (props) => {
 
 const mapDispatchToProps = dispatch => {
     return {
-
-        loadData: () => dispatch(loadData()),
+        addComment: (comment) => dispatch(addComment(comment)),
+        load: (id) => dispatch(load(id)),
+        select: (name, value) => dispatch(select(name, value)),
+        refresh: () => dispatch(refresh()),
     }
 }
 
 const mapStateToProps = (state) => (console.log("mapStateToProps"), {
 
-    value: state.fullNews,
+    value: state.clientNewsFull,
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(FullNewsPage);

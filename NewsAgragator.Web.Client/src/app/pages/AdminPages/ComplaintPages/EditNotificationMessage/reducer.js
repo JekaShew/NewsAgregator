@@ -37,9 +37,9 @@ export default (state = initialState.editNotificationMessage, action) => {
         case "NOTIFICATIONMESSAGE_LOAD_PARAMETERS_START":
             return {
                 ...state,
-                // editNotificationMessage:
-                // {
+
                 loadingParameters: true,
+                loadingData:false,
                 id: {
                     value: '',
                 },
@@ -69,16 +69,13 @@ export default (state = initialState.editNotificationMessage, action) => {
                         text: '',
                     },
                 },
-                // }
             }
 
         case 'NOTIFICATIONMESSAGE_LOAD_PARAMETERS_SUCCESS':
             return {
                 ...state,
-                // editNotificationMessage:
-                // {
-                //     ...state.editNotificationMessage,
                 loadingParameters: false,
+                loadingData:false,
                 ...Object.fromEntries(Object.entries(action.data).map(x => ([
                     x[0],
                     {
@@ -86,36 +83,28 @@ export default (state = initialState.editNotificationMessage, action) => {
                         value: x[1],
                     }
                 ])))
-                // }
 
             }
 
         case "NOTIFICATIONMESSAGE_LOAD_START":
             return {
                 ...state,
-                // ...state.editNotificationMessage,
-                // editNotificationMessage:
-                // {
                 loadingData: true,
-
-                // }
+                loadingParameters: false,
             }
 
         case "NOTIFICATIONMESSAGE_LOAD_SUCCESS":
             return {
                 ...state,
-                // editNotificationMessage:
-                // {
-                //     ...state.editNotificationMessage,
                 ...state.accounts,
                 loadingData: false,
+                loadingParameters: false,
                 ...Object.fromEntries(Object.entries(action.data).map(x => ([
                     x[0],
                     {
                         value: x[1],
                     }
                 ]))),
-                // }
             }
 
         default:

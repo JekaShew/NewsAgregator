@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NewsAgregator.Abstract.ComplaintInterfaces;
 using NewsAgregator.Abstract.NewsInterfaces;
 using NewsAgregator.ViewModels.Data;
@@ -39,6 +40,7 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
         }
 
         [HttpGet("takeall")]
+        [Authorize]
         public async Task<IActionResult> TakeAll()
         {
             try

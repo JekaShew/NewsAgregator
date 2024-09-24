@@ -18,12 +18,18 @@ namespace NewsAgregator.Abstract.NewsInterfaces
 
         public Task AddNewsAsync(NewsVM news);
         public Task AggregateNewsAsync();
-
+        public Task GetRssDataAsync();
+        public Task UpdateNewsTextByScrappedData();
         public Task DeleteNewsAsync(Guid id);
 
         public Task UpdateNewsAsync(NewsVM updatedNews);
         public Task<NewsParameters> GetNewsParametersAsync();
 
         public Task UpdateNewsRateAsync();
+
+        public Task DeleteNewsWithBadRateAsync();
+
+        public Task DeleteOldNewsesAsync();
+
     }
 }

@@ -135,6 +135,8 @@ const SignINPage = (props) => {
             );
     }
 
+    
+
     const toForgotPassword = () => {
         navigate("/ForgotPassword");
     }
@@ -142,6 +144,15 @@ const SignINPage = (props) => {
     const toSignUPPage = () => {
         navigate("/SignUP");
     }
+
+    useEffect(() => {
+        if(props.value.isSuccess){
+            if(JSON.parse(localStorage.getItem("AUTHORIZATION"))!=null && JSON.parse(localStorage.getItem("AUTHORIZATION")).role == "User")
+                navigate("/Main")
+            else
+                navigate("/ReferenceBooks")
+        }
+    }, [props.value.isSuccess]);
 
     const signIN = () => {
         let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));

@@ -55,7 +55,7 @@ const Roles = (props) => {
                             <th className="tableRow" scope="col">Action</th>
                             <th scope="col">Title</th>
                             <th scope="col">Description</th>
-
+                            <th scope="col">Policies</th>
                         </tr>
                     </thead>
                     <tbody>

@@ -111,6 +111,8 @@
     text-align: center;
 }
 
+
+
 .signUPPage{
     width:50%;
     /* align-content: center; */
@@ -209,6 +211,23 @@
 
 }
 
+.complaintBtn{
+    width: 30%;
+    height: 2rem;
+    font-size: 1rem; 
+    font-weight: bold;
+    font-family: 'Montserrat', sans-serif;
+    margin: 1rem auto;
+    padding: 0.3rem 0.5rem;
+    background-color: #b92020;
+    color: #ffffff;
+    border: none;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+    cursor: pointer;
+    text-align: center;
+}
+
 .btnMin{
     color:#91C74F;
     text-decoration: underline; /* Подчеркивание текста */
@@ -221,4 +240,72 @@
 font-weight: bold;
 
 }
+
+
+.fullNewsHead{
+    width:100%;
+    margin: 1rem auto;
+    display:flex;
+    flex-direction:row;
+    justify-content: space-evenly;
+}
+
+.fullNewsHeadCenter{
+    width: 50%;
+    font-size: 1rem; 
+    font-weight: bold;
+    font-family: 'Montserrat', sans-serif;
+    margin: 1rem auto;
+    text-align: center;
+}
+
+.fullNewsTitle{
+    font-size: larger;
+}
+
+.fullNewsHeadSide{
+    width: 25%;
+    display:flex;
+    justify-content: center;
+}
+
+.fullNewsHeadDateandRate{
+    margin:1rem auto;
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.fullNewsTextHTML{
+    margin:1rem auto;
+    width:80%;
+}
+
+.clientFullNews .btnLoadMore{
+    display:flex;
+    width:50%;
+    text-align: center;
+}
+
+.clientFullNews{
+    width:70%;
+    margin:1rem auto;
+}
+
+.fullNewsAddComment{
+    display:flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    width:80%;
+    margin:1rem auto;
+}
+
+.fullNewsAddComment .btnReadMore{
+    font-size: medium;
+    width:20%;
+    display: flex;
+    margin: 0;
+    
+}
+
 

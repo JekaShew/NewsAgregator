@@ -50,7 +50,7 @@ export const load = (id) => ({
     remote: {
         url: '/api/account/getparameters',
         type: 'get',
-        apiSuccess: ['ACCOUNT_LOAD_PARAMETRS_DONE', loadData(id)],
+        apiSuccess: ['ACCOUNT_LOAD_PARAMETRS_SUCCESS', loadData(id)],
     }
 
 })

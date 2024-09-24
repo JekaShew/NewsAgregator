@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using NewsAgregator.Abstract.AccountInterfaces;
 using NewsAgregator.Abstract.ComplaintInterfaces;
 using NewsAgregator.ViewModels.Data;
@@ -18,6 +19,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         }
 
         [HttpPost("add")]
+        [Authorize]
         public async Task<IActionResult> Add(PolicyVM policyVM)
         {
             try
@@ -39,6 +41,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         }
 
         [HttpGet("takeall")]
+        [Authorize]
         public async Task<IActionResult> TakeAll()
         {
             try
@@ -58,6 +61,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         }
 
         [HttpGet("takebyid/{id}")]
+        [Authorize]
         public async Task<IActionResult> TakeById([FromRoute] Guid id)
         {
             try

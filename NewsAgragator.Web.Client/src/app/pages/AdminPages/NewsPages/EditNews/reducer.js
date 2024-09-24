@@ -40,6 +40,7 @@ export default (state = initialState.editNews, action) => {
                 // editNews:
                 // {
                     loadingParameters: true,
+                    loadingData:false,
                     id: {
                         value: '',
                     },
@@ -88,7 +89,8 @@ export default (state = initialState.editNews, action) => {
                 // editNews:
                 // {
                 //     ...state.editNews,
-                    loadingParameters: false,
+                loadingParameters: false,
+                loadingData:true,
                     ...Object.fromEntries(Object.entries(action.data).map(x => ([
                         x[0],
                         {
@@ -107,6 +109,7 @@ export default (state = initialState.editNews, action) => {
                 // editNews:
                 // {
                     loadingData: true,
+                    loadingParameters: false,
 
                 // }
             }
@@ -114,18 +117,16 @@ export default (state = initialState.editNews, action) => {
         case "NEWS_LOAD_SUCCESS":
             return {
                 ...state,
-                // editNews:
-                // {
-                //     ...state.editNews,
-                    ...state.newsStatuses,
-                    loadingData: false,
-                    ...Object.fromEntries(Object.entries(action.data).map(x => ([
-                        x[0],
-                        {
-                            value: x[1],
-                        }
-                    ]))),
-                // }
+
+                ...state.newsStatuses,
+                loadingData: false,
+                loadingParameters: false,
+                ...Object.fromEntries(Object.entries(action.data).map(x => ([
+                    x[0],
+                    {
+                        value: x[1],
+                    }
+                ]))),
             }
 
         default:

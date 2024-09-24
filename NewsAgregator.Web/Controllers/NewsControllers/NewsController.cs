@@ -1,9 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using NewsAgregator.Abstract.ComplaintInterfaces;
 using NewsAgregator.Abstract.NewsInterfaces;
 using NewsAgregator.ViewModels.Data;
 using NewsAgregator.Web.Controllers.AccountControllers;
+using NewsAgregator.Web.Filters;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace NewsAgregator.Web.Controllers.NewsControllers
@@ -18,26 +20,6 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
         {
             _newsServices = newsServices;
             _logger = logger;
-        }
-
-        [HttpPost("updatenewsrate")]
-        public async Task<IActionResult> UpdateNewsRate()
-        {
-            try
-            {
-                if (ModelState.IsValid)
-                {
-                    await _newsServices.UpdateNewsRateAsync();
-                    return Ok();
-                }
-                else return BadRequest(ModelState);
-
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex.Message);
-                return StatusCode(500, ex.Message);
-            }
         }
 
         [HttpGet("getparameters")]
@@ -96,7 +78,70 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
             }
         }
 
+        [HttpPost("getrssdata")]
+        public async Task<IActionResult> GetRssData()
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    await _newsServices.GetRssDataAsync();
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("scraptext")]
+        public async Task<IActionResult> ScrapText()
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    await _newsServices.UpdateNewsTextByScrappedData();
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+        [HttpPost("updatenewsrate")]
+        public async Task<IActionResult> UpdateNewsRate()
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    await _newsServices.UpdateNewsRateAsync();
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+        }
+
+
         [HttpGet("takeall")]
+        [Authorize]
+        [PolicyAuthorization(Permission = "CanReadNews")]
         public async Task<IActionResult> TakeAll()
         {
             try
@@ -133,6 +178,7 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
         }
 
         [HttpGet("takesuitablenewses")]
+        [Authorize]
         public async Task<IActionResult> TakeSuitableNewses()
         {
             try

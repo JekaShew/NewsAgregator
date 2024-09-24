@@ -35,11 +35,6 @@ namespace NewsAgregator.Services.AccountServices
             _appDBContext = appDBContext;
         }
 
-        public Task<IActionResult> SignOutAsync(Guid id)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<string> GenerateJwtTokenString(Guid accountId)
         {
 
@@ -89,7 +84,7 @@ namespace NewsAgregator.Services.AccountServices
         }
 
         public async Task<string> GenerateRefreshToken(Guid accountId)
-        {
+            {
             var refreshToken = new RefreshToken()
             {
                 Id = Guid.NewGuid(),

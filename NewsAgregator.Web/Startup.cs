@@ -30,6 +30,8 @@ using NewsAgregator.Abstract.WeatherInterfaces;
 using NewsAgregator.Services.WeatherServices;
 using Serilog;
 using Hangfire;
+using Microsoft.AspNetCore.Mvc.Filters;
+using NewsAgregator.Web.Filters;
 
 
 namespace NewsAgregator.Web
@@ -61,7 +63,7 @@ namespace NewsAgregator.Web
                 .Enrich.FromLogContext()
                 .WriteTo.Console(Serilog.Events.LogEventLevel.Error)
                 .WriteTo.File("NewsAggregatorLogs.log"));
-            services.AddDbContext<AppDBContext>(options => options.UseSqlServer(connectionString: Configuration.GetConnectionString("Work")));
+            services.AddDbContext<AppDBContext>(options => options.UseSqlServer(connectionString: Configuration.GetConnectionString("Home")));
 
             var jwtIss = Configuration.GetSection("JWT:Iss").Get<string>();
             var jwtAud = Configuration.GetSection("JWT:Aud").Get<string>();
@@ -90,7 +92,7 @@ namespace NewsAgregator.Web
                     .SetDataCompatibilityLevel(CompatibilityLevel.Version_180)
                     .UseSimpleAssemblyNameTypeSerializer()
                     .UseRecommendedSerializerSettings()
-                    .UseSqlServerStorage(Configuration.GetConnectionString("Work")));
+                    .UseSqlServerStorage(Configuration.GetConnectionString("Home")));
             services.AddHangfireServer();
 
             services.AddMvc();
@@ -115,7 +117,8 @@ namespace NewsAgregator.Web
  
             services.AddDbContext<AppDBContext>();
             //services.AddTransient<DbContext>(isp => isp.GetService<AppDBContext>());
-           
+            //services.AddScoped(typeof(IActionFilter), typeof(PolicyAuthorizationFilter));
+
             services.AddScoped<IAccountServices, AccountServices>();
             services.AddScoped<IAccountStatusServices, AccountStatusServices>();
             services.AddScoped<IPolicyServices, PolicyServices>();

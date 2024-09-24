@@ -70,7 +70,7 @@ namespace NewsAgregator.Services.CommentServices
                 .Include(n => n.News)
                 .ToListAsync()).Select(c => CommentMapper.CommentToCommentVM(c)).ToList();
 
-            return null;
+            return commentVMs;
         }
 
         public async Task UpdateCommentAsync(CommentVM updatedCommentVM)

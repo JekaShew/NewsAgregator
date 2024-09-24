@@ -40,6 +40,7 @@ export default (state = initialState.editWeather, action) => {
                 // editWeather:
                 // {
                     loadingParameters: true,
+                    loadingData:false,
                     id: {
                         value: '',
                     },
@@ -126,7 +127,8 @@ export default (state = initialState.editWeather, action) => {
                 // {
                 //     ...state.editWeather,
                     
-                    loadingParameters: false,
+                loadingParameters: false,
+                loadingData:true,
                     ...Object.fromEntries(Object.entries(action.data).map(x => ([
                         x[0],
                         {

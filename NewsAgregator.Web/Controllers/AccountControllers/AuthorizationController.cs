@@ -76,7 +76,7 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         }
 
         [HttpPost("signout")]
-        public async Task<IActionResult> SignOut(Guid tokenId)
+        public async Task<IActionResult> SignOut([FromBody]Guid tokenId)
         {
             try
             {

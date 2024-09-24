@@ -1,4 +1,5 @@
 import initialState from "../../../../../initialState";
+import { loadParameters } from "./actions";
 
 
 export default (state = initialState.editAccount, action) => {
@@ -7,36 +8,27 @@ export default (state = initialState.editAccount, action) => {
         case "ACCOUNT_SELECT":
             return {
                 ...state,
-                // editAccount:
-                // {
-                //     ...state.editAccount,
                 [action.name]:
                 {
                     value: action.val,
                 },
-                // }
             }
 
         case "ACCOUNT_SELECT_PARAMETER":
             return {
                 ...state,
-                // editAccount:
-                // {
-                //     ...state.editAccount,
                 [action.name]:
                 {
                     id: action.val.value,
                     text: action.val.text,
                 },
-                // }
             }
 
         case "ACCOUNT_LOAD_PARAMETERS_START":
             return {
                 ...state,
-                // editAccount:
-                // {
                 loadingParameters: true,
+                loadingData:false,
                 id: {
                     value: '',
                 },
@@ -113,10 +105,9 @@ export default (state = initialState.editAccount, action) => {
         case 'ACCOUNT_LOAD_PARAMETERS_SUCCESS':
             return {
                 ...state,
-                // editAccount:
-                // {
-                //     ...state.editAccount,
+
                 loadingParameters: false,
+                loadingData:true,
                 ...Object.fromEntries(Object.entries(action.data).map(x => ([
                     x[0],
                     {
@@ -124,7 +115,6 @@ export default (state = initialState.editAccount, action) => {
                         value: x[1],
                     }
                 ])))
-                // }
 
             }
 
@@ -135,6 +125,7 @@ export default (state = initialState.editAccount, action) => {
                 // editAccount:
                 // {
                 loadingData: true,
+                loadingParameters: false,
 
                 // }
             }
@@ -142,11 +133,10 @@ export default (state = initialState.editAccount, action) => {
         case "ACCOUNT_LOAD_SUCCESS":
             return {
                 ...state,
-                // editAccount:
-                // {
                 ...state.accountStatuses,
                 ...state.roles,
                 loadingData: false,
+                loadingParameters: false,
 
                 ...Object.fromEntries(Object.entries(action.data).map(x => ([
                     x[0],
@@ -159,7 +149,7 @@ export default (state = initialState.editAccount, action) => {
                 {
                     value: action.data.password,
                 }
-                // }
+
             }
 
 

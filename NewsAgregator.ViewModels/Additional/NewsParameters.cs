@@ -9,5 +9,6 @@ namespace NewsAgregator.ViewModels.Additional
     public class NewsParameters
     {
         public List<Parameter>? NewsStatuses { get; set; }
+        public List<CommentParameter>? Comments { get; set; } 
     }
 }
