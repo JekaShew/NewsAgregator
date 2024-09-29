@@ -1,15 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import '../../../ClientPages/ClientStyles.css';
+import '../../../ClientStyles.css';
 
 const Comment = (props) => {
 
     const renderComponent = () => {
             return (
                 <div className='comment'>
-                    <div className='newsShortTitle'>{x.userName.value}</div>
-                    <div className='newsShortDescription'>{x.text.value}</div> 
+                    <div className='newsShortTitle'>{props.data.userName}</div>
+                    <div className='newsShortDescription'>{props.data.text}</div> 
                 </div>
             )
     }
@@ -21,4 +21,4 @@ const Comment = (props) => {
     );
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Comment);
+export default Comment;

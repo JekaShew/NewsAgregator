@@ -5,6 +5,7 @@ import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import Wrapper from '../../../Wrapper/Wrapper';
 import ModalConfirmation from '../../../../customComponents/ModalConfirmation/ModalConfirmation';
+import Comment from '../ClientNewsesPage/Components/Comment';
 import { load,addComment,select } from './actions';
 import '../../../ClientPages/ClientStyles.css';
 
@@ -278,7 +279,6 @@ const FullNewsPage = (props) => {
                             <div> 
                                 <Comment 
                                     data = {x} 
-
                                 />
                                 <button 
                                     className="btnAddChange" 

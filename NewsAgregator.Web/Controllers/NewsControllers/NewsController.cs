@@ -140,8 +140,8 @@ namespace NewsAgregator.Web.Controllers.NewsControllers
 
 
         [HttpGet("takeall")]
-        [Authorize]
-        [PolicyAuthorization(Permission = "CanReadNews")]
+        //[Authorize]
+        //[PolicyAuthorization(Permission = "CanReadNews")]
         public async Task<IActionResult> TakeAll()
         {
             try

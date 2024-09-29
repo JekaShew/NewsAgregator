@@ -48,7 +48,7 @@ const Weathers = (props) => {
 
         if (loading == false) {
             return (
-                <table>
+                <table className='table'>
                     <thead>
                         <tr>
                             <th>Action</th>

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using NewsAgregator.Abstract.AccountInterfaces;
 using NewsAgregator.Abstract.ComplaintInterfaces;
 using NewsAgregator.ViewModels.Data;
+using NewsAgregator.Web.Filters;
 
 namespace NewsAgregator.Web.Controllers.AccountControllers
 {
@@ -41,7 +42,8 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         }
 
         [HttpGet("takeall")]
-        [Authorize]
+        //[Authorize]
+        //[PolicyAuthorization(Permission = "CanReadPolicy")]
         public async Task<IActionResult> TakeAll()
         {
             try
@@ -61,7 +63,8 @@ namespace NewsAgregator.Web.Controllers.AccountControllers
         }
 
         [HttpGet("takebyid/{id}")]
-        [Authorize]
+        //[Authorize]
+        //[PolicyAuthorization(Permission = "CanReadPolicy")]
         public async Task<IActionResult> TakeById([FromRoute] Guid id)
         {
             try

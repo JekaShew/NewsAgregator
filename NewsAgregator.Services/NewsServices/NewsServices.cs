@@ -49,6 +49,8 @@ namespace NewsAgregator.Services.NewsServices
 
         public async Task<NewsParameters> GetNewsParametersAsync()
         {
+            var test = await _appDBContext.Comments.ToListAsync();
+            test.Select(c => NewsParametersMapper.CommentToCommentParameter(c));
             var newsParameters = new NewsParameters()
             {
                 NewsStatuses = (await _appDBContext.NewsStatuses.ToListAsync()).Select(ns => NewsParametersMapper.NewsStatusToParameter(ns)).ToList(),

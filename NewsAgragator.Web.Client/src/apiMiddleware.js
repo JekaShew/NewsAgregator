@@ -57,24 +57,24 @@ const apiMiddleware = store => next => action => {
                     store.dispatch({ type: action.remote.apiSuccess, data: result.data, nested: action });
             })
             .catch(error => {
-                if(error.response.status === 401)
-                {
-                    axios({
-                        method: 'post',
-                        url: "/api/authorization/refresh",
-                        data: authorization.rToken,
-                        headers: { 'Cache': 'no-cache', ...authorizationHeader, ...contentType },
-                        withCredentials: true
-                    }).then(
-                        axios({
-                            method: action.remote.type,
-                            url: Config.apiHost + action.remote.url,
-                            data: action.remote.body ? action.remote.body : action.remote.data,
-                            headers: { 'Cache': 'no-cache', ...authorizationHeader, ...contentType },
-                            withCredentials: true
-                        })
-                    )   
-                }
+                // if(error.response.status === 401)
+                // {
+                //     axios({
+                //         method: 'post',
+                //         url: "/api/authorization/refresh",
+                //         data: authorization.rToken,
+                //         headers: { 'Cache': 'no-cache', ...authorizationHeader, ...contentType },
+                //         withCredentials: true
+                //     }).then(
+                //         axios({
+                //             method: action.remote.type,
+                //             url: Config.apiHost + action.remote.url,
+                //             data: action.remote.body ? action.remote.body : action.remote.data,
+                //             headers: { 'Cache': 'no-cache', ...authorizationHeader, ...contentType },
+                //             withCredentials: true
+                //         })
+                //     )   
+                // }
                 if (error.response && error.response.status != 500 && error.response.data) {
                     if (error.response.data.code == 1) {
                         if (Array.isArray(action.remote.apiFail))
