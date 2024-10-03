@@ -1,0 +1,5 @@
+Id	Title	BaseUrl	RssUrl
+6DB9FD35-75AA-45E5-93F6-00DF65A22B76 |	GP   |	https://gp.by |	https://gp.by/feed/
+F39B935F-FA57-437A-B9AD-0BDF17122AC8 |	Belta |	https://www.belta.by  |	https://www.belta.by/rss
+5B041B25-2DAB-46E2-B9A4-12E2DBEE2258 |	Belka Gomel |	https://belkagomel.by | https://belkagomel.by/feed/
+0076B637-51A5-4DBB-8DF5-F599187201A3 |	Sputnik  |  https://sputnik.by   |	https://sputnik.by/export/rss2/archive/index.xml

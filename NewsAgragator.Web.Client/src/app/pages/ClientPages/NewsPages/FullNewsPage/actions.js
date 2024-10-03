@@ -1,7 +1,7 @@
-export const addComment = (comment) => ({
+export const sendComment = (comment) => ({
     type: 'CLIENTNEWSFULL_ADDCOMMENT',
     remote: {
-        url: '/api/comment/add',
+        url: '/api/comment/sendcomment',
         type: 'post',
         body: comment,
         contentType: 'application/x-www-form-urlencoded',

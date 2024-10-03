@@ -56,6 +56,27 @@ namespace NewsAgregator.Web.Controllers.CommentControllers
 
         }
 
+        [HttpPost("sendcomment")]
+        public async Task<IActionResult> SendComment([FromBody]CommentVM commentVM)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    await _commentServices.AddCommentAsync(commentVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+
         [HttpGet("takeall")]
         public async Task<IActionResult> TakeAll()
         {

@@ -6,7 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import Wrapper from '../../../Wrapper/Wrapper';
 import ModalConfirmation from '../../../../customComponents/ModalConfirmation/ModalConfirmation';
 import Comment from '../ClientNewsesPage/Components/Comment';
-import { load,addComment,select } from './actions';
+import { load, sendComment, select } from './actions';
 import '../../../ClientPages/ClientStyles.css';
 
 const useValidation = (value, validations) => {
@@ -168,16 +168,23 @@ const FullNewsPage = (props) => {
         console.log("DATA");
         console.log(data);
         let formData = new FormData();
+        let comment = {
+            accountId : null,
+            text : props.value.comment.value,
+            date: null,
+            newsId: props.value.id.value,
+        }
+        console.log(comment);
 
-        formData.append("comment",data[comment]);
-        formData.append("comment",data[comment]);
+        formData.append("comment",comment);
+        
         // for (var key in data) {
         //     if (data[key]) {
         //         formData.append(key, data[key]);
         //     }
         // }
 
-        props.addComment(formData);
+        props.sendComment(comment);
     }
 
     const beforeRender = () => {
@@ -333,7 +340,7 @@ const FullNewsPage = (props) => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        addComment: (comment) => dispatch(addComment(comment)),
+        sendComment: (comment) => dispatch(sendComment(comment)),
         load: (id) => dispatch(load(id)),
         select: (name, value) => dispatch(select(name, value)),
         refresh: () => dispatch(refresh()),

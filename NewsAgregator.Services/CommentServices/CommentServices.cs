@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
+using NewsAgregator.Abstract.AccountInterfaces;
 using NewsAgregator.Abstract.CommentInterfaces;
 using NewsAgregator.Data;
 using NewsAgregator.Mapper.DataMappers;
@@ -17,9 +18,11 @@ namespace NewsAgregator.Services.CommentServices
     public class CommentServices : ICommentServices
     {
         private readonly AppDBContext _appDBContext;
-        public CommentServices(AppDBContext appDBContext)
+        private readonly IAccountServices _accountServices;
+        public CommentServices(AppDBContext appDBContext, IAccountServices accountServices)
         {
             _appDBContext = appDBContext;
+            _accountServices = accountServices;
         }
 
         public async Task<CommentParameters> GetCommentParametersAsync()
@@ -36,6 +39,14 @@ namespace NewsAgregator.Services.CommentServices
         {
             var newComment = CommentMapper.CommentVMToComment(commentVM);
             newComment.Id = Guid.NewGuid();
+            if (commentVM.Date == null)
+            {
+                newComment.Date = DateTime.UtcNow;
+            }
+            if(commentVM.AccountId == null)
+            {
+                newComment.AccountId = (await _accountServices.GetCurrentAccountId());
+            }
 
             await _appDBContext.AddAsync(newComment);
             await _appDBContext.SaveChangesAsync();
