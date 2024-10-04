@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Wrapper from '../../Wrapper/Wrapper';
 import { loadData } from './actions';
 import '../../ClientPages/ClientStyles.css';
-import NewsShort from '../NewsPages/ClientNewsesPage/Components/NewsShort';
+import NewsShort from '../NewsPages/Components/NewsShort';
 
 
 

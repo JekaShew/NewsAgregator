@@ -5,7 +5,7 @@ import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import Wrapper from '../../../Wrapper/Wrapper';
 import ModalConfirmation from '../../../../customComponents/ModalConfirmation/ModalConfirmation';
-import Comment from '../ClientNewsesPage/Components/Comment';
+import Comment from '../Components/Comment';
 import { load, sendComment, select } from './actions';
 import '../../../ClientPages/ClientStyles.css';
 
@@ -175,17 +175,10 @@ const FullNewsPage = (props) => {
             newsId: props.value.id.value,
         }
         console.log(comment);
+        console.log(params.id);
 
-        formData.append("comment",comment);
-        
-        // for (var key in data) {
-        //     if (data[key]) {
-        //         formData.append(key, data[key]);
-        //     }
-        // }
-
-        props.sendComment(comment);
-    }
+        props.sendComment(comment,params.id);
+    } 
 
     const beforeRender = () => {
         if (params.id != null) {
@@ -283,16 +276,19 @@ const FullNewsPage = (props) => {
                     </div>
                     <div className='fullNewsComments'>
                         {props.value.comments != null? props.value.comments.value.map(x => (
-                            <div> 
+                            <div className='commentBlock'> 
                                 <Comment 
                                     data = {x} 
                                 />
+                                <div className='commentbottomBlock'>
+                                    <div>{x.date}</div>
                                 <button 
                                     className="btnAddChange" 
                                     onClick={() => complaintToComment()}
                                 >
                                     Complaint to News
                                 </button>
+                                </div>
                             </div>
                         ))
                         :
@@ -340,7 +336,7 @@ const FullNewsPage = (props) => {
 
 const mapDispatchToProps = dispatch => {
     return {
-        sendComment: (comment) => dispatch(sendComment(comment)),
+        sendComment: (comment, id) => dispatch(sendComment(comment, id)),
         load: (id) => dispatch(load(id)),
         select: (name, value) => dispatch(select(name, value)),
         refresh: () => dispatch(refresh()),

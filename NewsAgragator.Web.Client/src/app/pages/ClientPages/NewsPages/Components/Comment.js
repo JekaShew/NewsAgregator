@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import '../../../ClientStyles.css';
+import '../../ClientStyles.css';
 
 const Comment = (props) => {
 

@@ -45,7 +45,7 @@ namespace NewsAgregator.Services.CommentServices
             }
             if(commentVM.AccountId == null)
             {
-                newComment.AccountId = (await _accountServices.GetCurrentAccountId());
+                newComment.AccountId = _accountServices.GetCurrentAccountId();
             }
 
             await _appDBContext.AddAsync(newComment);

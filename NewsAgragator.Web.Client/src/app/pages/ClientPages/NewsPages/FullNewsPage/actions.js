@@ -1,11 +1,11 @@
-export const sendComment = (comment) => ({
-    type: 'CLIENTNEWSFULL_ADDCOMMENT',
+export const sendComment = (comment,id) => ({
+    type: 'CLIENTNEWSFULL_SENDCOMMENT',
     remote: {
         url: '/api/comment/sendcomment',
         type: 'post',
         body: comment,
         contentType: 'application/x-www-form-urlencoded',
-
+        apiSuccess: ['CLIENTNEWSFULL_SENDCOMMENT_SUCCESS', loadData(id)],
     }
 
 })
@@ -37,6 +37,15 @@ export const load = (id) => ({
     }
 
 })
+
+// export const loadComments = (id) => ({
+//     type: 'CLIENTNEWSFULL_LOAD_PARAMETERS',
+//     remote: {
+//         url: '/api/news/getparameters',
+//         type: 'get',
+//     }
+
+// })
 
 const loadData = (id) => ({
     type: 'CLIENTNEWSFULL_LOAD',

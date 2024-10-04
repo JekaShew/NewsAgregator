@@ -308,4 +308,31 @@ font-weight: bold;
     
 }
 
+.comment{
+    
+    margin: 0.5rem auto;
+    text-align: left;
+}
 
+.commentbottomBlock{
+    display:flex;
+    flex-direction: row;
+    justify-content: space-between;
+    color: black;
+    margin: 0.5rem auto;
+}
+
+.commentBlock{
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 10px;
+    border-color: #91C74F;
+    transition: background-color 0.3s ease;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    text-align: center;
+    margin: 0.5rem auto;
+}

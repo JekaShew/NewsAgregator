@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import Wrapper from '../../../Wrapper/Wrapper';
 import { loadData } from './actions';
 import{ refresh } from '../../AccountPages/Authorization/actions'
-import NewsShort from '../ClientNewsesPage/Components/NewsShort';
+import NewsShort from '../Components/NewsShort';
 import '../../../ClientPages/ClientStyles.css';
 
 const useToken = () => {

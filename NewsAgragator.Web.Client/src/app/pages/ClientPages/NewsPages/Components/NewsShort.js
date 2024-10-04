@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import '../../../../ClientPages/ClientStyles.css';
+import '../../../ClientPages/ClientStyles.css';
 
 const NewsShortComponent = (props) => {
 

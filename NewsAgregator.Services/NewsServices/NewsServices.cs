@@ -54,7 +54,7 @@ namespace NewsAgregator.Services.NewsServices
             var newsParameters = new NewsParameters()
             {
                 NewsStatuses = (await _appDBContext.NewsStatuses.ToListAsync()).Select(ns => NewsParametersMapper.NewsStatusToParameter(ns)).ToList(),
-                Comments = (await _appDBContext.Comments.ToListAsync()).Select(c => NewsParametersMapper.CommentToCommentParameter(c)).ToList(),
+                Comments = (await _appDBContext.Comments.Include(a => a.Account).ToListAsync()).Select(c => NewsParametersMapper.CommentToCommentParameter(c)).ToList(),
             };
             return newsParameters;
 
@@ -88,7 +88,7 @@ namespace NewsAgregator.Services.NewsServices
 
             var newsParameters = await GetNewsParametersAsync();
             newsVM.NewsStatuses = newsParameters.NewsStatuses;
-            newsVM.Comments = newsParameters.Comments.Where(c => c.NewsId == newsVM.Id).ToList();
+            newsVM.Comments = newsParameters.Comments.Where(c => c.NewsId == newsVM.Id).OrderBy(c => c.Date).ToList();
 
             return newsVM;
         }
