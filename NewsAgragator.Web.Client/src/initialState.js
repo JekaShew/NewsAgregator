@@ -1,5 +1,5 @@
 import { text } from "@fortawesome/fontawesome-svg-core";
-import { clientMain, clientNews, comments } from "./reducers";
+import { clientMain, clientNews, comments, createComplaint } from "./reducers";
 
 export default {
 
@@ -447,69 +447,69 @@ export default {
     weathers: {
         loading: true,
         value:
-            [
-                {
-                    id: {
-                        value: '',
-                    },
-                    city: {
-                        value: '',
-                    },
-                    temperatureMorning: {
-                        value: '',
-                    },
-                    temperatureDay: {
-                        value: '',
-                    },
-                    temperatureEvening: {
-                        value: '',
-                    },
-                    temperatureNight: {
-                        value: '',
-                    },
-                    temperatureCommon: {
-                        value: '',
-                    },
-                    date: {
-                        value: '',
-                    },
-                    percipittaion: {
-                        value: '',
-                    },
-                    wind: {
-                        value: '',
-                    },
-                    windDirection: {
-                        value: '',
-                    },
-                    pressure: {
-                        value: '',
-                    },
-                    humidity: {
-                        value: '',
-                    },
-
-                    weatherStatusMorning: {
-                        value: '',
-                    },
-
-                    weatherStatusDay: {
-                        value: '',
-                    },
-
-                    weatherStatusEvening: {
-                        value: '',
-                    },
-
-                    weatherStatusNight: {
-                        value: '',
-                    },
-
-                    weatherStatusCommon: {
-                        value: '',
-                    },
+        [
+            {
+                id: {
+                    value: '',
                 },
-            ],
+                city: {
+                    value: '',
+                },
+                temperatureMorning: {
+                    value: '',
+                },
+                temperatureDay: {
+                    value: '',
+                },
+                temperatureEvening: {
+                    value: '',
+                },
+                temperatureNight: {
+                    value: '',
+                },
+                temperatureCommon: {
+                    value: '',
+                },
+                date: {
+                    value: '',
+                },
+                percipittaion: {
+                    value: '',
+                },
+                wind: {
+                    value: '',
+                },
+                windDirection: {
+                    value: '',
+                },
+                pressure: {
+                    value: '',
+                },
+                humidity: {
+                    value: '',
+                },
+
+                weatherStatusMorning: {
+                    value: '',
+                },
+
+                weatherStatusDay: {
+                    value: '',
+                },
+
+                weatherStatusEvening: {
+                    value: '',
+                },
+
+                weatherStatusNight: {
+                    value: '',
+                },
+
+                weatherStatusCommon: {
+                    value: '',
+                },
+            },
+        ],
     },
 
     editAccountStatus: {
@@ -762,33 +762,34 @@ export default {
     clientMain: {
         loading: true,
         topNewses:
-            [
-                {
-                    id: {
-                        value: '',
-                    },
-                    title: {
-                        value: '',
-                    },
-                    text: {
-                        value: '',
-                    },
-                    date: {
-                        value: '',
-                    },
-                    positiveRating: {
-                        value: '',
-                    },
-                    description: {
-                        value:'',
-                    },
+        [
+            {
+                id: {
+                    value: '',
                 },
-            ],
+                title: {
+                    value: '',
+                },
+                text: {
+                    value: '',
+                },
+                date: {
+                    value: '',
+                },
+                positiveRating: {
+                    value: '',
+                },
+                description: {
+                    value:'',
+                },
+            },
+        ],
     },
 
     clientNews:{
         loading: true,
-        value:[
+        value:
+        [
             {
                 id: {
                     value: '',
@@ -810,6 +811,29 @@ export default {
                 }, 
             },
         ],
+    },
+
+    createComplaint: {
+        loading: true,
+        id: {
+            value: '',
+        },
+        title: {
+            value: '',
+        },
+        text: {
+            value: '',
+        },
+        complaintStatusId: {
+            value: '',
+        },
+        complaintTypeId: {
+            value: '',
+        },
+        userId: {
+            value: '',
+        },
+     
     },
 
     clientNewsFull: {

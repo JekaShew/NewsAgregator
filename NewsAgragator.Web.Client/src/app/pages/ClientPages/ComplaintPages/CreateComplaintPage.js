@@ -1,9 +1,8 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import Wrapper from '../../Wrapper/Wrapper';
-import { add, save, select, selectParameter, clearState, load, loadParameters } from './actions';
+import { select, clearState, loadParameters, sendComplaint } from './actions';
 import InputObject from '../../../customComponents/InputObject/InputObject';
 import '../../ClientPages/ClientStyles.css';
 
@@ -101,11 +100,10 @@ const renderValidationMessages = (inputName) =>{
     }
 }
 
-const EditComplaint = (props) => {
+const CreateComplaintPage = (props) => {
 
     const navigate = useNavigate();
-    const params = useParams();
-    const [managingState, setValue] = useState({ AddOrChange: "", Loading: true, });
+    const [managingState, setValue] = useState({Loading: true, });
     const title = useInput({isEmpty:true, minLength:2});
     const text = useInput({isEmpty:true, minLength:5});
 
@@ -115,37 +113,21 @@ const EditComplaint = (props) => {
 
     const beforeRender = () => {
         console.log("BeforeRender");
-        if (params.id != null) {
-            setValue({ AddOrChange: "Change", Loading: true });
-            props.load(params.id);
-        }
-        else {
-            setValue({ AddOrChange: "Add", Loading: true });
-            props.clearState();
-            props.loadParameters();
-        }
+        setValue({Loading: true });
+        props.clearState();
+        props.loadParameters();
     }
 
     useEffect(() => {
-        console.log("propsLoading changed");
-        if (params.id != null
-            && managingState.AddOrChange == "Change"
-            && !props.value.loadingParameters
-            && !props.value.loadingData) {
-            title.onInitialize(props.value.title.value);
-            text.onInitialize(props.value.text.value);
-            setValue({ AddOrChange: "Change", Loading: props.value.loadingData });
-        }
-        else if (params.id == null
-            && managingState.AddOrChange == "Add"
-            && !props.value.loadingParameters) {
+       
+        if (!props.value.loadingParameters) {
             title.onInitialize("");
             text.onInitialize("");
             setValue({ AddOrChange: "Add", Loading: props.value.loadingParameters });
         }
-    }, [props.value.loadingParameters, props.value.loadingData]);
+    }, [props.value.loadingParameters]);
 
-    const addORchangeBtn = () => {
+    const createComplaintBtn = () => {
         let disabled = false;
         if(!title.inputValid && !text.inputValid)
             disabled = true;
@@ -154,55 +136,24 @@ const EditComplaint = (props) => {
 
         if (managingState.AddOrChange == "Add")
             return (<button disabled={disabled} className="btnAddChange" onClick={() => addComplaint()}>Add</button>);
-        else if (managingState.AddOrChange == "Change")
-            return (<button disabled={disabled} className="btnAddChange" onClick={() => changeComplaint()}>Change</button>);
-
     }
 
     const goToList = () => {
-        navigate("/Complaints");
-    }
-
-    const changeComplaint = () => {
-        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
-        data.commentId = data.comment.id;
-        data.newsId = data.news.id;
-        data.complaintStatusId = data.complaintStatus.id;
-        data.complaintTypeId = data.complaintType.id;
-        data.userId = data.user.id;
-        data.administratorId = data.administrator.id;
-        data.id = params.id;;
-
-        let formData = new FormData();
-
-        for (var key in data) {
-            if (data[key]) {
-                formData.append(key, data[key]);
-            }
-        }
-
-        props.save(formData);
+        navigate("/ClientFullNews/" + props.data.newsId);
     }
 
     const addComplaint = () => {
-        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
-        data.commentId = data.comment.id;
-        data.newsId = data.news.id;
-        data.complaintStatusId = data.complaintStatus.id;
-        data.complaintTypeId = data.complaintType.id;
-        data.userId = data.user.id;
-        data.administratorId = data.administrator.id;
-        data.id = null;
-
-        let formData = new FormData();
-
-        for (var key in data) {
-            if (data[key]) {
-                formData.append(key, data[key]);
-            }
+        
+        let complaint ={
+            newsId: props.data.newsId,
+            commentId: props.data.commentId,
+            title: props.data.title,
+            text: PerformancePaintTiming.data.text,
+            complaintTypeId: props.data.complaintTypeId,
+            userId: null,
         }
 
-        props.add(formData);
+        props.add(complaint);
     };
 
     const renderInputs = () => {
@@ -210,6 +161,17 @@ const EditComplaint = (props) => {
         if (managingState.Loading == false) {
             return (
                 <div className="editPageInputs">
+                     <div className="divInput">
+                        <div className="inputTitle">Complaint Type</div>
+                        <InputObject
+                            id="complaintType"
+                            value={props.value.complaintType.value.id}
+                            options={props.value.complaintTypes.value}
+                            placeholder="Complaint Type"
+                            onClick={(val, text) => props.selectParameter('complaintType', val, text)}
+                        />
+                    </div>
+
                     <div className="divInput">
                         <div className="inputTitle">Title</div>
                         <input
@@ -238,66 +200,8 @@ const EditComplaint = (props) => {
                     {
                         renderValidationMessages(text)
                     }
-                    <div className="divInput">
-                        <div className="inputTitle">Comment</div>
-                        <InputObject
-                            id="comment"
-                            value={props.value.comment.value.id}
-                            options={props.value.comments.value}
-                            placeholder="Comment"
-                            onClick={(val, text) => props.selectParameter('comment', val,text)}
-                        />
-                    </div>
-                    <div className="divInput">
-                        <div className="inputTitle">News</div>
-                        <InputObject
-                            id="news"
-                            value={props.value.news.value.id}
-                            options={props.value.newses.value}
-                            placeholder="News"
-                            onClick={(val, text) => props.selectParameter('news', val, text)}
-                        />
-                    </div>
-                    <div className="divInput">
-                        <div className="inputTitle">Complaint Status</div>
-                        <InputObject
-                            id="compalintStatus"
-                            value={props.value.complaintStatus.value.id}
-                            options={props.value.complaintStatuses.value}
-                            placeholder="Compalint Status"
-                            onClick={(val, text) => props.selectParameter('complaintStatus', val, text)}
-                        />
-                    </div>
-                    <div className="divInput">
-                        <div className="inputTitle">Complaint Type</div>
-                        <InputObject
-                            id="complaintType"
-                            value={props.value.complaintType.value.id}
-                            options={props.value.complaintTypes.value}
-                            placeholder="Complaint Type"
-                            onClick={(val, text) => props.selectParameter('complaintType', val, text)}
-                        />
-                    </div>
-                    <div className="divInput">
-                        <div className="inputTitle">User</div>
-                        <InputObject
-                            id="user"
-                            value={props.value.user.value.id}
-                            options={props.value.accounts.value}
-                            placeholder="User"
-                            onClick={(val, text) => props.selectParameter('user', val, text)}
-                        />
-                    </div>
-                    <div className="divInput">
-                        <div className="inputTitle">Administrator</div>
-                        <InputObject
-                            id="administrator"
-                            value={props.value.administrator.value.id}
-                            options={props.value.accounts.value}
-                            placeholder="Administrator"
-                            onClick={(val, text) => props.selectParameter('administrator', val, text)}
-                        />
-                    </div>
+
+                   
                 </div>
                 );
         }
@@ -316,7 +220,7 @@ const EditComplaint = (props) => {
 
         <Wrapper>
             <div className="editPage">
-                <div className="pageTitle">Edit Complaint </div>
+                <div className="pageTitle">Send Complaint </div>
                 {renderInputs()}
 
 
@@ -324,7 +228,7 @@ const EditComplaint = (props) => {
                 <div className="btns">
                     <button className="btnAddChange" onClick={() => goToList()}>Back to List</button>
                     <div>
-                        {addORchangeBtn()}
+                        {createComplaintBtn()}
                     </div>
                 </div>
             </div>
@@ -335,18 +239,15 @@ const EditComplaint = (props) => {
 const mapDispatchToProps = dispatch => {
     return {
         select: (name, value) => dispatch(select(name, value)),
-        selectParameter: (name, value, text) => dispatch(selectParameter(name, value, text)),
-        add: (newComplaint) => dispatch(add(newComplaint)),
-        save: (updatedComplaint) => dispatch(save(updatedComplaint)),
+        sendComplaint: (newComplaint) => dispatch(sendComplaint(newComplaint)),
         loadParameters: () => dispatch(loadParameters()),
-        load: (id) => dispatch(load(id)),
         clearState: (data) => dispatch(clearState(data)),
     }
 }
 
 const mapStateToProps = (state) => (console.log("mapStateToProps"), {
 
-    value: state.editComplaint,
+    value: state.createComplaint,
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditComplaint);
+export default connect(mapStateToProps, mapDispatchToProps)(CreateComplaintPage);

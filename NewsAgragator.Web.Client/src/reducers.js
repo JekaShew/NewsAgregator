@@ -39,6 +39,7 @@ import authorization from './app/pages/ClientPages/AccountPages/Authorization/re
 import changePassword from './app/pages/ClientPages/AccountPages/ChangePasswordPage/reducer';
 import changePasswordWhenForgot from './app/pages/ClientPages/AccountPages/ForgotPasswordPage/reducer';
 import clientNewsFull from './app/pages/ClientPages/NewsPages/FullNewsPage/reducer';
+import createComplaint from './app/pages/ClientPages/ComplaintPages/reducer';
 
 const lastAction = (state = null, action) => {
     return action;
@@ -54,7 +55,7 @@ export {authorization}
 export {changePassword}
 export {changePasswordWhenForgot}
 
-
+export {createComplaint}
 
 export { editWeatherStatus }
 export { editAccountStatus }

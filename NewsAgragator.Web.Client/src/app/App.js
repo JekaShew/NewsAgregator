@@ -46,6 +46,7 @@ import SignUPPage from './pages/ClientPages/AccountPages/SignUPPage/SignUPPage';
 import ForgotPasswordPage from './pages/ClientPages/AccountPages/ForgotPasswordPage/ForgotPasswordPage';
 import ChangePasswordPage from './pages/ClientPages/AccountPages/ChangePasswordPage/ChangePasswordPage';
 
+import CreateComplaintPage from './pages/ClientPages/ComplaintPages/CreateComplaintPage';
 
 import ReferenceBooks from './pages/AdminPages/ReferenceBooks/ReferenceBooks';
 
@@ -58,13 +59,14 @@ function App() {
                 <Routes>
                     <Route path="/" Component={MainPage} exact />
                     <Route path="/Main" Component={MainPage} exact />
+                    <Route path="/CreateComplaintPage" Component={CreateComplaintPage} exact />
                     <Route path="/ClientNewsFull/:id" Component={ClientNewsFull} exact />
                     <Route path="/ClientNewses" Component={ClientNewsesPage} exact />
                     <Route path="/SignIN" Component={SignINPage} exact />
                     <Route path="/SignUP" Component={SignUPPage} exact />
                     <Route path="/ForgotPassword" Component={ForgotPasswordPage} exact />
                     <Route path="/ChangePassword" Component={ChangePasswordPage} exact />
-                    <Route path="/CreateComplaint/:id" Component={CreateComplaintPage} exact />
+                    {/* <Route path="/CreateComplaint/:id" Component={CreateComplaintPage} exact /> */}
 
 
                     <Route path="/ReferenceBooks" Component={ReferenceBooks} exact />
