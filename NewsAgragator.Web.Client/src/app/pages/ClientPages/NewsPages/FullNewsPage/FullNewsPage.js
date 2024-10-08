@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { useParams } from 'react-router';
 import { useNavigate } from 'react-router-dom';
 import Wrapper from '../../../Wrapper/Wrapper';
+import ModalWrapper from '../Components/ModalWrapper';
+import CreateComplaintPage from'../../ComplaintPages/CreateComplaintPage';
 import ModalConfirmation from '../../../../customComponents/ModalConfirmation/ModalConfirmation';
 import Comment from '../Components/Comment';
 import { load, sendComment, select } from './actions';
@@ -147,7 +149,13 @@ const renderValidationMessages = (inputName) =>{
 
 const FullNewsPage = (props) => {
 
-    const [loading, setLoading] = useState(true);
+    // const [loading, setLoading] = useState(true);
+    const [confirmationDeleting, setConfirmationDeleting] = useState(
+        { 
+            Id: '', 
+            Title: '', 
+
+            ConfirmationModalShow: false });
     const navigate = useNavigate();
     const [managingState, setValue] = useState({ Loading: true, });
     const params = useParams();
@@ -179,6 +187,23 @@ const FullNewsPage = (props) => {
 
         props.sendComment(comment,params.id);
     } 
+
+    const complaintToNews = (id) => {
+
+    }
+
+    const complaintToComment = (id) => {
+        setConfirmationDeleting({ Id: id, Title: title, ConfirmationModalShow: true });
+        console.log("btnDelete");
+        console.log(confirmationDeleting);
+        console.log(props);
+
+        return  
+        <ModalWrapper isOpen={isModalOpen} onClose={closeModal}>
+            <SomeComponent /> {/* Загружаемый компонент */}
+        </ModalWrapper>
+    };
+
 
     const beforeRender = () => {
         if (params.id != null) {
@@ -271,7 +296,7 @@ const FullNewsPage = (props) => {
                     <div className='fullNewsTextHTML' dangerouslySetInnerHTML={{ __html: props.value.textHTML.value }}>
                        
                     </div>
-                    <div className='complaintBtn' onClick={() => complaintToNews()}>
+                    <div className='complaintBtn' onClick={() => complaintToNews(props.value.id.value)}>
                         Complaint to News
                     </div>
                     <div className='fullNewsComments'>
@@ -284,7 +309,7 @@ const FullNewsPage = (props) => {
                                     <div>{x.date}</div>
                                 <button 
                                     className="btnAddChange" 
-                                    onClick={() => complaintToComment()}
+                                    onClick={() => complaintToComment(x.id)}
                                 >
                                     Complaint to News
                                 </button>
