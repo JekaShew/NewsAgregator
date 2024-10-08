@@ -44,7 +44,7 @@ const Complaints = (props) => {
         console.log("RenderTable");
         console.log(props);
         console.log(props.value);
-
+        
         if (loading == false) {
             return (
                 <table className='table'>
