@@ -18,7 +18,7 @@ namespace NewsAgregator.ViewModels.Data
         [Required, MinLength(5)]
         public string? Text { get; set; }
 
-        public Guid? CommentId { get; set; }
+        public Guid? CommentId { get; set; } 
         public List<Parameter>? Comments { get; set; }
         public Parameter? Comment { get; set; }
 

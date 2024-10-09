@@ -1,8 +1,9 @@
 import React from 'react';
 
 const ModalWrapper = ({ isOpen, onClose, children }) => {
+  console.log("ModalWrapper");
   if (!isOpen) return null;
-
+  
   return (
     <div className="modal-overlay">
       <div className="modal-content">

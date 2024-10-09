@@ -113,6 +113,7 @@ const CreateComplaintPage = (props) => {
 
     const beforeRender = () => {
         console.log("BeforeRender");
+        console.log("CreateCompalintPage");
         setValue({Loading: true });
         props.clearState();
         props.loadParameters();
@@ -143,10 +144,11 @@ const CreateComplaintPage = (props) => {
     }
 
     const addComplaint = () => {
-        
+        console.log("AddComplaintClient");
+        console.log(props);
         let complaint ={
-            newsId: props.data.newsId,
-            commentId: props.data.commentId,
+            newsId: props.data.NewsId,
+            commentId: props.data.CommentId,
             title: props.data.title,
             text: PerformancePaintTiming.data.text,
             complaintTypeId: props.data.complaintTypeId,

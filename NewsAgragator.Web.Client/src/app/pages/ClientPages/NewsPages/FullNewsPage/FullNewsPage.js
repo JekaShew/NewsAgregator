@@ -150,17 +150,22 @@ const renderValidationMessages = (inputName) =>{
 const FullNewsPage = (props) => {
 
     // const [loading, setLoading] = useState(true);
-    const [confirmationDeleting, setConfirmationDeleting] = useState(
+    const [modalWrapper, setModalWrapper] = useState(
         { 
-            Id: '', 
-            Title: '', 
-
-            ConfirmationModalShow: false });
+            ComplaintIds:
+            {
+                NewsId: '',
+                CommentId: ''
+            }, 
+            ModalWrapperShow: false
+        });
+    
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
     const [managingState, setValue] = useState({ Loading: true, });
     const params = useParams();
     const comment = useInput({isEmpty:true});
-    const { accessToken, refreshAccessToken } = useToken();
+    // const { accessToken, refreshAccessToken } = useToken();
     const backToNewses = () => {
         navigate('/ClientNewses');
     }
@@ -171,11 +176,11 @@ const FullNewsPage = (props) => {
     }
 
     const btnSendComment = () =>{
-        let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
+        // let data = Object.fromEntries(Object.entries(props.value).map(e => [e[0], e[1].value]));
 
         console.log("DATA");
-        console.log(data);
-        let formData = new FormData();
+        // console.log(data);
+        // let formData = new FormData();
         let comment = {
             accountId : null,
             text : props.value.comment.value,
@@ -188,20 +193,39 @@ const FullNewsPage = (props) => {
         props.sendComment(comment,params.id);
     } 
 
+    const openModal = (complaintIds) => {
+        // setIsModalOpen(true);
+        console.log("openModal");
+        console.log(isModalOpen);
+        <ModalWrapper isOpen={isModalOpen} onClose={closeModal}>
+            <CreateComplaintPage
+                 data = {complaintIds}/> 
+        </ModalWrapper>
+      };
+    
+      const closeModal = () => {
+        setModalWrapper({ComplaintIds:{NewsId:'',CommentId:''},ModalWrapperShow:false});
+      };
+
     const complaintToNews = (id) => {
 
     }
 
     const complaintToComment = (id) => {
-        setConfirmationDeleting({ Id: id, Title: title, ConfirmationModalShow: true });
-        console.log("btnDelete");
-        console.log(confirmationDeleting);
+        setModalWrapper({ ComplaintIds:{NewsId: props.value.id.value, CommentId: id}, ModalWrapperShow: true });
+        setIsModalOpen(true);
+        console.log("complaintToComment");
+        
         console.log(props);
 
-        return  
-        <ModalWrapper isOpen={isModalOpen} onClose={closeModal}>
-            <SomeComponent /> {/* Загружаемый компонент */}
-        </ModalWrapper>
+        let complaintIds = 
+        {
+            newsId: props.value.id.value,
+            commentId: id,
+        };
+        console.log(complaintIds);
+        
+        openModal(complaintIds);
     };
 
 
@@ -355,6 +379,11 @@ const FullNewsPage = (props) => {
                 {renderComponent()}
                 
             </div>
+            <ModalWrapper isOpen={modalWrapper.ModalWrapperShow} onClose={closeModal}>
+                <CreateComplaintPage
+                     data = {modalWrapper.complaintIds}
+                /> 
+            </ModalWrapper>
         </Wrapper>
     );
 };
