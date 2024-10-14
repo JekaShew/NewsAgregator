@@ -136,30 +136,32 @@ const CreateComplaintPage = (props) => {
         disabled = false;
 
         if (managingState.AddOrChange == "Add")
-            return (<button disabled={disabled} className="btnAddChange" onClick={() => addComplaint()}>Add</button>);
+            return (<button disabled={disabled} className="btnAddChange" onClick={() => sendComplaint()}>Add</button>);
     }
 
     const goToList = () => {
         navigate("/ClientFullNews/" + props.data.newsId);
     }
 
-    const addComplaint = () => {
+    const sendComplaint = () => {
         console.log("AddComplaintClient");
         console.log(props);
         let complaint ={
             newsId: props.data.NewsId,
             commentId: props.data.CommentId,
-            title: props.data.title,
-            text: PerformancePaintTiming.data.text,
-            complaintTypeId: props.data.complaintTypeId,
+            title: title.value,
+            text: text.value,
+            complaintTypeId: props.complaintTypeId,
             userId: null,
         }
-
-        props.add(complaint);
+        console.log("COMPLAINT");
+        console.log(complaint);
+        props.sendComplaint(complaint);
     };
 
     const renderInputs = () => {
-        console.log("renderInputs");
+        console.log("renderInputsCreateComplaint");
+        console.log(props);
         if (managingState.Loading == false) {
             return (
                 <div className="editPageInputs">
@@ -170,7 +172,7 @@ const CreateComplaintPage = (props) => {
                             value={props.value.complaintType.value.id}
                             options={props.value.complaintTypes.value}
                             placeholder="Complaint Type"
-                            onClick={(val, text) => props.selectParameter('complaintType', val, text)}
+                            onClick={(val, text) => props.select('complaintType', val, text)}
                         />
                     </div>
 
@@ -219,8 +221,6 @@ const CreateComplaintPage = (props) => {
     }
 
     return (
-
-        <Wrapper>
             <div className="editPage">
                 <div className="pageTitle">Send Complaint </div>
                 {renderInputs()}
@@ -234,7 +234,6 @@ const CreateComplaintPage = (props) => {
                     </div>
                 </div>
             </div>
-        </Wrapper>
     );
 };
 

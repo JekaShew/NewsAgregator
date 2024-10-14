@@ -1,7 +1,7 @@
 export const sendComplaint = (newComplaint) => ({
     type: 'COMPLAINT_SEND',
     remote: {
-        url: '/api/complaint/send',
+        url: '/api/complaint/sendcomplaint',
         type: 'post',
         body: newComplaint,
         contentType: 'application/x-www-form-urlencoded',

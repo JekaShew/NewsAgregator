@@ -193,15 +193,15 @@ const FullNewsPage = (props) => {
         props.sendComment(comment,params.id);
     } 
 
-    const openModal = (complaintIds) => {
-        // setIsModalOpen(true);
-        console.log("openModal");
-        console.log(isModalOpen);
-        <ModalWrapper isOpen={isModalOpen} onClose={closeModal}>
-            <CreateComplaintPage
-                 data = {complaintIds}/> 
-        </ModalWrapper>
-      };
+    // const openModal = (complaintIds) => {
+    //     // setIsModalOpen(true);
+    //     console.log("openModal");
+    //     console.log(isModalOpen);
+    //     <ModalWrapper isOpen={isModalOpen} onClose={closeModal}>
+    //         <CreateComplaintPage
+    //              data = {complaintIds}/> 
+    //     </ModalWrapper>
+    //   };
     
       const closeModal = () => {
         setModalWrapper({ComplaintIds:{NewsId:'',CommentId:''},ModalWrapperShow:false});
@@ -209,6 +209,24 @@ const FullNewsPage = (props) => {
 
     const complaintToNews = (id) => {
 
+    }
+
+    const renderModalComplaint = () =>{
+        console.log("renderModalComplaint");
+        console.log(modalWrapper);
+        if(modalWrapper.ModalWrapperShow === true)
+        {
+            return(
+                <ModalWrapper isOpen={modalWrapper.ModalWrapperShow} onClose={closeModal}>
+                    <CreateComplaintPage
+                        data = {modalWrapper.ComplaintIds}
+                        // NewsId = {modalWrapper.ComplaintIds.NewsId}
+                        // CommentId = {modalWrapper.ComplaintIds.CommentId}
+                    /> 
+                </ModalWrapper>
+            );
+        }
+        else return (<div>NONE</div>);      
     }
 
     const complaintToComment = (id) => {
@@ -379,11 +397,8 @@ const FullNewsPage = (props) => {
                 {renderComponent()}
                 
             </div>
-            <ModalWrapper isOpen={modalWrapper.ModalWrapperShow} onClose={closeModal}>
-                <CreateComplaintPage
-                     data = {modalWrapper.complaintIds}
-                /> 
-            </ModalWrapper>
+            {renderModalComplaint()}
+            
         </Wrapper>
     );
 };

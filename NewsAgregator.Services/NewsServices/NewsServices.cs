@@ -490,8 +490,8 @@ namespace NewsAgregator.Services.NewsServices
                 try
                 {
                     var newsNode = doc.DocumentNode.SelectSingleNode("//article[@itemprop='description']").InnerHtml;
-
-                    news.TextHTML = newsNode;
+                    //news = null?
+                    //news.TextHTML = newsNode;
                 }
 
                 catch (Exception ex)

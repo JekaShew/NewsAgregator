@@ -55,6 +55,27 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
 
         }
 
+        [HttpPost("sendcomplaint")]
+        public async Task<IActionResult> SendComplaint([FromBody]ComplaintVM complaintVM)
+        {
+            try
+            {
+                if (ModelState.IsValid)
+                {
+                    await _complaintServices.AddComplaintAsync(complaintVM);
+                    return Ok();
+                }
+                else return BadRequest(ModelState);
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+
         [HttpGet("takeall")]
         public async Task<IActionResult> TakeAll()
         {
