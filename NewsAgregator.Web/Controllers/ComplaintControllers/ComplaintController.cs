@@ -17,6 +17,23 @@ namespace NewsAgregator.Web.Controllers.ComplaintControllers
             _logger = logger;
         }
 
+        [HttpGet("getfullparameters")]
+        public async Task<IActionResult> GetFullParameters()
+        {
+            try
+            {
+                var result = await _complaintServices.GetComplaintParametersAsync();
+
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex.Message);
+                return StatusCode(500, ex.Message);
+            }
+
+        }
+
         [HttpGet("getparameters")]
         public async Task<IActionResult> GetParameters()
         {

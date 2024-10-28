@@ -724,7 +724,7 @@ namespace NewsAgregator.Services.NewsServices
                 await DeleteNewsAsync(news.Id);
             }
 
-            await _appDBContext.SaveChangesAsync();
+            //await _appDBContext.SaveChangesAsync();
         }
 
         public async Task DeleteOldNewsesAsync()
@@ -737,7 +737,7 @@ namespace NewsAgregator.Services.NewsServices
                 await DeleteNewsAsync(news.Id);
             }
 
-            await _appDBContext.SaveChangesAsync();
+            //await _appDBContext.SaveChangesAsync();
         }
 
         public async Task<List<NewsVM>> TakeTopNewsesAsync()
