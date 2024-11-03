@@ -715,30 +715,30 @@ namespace NewsAgregator.Services.NewsServices
             return myString;
         }
 
-        public async Task DeleteNewsWithBadRateAsync()
-        {
-            var allNewses = await TakeNewsesAsync();
-            var toDeleteNewses = allNewses.Where(n => n.PositiveRating <=4).ToList();
-            foreach(var news in toDeleteNewses)
-            {
-                await DeleteNewsAsync(news.Id);
-            }
+        //public async Task DeleteNewsWithBadRateAsync()
+        //{
+        //    var allNewses = await TakeNewsesAsync();
+        //    var toDeleteNewses = allNewses.Where(n => n.PositiveRating <=4).ToList();
+        //    foreach(var news in toDeleteNewses)
+        //    {
+        //        await DeleteNewsAsync(news.Id);
+        //    }
 
-            //await _appDBContext.SaveChangesAsync();
-        }
+        //    //await _appDBContext.SaveChangesAsync();
+        //}
 
-        public async Task DeleteOldNewsesAsync()
-        {
-            var allNewses = await TakeNewsesAsync();
-            TimeSpan twoWeeks = TimeSpan.FromDays(14);
-            var oldNewses = allNewses.Where(n => n.Date.Value >= DateTime.Now.AddDays(-14)).ToList();
-            foreach (var news in oldNewses)
-            {
-                await DeleteNewsAsync(news.Id);
-            }
+        //public async Task DeleteOldNewsesAsync()
+        //{
+        //    var allNewses = await TakeNewsesAsync();
+        //    TimeSpan twoWeeks = TimeSpan.FromDays(14);
+        //    var oldNewses = allNewses.Where(n => n.Date.Value >= DateTime.Now.AddDays(-14)).ToList();
+        //    foreach (var news in oldNewses)
+        //    {
+        //        await DeleteNewsAsync(news.Id);
+        //    }
 
-            //await _appDBContext.SaveChangesAsync();
-        }
+        //    //await _appDBContext.SaveChangesAsync();
+        //}
 
         public async Task<List<NewsVM>> TakeTopNewsesAsync()
         {

@@ -27,9 +27,9 @@ namespace NewsAgregator.Abstract.NewsInterfaces
 
         public Task UpdateNewsRateAsync();
 
-        public Task DeleteNewsWithBadRateAsync();
+        //public Task DeleteNewsWithBadRateAsync();
 
-        public Task DeleteOldNewsesAsync();
+        //public Task DeleteOldNewsesAsync();
 
     }
 }
